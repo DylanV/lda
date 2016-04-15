@@ -36,30 +36,31 @@ doc_corpus load_corpus(std::string file_path)
 
         while(!fs.eof()){
             getline(fs, line);
+            if(line != ""){
+                std::vector<std::string> items = split(line, line_delim);
 
-            std::vector<std::string> items = split(line, line_delim);
+                int unique_count = stoi(items[0]);
+                items.erase(items.begin());
 
-            int unique_count = stoi(items[0]);
-            items.erase(items.begin());
+                document doc;
+                std::map<int, int> word_counts;
+                int count =0;
 
-            document doc;
-            std::map<int, int> word_counts;
-            int count =0;
+                for(std::string const& str : items){
+                    std::vector<std::string> wc_str = split(str, item_delim);
+                    int word_id = stoi(wc_str[0]);
+                    int word_count = stoi(wc_str[1]);
+                    vocab.insert(word_id);
+                    word_counts[word_id] += word_count;
+                    count += word_count;
+                }
 
-            for(std::string const& str : items){
-                std::vector<std::string> wc_str = split(str, item_delim);
-                int word_id = stoi(wc_str[0]);
-                int word_count = stoi(wc_str[1]);
-                vocab.insert(word_id);
-                word_counts[word_id] += word_count;
-                count += word_count;
+                doc.wordCounts = word_counts;
+                doc.count = count;
+                doc.uniqueCount = unique_count;
+                doc_count++;
+                docs.push_back(doc);
             }
-
-            doc.wordCounts = word_counts;
-            doc.count = count;
-            doc.uniqueCount = unique_count;
-            doc_count++;
-            docs.push_back(doc);
         }
         corpus.numTerms = vocab.size();
         corpus.numDocs = doc_count;
@@ -69,3 +70,17 @@ doc_corpus load_corpus(std::string file_path)
     return corpus;
 }
 
+std::vector<std::string> load_vocab(std::string file_path)
+{
+    std::ifstream fs(file_path);
+    std::vector<std::string> vocab;
+
+    if(fs.is_open()){
+        std::string line;
+        while(!fs.eof()){
+            getline(fs, line);
+            vocab.push_back(line);
+        }
+    }
+    return vocab;
+}

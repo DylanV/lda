@@ -5,11 +5,13 @@
 #include "lda.h"
 #include "alpha.h"
 #include "util.h"
+#include "data.h"
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <assert.h>
 
 lda::lda(doc_corpus &corp)
 {
@@ -44,7 +46,7 @@ void lda::train(int num_topics)
     while ( ( (converged <0) || (converged>1e-4) ) && ( (iteration > 2) || (iteration < 100) ) ) {
         iteration++;
         likelihood = 0;
-
+        clock_t start = clock();
         zeroSSInit(ss);
 
         for(int d=0; d<numDocs; d++){
@@ -55,9 +57,8 @@ void lda::train(int num_topics)
         }
         mle(ss, true);
 
-        if(iteration % 10 == 0){
-            std::cout << " iter: " << iteration << " lhood: " << likelihood << std::endl;
-        }
+        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
+            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
@@ -99,12 +100,11 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     std::vector<double> old_phi(numTopics);
     std::vector<double> digamma_gam(numTopics);
 
+    phi = std::vector<std::vector<double>>(doc.uniqueCount, std::vector<double>(numTopics, 1/numTopics));
+    var_gamma = std::vector<double>(numTopics, alpha + doc.count/numTopics);
+
     for(int k=0; k<numTopics; k++){
-        var_gamma[k] = alpha + doc.count/numTopics;
         digamma_gam[k] = digamma(var_gamma[k]);
-        for(int n=0; n<doc.uniqueCount; n++){
-            phi[n][k] = 1/numTopics;
-        }
     }
 
     int iteration = 0;
@@ -160,14 +160,10 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
     }
     double digsum = digamma(var_gamma_sum);
 
-    likelihood = lgamma(alpha * numTopics);
-    likelihood -= numTopics * lgamma(alpha);
-    likelihood -= lgamma(var_gamma_sum);
+    likelihood = lgamma(alpha * numTopics) - numTopics * lgamma(alpha) - lgamma(var_gamma_sum);
 
     for(int k=0; k<numTopics; k++){
-        likelihood += (alpha - 1)*(dig[k] - digsum);
-        likelihood += lgamma(var_gamma[k]);
-        likelihood -= (var_gamma[k] - 1)*(dig[k] - digsum);
+        likelihood += (alpha - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
 
         int n=0;
         for(auto const& word_count: doc.wordCounts){
@@ -256,10 +252,16 @@ void lda::writeGammaToFile(std::string folder_path)
     std::fstream fs;
     fs.open(folder_path+"gamma.dat", std::fstream::out | std::fstream::trunc);
     if(fs.is_open()){
+        std::vector<double> gammaSum(numDocs,0);
+        for(int d=0; d<numDocs; d++){
+            for(int k=0; k<numTopics; k++){
+                gammaSum[d] += varGamma[d][k];
+            }
+        }
         fs << numDocs << sep << numTopics << nl;
         for(int d=0; d<numDocs; d++){
             for(int k=0; k<numTopics; k++){
-                fs << varGamma[d][k] << sep;
+                fs << varGamma[d][k]/gammaSum[d] << sep;
             }
             fs << nl;
         }
@@ -272,5 +274,48 @@ void lda::writeParams(std::string folder_path)
     writeGammaToFile(folder_path);
     writeAlphaToFile(folder_path);
 }
+
+void lda::loadFromParams(std::string folder_path)
+{
+    char sep = ' ';
+    logProbW = loadBetaFromFile(folder_path + "beta.dat");
+}
+
+std::vector<std::vector<double>> lda::loadBetaFromFile(std::string file_path) {
+
+    std::vector<std::vector<double>> beta;
+    char sep = ' ';
+
+    std::ifstream fs(file_path);
+    if(fs.is_open()){
+        std::string line;
+        bool readFirst = false;
+
+        while(!fs.eof()){
+            getline(fs, line);
+            std::vector<std::string> items = split(line, sep);
+
+            if(!readFirst){
+                assert(items.size() == 2);
+                readFirst = true;
+                numTopics = stoi(items[0]);
+                numTerms = stoi(items[1]);
+                assert(numTerms == corpus.numTerms);
+            } else{
+                if(line != ""){
+                    assert(items.size() == numTerms);
+                    std::vector<double> top_probs;
+                    for(auto const& item : items){
+                        top_probs.push_back(stod(item));
+                    }
+                    beta.push_back(top_probs);
+                }
+            }
+        }
+    }
+
+    return beta;
+}
+
 
 

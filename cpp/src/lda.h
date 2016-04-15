@@ -47,6 +47,7 @@ public:
     // Functions
     void train(int num_topics);
     void writeParams(std::string folder_path);
+    void loadFromParams(std::string folder_path);
 
     // Constructor
     lda(doc_corpus& corp);
@@ -66,9 +67,12 @@ private:
                      std::vector<std::vector<double>>& phi);
     double compute_likelihood(document const& doc, std::vector<double>& var_gamma,
                               std::vector<std::vector<double>>& phi);
+
     void writeBetaToFile(std::string folder_path);
     void writeAlphaToFile(std::string folder_path);
     void writeGammaToFile(std::string folder_path);
+
+    std::vector<std::vector<double>> loadBetaFromFile(std::string file_path);
 };
 
 

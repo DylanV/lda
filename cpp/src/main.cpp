@@ -2,40 +2,41 @@
 #include "data.h"
 #include "lda.h"
 #include <math.h>
+#include <time.h>
 
 using namespace std;
 
 int main() {
-    cout << "Loading corpus:" << endl;
-    doc_corpus corpus = load_corpus("../datasets/dummy.dat");
+    cout << "Loading corpus" << endl;
+    doc_corpus corpus = load_corpus("../datasets/ap/ap.dat");
     lda vb(corpus);
-    cout << "Training lda:" << endl;
-    vb.train(4);
 
-    for(int k=0; k<4; k++){
-        cout << "topic: " << k << endl;
-        for(int w=0; w<corpus.numTerms; w++){
+    cout << "loading vocabulary" << endl;
+    vector<string> vocab = load_vocab("../datasets/ap/vocab.txt");
+
+    cout << "Training lda:" << endl;
+    clock_t start = clock();
+    vb.train(100);
+    cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
+    vb.writeParams("../params/ap100topic/");
+
+//    vb.loadFromParams("../params/");
+
+    for(int k=0; k<vb.numTopics; k++){
+        vector<pair<double, string>> word_probs;
+        for(int w=0; w<vb.numTerms; w++){
             double prob = exp(vb.logProbW[k][w]);
-            if(prob > 0.05){
-                cout << w << " " << prob << " ";
+//            double prob = vb.logProbW[k][w];
+            if(prob > 1e-3){
+                word_probs.push_back(pair<double, string>(1-prob, vocab[w]));
             }
+        }
+        sort(begin(word_probs), end(word_probs));
+        for(int i=0; i<20; i++){
+            cout << word_probs[i].second << " ";
         }
         cout << endl;
     }
-    vb.writeParams("../params/");
-
-//    double min = -9999999999999;
-//    int best = 2;
-//    for(int t=2; t<20; t++){
-//        vb = lda(corpus);
-//        vb.train(t);
-//        cout << t << " " << vb.likelihood << endl;
-//        if(vb.likelihood > min){
-//            min = vb.likelihood;
-//            best = t;
-//        }
-//    }
-//    cout << best << endl;
 
     return 0;
 }
