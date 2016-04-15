@@ -26,6 +26,7 @@
 *.exe
 *.out
 *.app
+*.exe.stackdump
 
 # intellij files
 .idea/

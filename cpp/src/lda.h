@@ -41,11 +41,13 @@ public:
     std::vector<std::vector<double>> logProbW;
     double alpha;
 
+    double likelihood;
+
     // Functions
-    void train(void);
+    void train(int num_topics);
 
     // Constructor
-    lda(doc_corpus& corp, int num_topics);
+    lda(doc_corpus& corp);
 
 private:
     // Variables

@@ -8,9 +8,9 @@ using namespace std;
 int main() {
     cout << "Loading corpus:" << endl;
     doc_corpus corpus = load_corpus("../datasets/dummy.dat");
-    lda vb(corpus, 4);
+    lda vb(corpus);
     cout << "Training lda:" << endl;
-    vb.train();
+    vb.train(4);
     cout << vb.alpha << endl;
 
     for(int k=0; k<4; k++){
@@ -23,5 +23,19 @@ int main() {
         }
         cout << endl;
     }
+
+    double min = -9999999999999;
+    int best = 2;
+    for(int t=2; t<20; t++){
+        vb = lda(corpus);
+        vb.train(t);
+        cout << t << " " << vb.likelihood << endl;
+        if(vb.likelihood > min){
+            min = vb.likelihood;
+            best = t;
+        }
+    }
+    cout << best << endl;
+
     return 0;
 }

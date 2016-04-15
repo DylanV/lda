@@ -10,16 +10,17 @@
 #include <math.h>
 #include <iostream>
 
-lda::lda(doc_corpus &corp, int num_topics) {
+lda::lda(doc_corpus &corp) {
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
-    numTopics = num_topics;
-    logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
-    alpha = 1;
 }
 
-void lda::train(){
+void lda::train(int num_topics){
+
+    numTopics = num_topics;
+    logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
+
     suff_stats ss;
     randomSSInit(ss);
     mle(ss, false);
@@ -33,7 +34,7 @@ void lda::train(){
     }
 
     int iteration = 0;
-    double likelihood;
+    double likelihood  = 0;
     double old_likelihood = 0;
     double converged = 1;
 
@@ -42,7 +43,6 @@ void lda::train(){
         likelihood = 0;
 
         zeroSSInit(ss);
-        std::cout << "iteration" << iteration << std::endl;
 
         for(int d=0; d<numDocs; d++){
             document doc = corpus.docs[d];
@@ -50,13 +50,18 @@ void lda::train(){
             std::vector<std::vector<double>> doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
-        std::cout << "likelihood: " << likelihood << std::endl;
         mle(ss, true);
+
+        if(iteration % 10 == 0){
+            std::cout << " iter: " << iteration << " lhood: " << likelihood << std::endl;
+        }
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
 
     }
+    std::cout << " Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
+    lda::likelihood = likelihood;
 }
 
 double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi) {
