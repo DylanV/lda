@@ -11,13 +11,15 @@
 #include <iostream>
 #include <fstream>
 
-lda::lda(doc_corpus &corp) {
+lda::lda(doc_corpus &corp)
+{
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
 }
 
-void lda::train(int num_topics){
+void lda::train(int num_topics)
+{
 
     numTopics = num_topics;
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
@@ -92,7 +94,8 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     return likelihood;
 }
 
-double lda::inference(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi){
+double lda::inference(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi)
+{
     std::vector<double> old_phi(numTopics);
     std::vector<double> digamma_gam(numTopics);
 
@@ -178,7 +181,8 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
     return likelihood;
 }
 
-void lda::mle(suff_stats &ss, bool optAlpha=true) {
+void lda::mle(suff_stats &ss, bool optAlpha=true)
+{
 
     for(int k=0; k<numTopics;k++){
         for(int w=0; w<numTerms; w++){
@@ -194,7 +198,8 @@ void lda::mle(suff_stats &ss, bool optAlpha=true) {
     }
 }
 
-void lda::randomSSInit(suff_stats& ss) {
+void lda::randomSSInit(suff_stats& ss)
+{
     ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
     ss.classTotal = std::vector<double>(numTopics, 0.0);
 
@@ -208,14 +213,16 @@ void lda::randomSSInit(suff_stats& ss) {
     }
 }
 
-void lda::zeroSSInit(suff_stats& ss) {
+void lda::zeroSSInit(suff_stats& ss)
+{
     ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0.0));
     ss.classTotal = std::vector<double>(numTopics, 0.0);
     ss.numDocs = 0;
     ss.alphaSS = 0;
 }
 
-void lda::writeBetaToFile(std::string folder_path) {
+void lda::writeBetaToFile(std::string folder_path)
+{
     char sep = ' ';
     char nl = '\n';
     std::fstream beta_fs;
