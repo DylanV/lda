@@ -9,6 +9,7 @@
 #include <time.h>       /* time */
 #include <math.h>
 #include <iostream>
+#include <fstream>
 
 lda::lda(doc_corpus &corp) {
     corpus = corp;
@@ -46,8 +47,8 @@ void lda::train(int num_topics){
 
         for(int d=0; d<numDocs; d++){
             document doc = corpus.docs[d];
-            std::vector<double> var_gamma = varGamma[d];
-            std::vector<std::vector<double>> doc_phi = phi[d];
+            std::vector<double>& var_gamma = varGamma[d];
+            std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
         mle(ss, true);
@@ -64,7 +65,9 @@ void lda::train(int num_topics){
     lda::likelihood = likelihood;
 }
 
-double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi) {
+double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
+                       std::vector<std::vector<double>>& phi)
+{
 
     double likelihood = inference(doc, var_gamma, phi);
 
@@ -140,7 +143,9 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     return likelihood;
 }
 
-double lda::compute_likelihood(document const &doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi) {
+double lda::compute_likelihood(document const &doc, std::vector<double>& var_gamma,
+                               std::vector<std::vector<double>>& phi)
+{
 
     double likelihood = 0;
     double var_gamma_sum = 0;
@@ -164,7 +169,8 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
         int n=0;
         for(auto const& word_count: doc.wordCounts){
             if(phi[n][k] > 0){
-                likelihood += word_count.second * ( phi[n][k] * ( (dig[k] - digsum)-log(phi[n][k])+logProbW[k][word_count.first]));
+                likelihood += word_count.second *
+                        ( phi[n][k] * ( (dig[k] - digsum)-log(phi[n][k])+logProbW[k][word_count.first]));
             }
             n++;
         }
@@ -209,7 +215,55 @@ void lda::zeroSSInit(suff_stats& ss) {
     ss.alphaSS = 0;
 }
 
+void lda::writeBetaToFile(std::string folder_path) {
+    char sep = ' ';
+    char nl = '\n';
+    std::fstream beta_fs;
+    beta_fs.open(folder_path+"beta.dat", std::fstream::out | std::fstream::trunc);
+    if(beta_fs.is_open()){
+        beta_fs << numTopics << sep << corpus.numTerms << nl;
+        for(int k=0; k<numTopics; k++){
+            for(int n=0; n<corpus.numTerms; n++){
+                beta_fs << exp(logProbW[k][n]) << sep;
+            }
+            beta_fs << nl;
+        }
+    }
+}
 
+void lda::writeAlphaToFile(std::string folder_path)
+{
+    char sep = ' ';
+    char nl = '\n';
+    std::fstream fs;
+    fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
+    if(fs.is_open()){
+        fs << alpha << nl;
+    }
+}
 
+void lda::writeGammaToFile(std::string folder_path)
+{
+    char sep = ' ';
+    char nl = '\n';
+    std::fstream fs;
+    fs.open(folder_path+"gamma.dat", std::fstream::out | std::fstream::trunc);
+    if(fs.is_open()){
+        fs << numDocs << sep << numTopics << nl;
+        for(int d=0; d<numDocs; d++){
+            for(int k=0; k<numTopics; k++){
+                fs << varGamma[d][k] << sep;
+            }
+            fs << nl;
+        }
+    }
+}
+
+void lda::writeParams(std::string folder_path)
+{
+    writeBetaToFile(folder_path);
+    writeGammaToFile(folder_path);
+    writeAlphaToFile(folder_path);
+}
 
 

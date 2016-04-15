@@ -11,7 +11,6 @@ int main() {
     lda vb(corpus);
     cout << "Training lda:" << endl;
     vb.train(4);
-    cout << vb.alpha << endl;
 
     for(int k=0; k<4; k++){
         cout << "topic: " << k << endl;
@@ -23,19 +22,20 @@ int main() {
         }
         cout << endl;
     }
+    vb.writeParams("../params/");
 
-    double min = -9999999999999;
-    int best = 2;
-    for(int t=2; t<20; t++){
-        vb = lda(corpus);
-        vb.train(t);
-        cout << t << " " << vb.likelihood << endl;
-        if(vb.likelihood > min){
-            min = vb.likelihood;
-            best = t;
-        }
-    }
-    cout << best << endl;
+//    double min = -9999999999999;
+//    int best = 2;
+//    for(int t=2; t<20; t++){
+//        vb = lda(corpus);
+//        vb.train(t);
+//        cout << t << " " << vb.likelihood << endl;
+//        if(vb.likelihood > min){
+//            min = vb.likelihood;
+//            best = t;
+//        }
+//    }
+//    cout << best << endl;
 
     return 0;
 }

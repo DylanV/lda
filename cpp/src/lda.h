@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <string>
 
 struct document {
     std::map<int,int> wordCounts;
@@ -45,6 +46,7 @@ public:
 
     // Functions
     void train(int num_topics);
+    void writeParams(std::string folder_path);
 
     // Constructor
     lda(doc_corpus& corp);
@@ -58,9 +60,15 @@ private:
     void randomSSInit(suff_stats& ss);
     void zeroSSInit(suff_stats& ss);
     void mle(suff_stats& ss, bool optAlpha);
-    double doc_e_step(document const& doc, suff_stats& ss, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi);
-    double inference(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi);
-    double compute_likelihood(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi);
+    double doc_e_step(document const& doc, suff_stats& ss, std::vector<double>& var_gamma,
+                      std::vector<std::vector<double>>& phi);
+    double inference(document const& doc, std::vector<double>& var_gamma,
+                     std::vector<std::vector<double>>& phi);
+    double compute_likelihood(document const& doc, std::vector<double>& var_gamma,
+                              std::vector<std::vector<double>>& phi);
+    void writeBetaToFile(std::string folder_path);
+    void writeAlphaToFile(std::string folder_path);
+    void writeGammaToFile(std::string folder_path);
 };
 
 
