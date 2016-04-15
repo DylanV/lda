@@ -16,9 +16,9 @@ int main() {
 
     cout << "Training lda:" << endl;
     clock_t start = clock();
-    vb.train(100);
+    vb.train(150);
     cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
-    vb.writeParams("../params/ap100topic/");
+    vb.writeParams("../params/ap150topic/");
 
 //    vb.loadFromParams("../params/");
 

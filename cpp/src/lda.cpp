@@ -235,7 +235,6 @@ void lda::writeBetaToFile(std::string folder_path)
 
 void lda::writeAlphaToFile(std::string folder_path)
 {
-    char sep = ' ';
     char nl = '\n';
     std::fstream fs;
     fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
