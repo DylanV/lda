@@ -76,7 +76,7 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     ss.alphaSS -= numTopics * digamma(gamma_sum);
 
     int n=0;
-    for(std::pair<int,int> const& word_count : doc.wordCounts){
+    for(auto const& word_count : doc.wordCounts){
         for(int k=0; k<numTopics; k++){
             ss.classWord[k][word_count.first] += word_count.second * phi[n][k];
             ss.classTotal[k] += word_count.second * phi[n][k];
@@ -111,7 +111,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         iteration++;
         int n=0;
 
-        for(std::pair<int, int> const& word_count : doc.wordCounts){
+        for(auto const& word_count : doc.wordCounts){
             phisum = 0;
             for(int k=0; k<numTopics; k++){
                 old_phi[k] = phi[n][k];
@@ -162,7 +162,7 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
         likelihood -= (var_gamma[k] - 1)*(dig[k] - digsum);
 
         int n=0;
-        for(std::pair<int,int> const& word_count: doc.wordCounts){
+        for(auto const& word_count: doc.wordCounts){
             if(phi[n][k] > 0){
                 likelihood += word_count.second * ( phi[n][k] * ( (dig[k] - digsum)-log(phi[n][k])+logProbW[k][word_count.first]));
             }
