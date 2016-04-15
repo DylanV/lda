@@ -71,7 +71,6 @@ void lda::train(int num_topics)
 double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
                        std::vector<std::vector<double>>& phi)
 {
-
     double likelihood = inference(doc, var_gamma, phi);
 
     double gamma_sum = 0;
