@@ -3,10 +3,11 @@
 #include "lda.h"
 #include <math.h>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
-int main() {
+void check_ap(void){
     cout << "Loading corpus" << endl;
     doc_corpus corpus = load_corpus("../datasets/ap/ap.dat");
     lda vb(corpus);
@@ -37,6 +38,42 @@ int main() {
         }
         cout << endl;
     }
+}
 
+void check_dummy(void){
+    cout << "Loading corpus" << endl;
+    doc_corpus corpus = load_corpus("../datasets/dummy2.dat");
+    lda vb(corpus);
+
+    double best_likelihood = -0;
+    int best_topics = 3;
+    for(int i=3; i<20; i++){
+        cout << i << ": ";
+        vb.train(i);
+        if(vb.likelihood > best_likelihood){
+            best_likelihood = vb.likelihood;
+            best_topics = i;
+        }
+    }
+
+    cout << "Best number of topics is: " << best_topics << endl;
+}
+
+void check_big_dummy(void){
+    cout << "Loading corpus" << endl;
+    doc_corpus corpus = load_corpus("../datasets/dummy2.dat");
+    lda vb(corpus);
+
+    cout << "Training lda:" << endl;
+    clock_t start = clock();
+    vb.train(10);
+    cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
+
+    vb.writeParams("../params/dat/");
+}
+
+int main() {
+//    check_ap();
+    check_big_dummy();
     return 0;
 }

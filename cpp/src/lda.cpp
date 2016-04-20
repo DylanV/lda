@@ -43,7 +43,7 @@ void lda::train(int num_topics)
     double old_likelihood = 0;
     double converged = 1;
 
-    while ( ( (converged <0) || (converged>1e-4) ) && ( (iteration > 2) || (iteration < 100) ) ) {
+    while ( ( (converged <0) || (converged>1e-4) ) && ( (iteration <= 2) || (iteration <= 100) ) ) {
         iteration++;
         likelihood = 0;
         clock_t start = clock();
@@ -57,14 +57,14 @@ void lda::train(int num_topics)
         }
         mle(ss, true);
 
-        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
-            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
+//        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
+//            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
 
     }
-    std::cout << " Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
+    std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
     lda::likelihood = likelihood;
 }
 

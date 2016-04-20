@@ -47,12 +47,14 @@ doc_corpus load_corpus(std::string file_path)
                 int count =0;
 
                 for(std::string const& str : items){
-                    std::vector<std::string> wc_str = split(str, item_delim);
-                    int word_id = stoi(wc_str[0]);
-                    int word_count = stoi(wc_str[1]);
-                    vocab.insert(word_id);
-                    word_counts[word_id] += word_count;
-                    count += word_count;
+                    if(str != "\r" && str != "\n"){
+                        std::vector<std::string> wc_str = split(str, item_delim);
+                        int word_id = stoi(wc_str[0]);
+                        int word_count = stoi(wc_str[1]);
+                        vocab.insert(word_id);
+                        word_counts[word_id] += word_count;
+                        count += word_count;
+                    }
                 }
 
                 doc.wordCounts = word_counts;
