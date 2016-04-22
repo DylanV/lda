@@ -40,7 +40,6 @@ double opt_alpha(double ss, int D, int K)
         df = d_alhood(a, ss, D, K);
         d2f = d2_alhood(a, D, K);
         log_a = log_a - df/(d2f * a + df);
-    }
-    while ((fabs(df) > NEWTON_THRESH) && (iter < MAX_ALPHA_ITER));
+    } while ((fabs(df) > NEWTON_THRESH) && (iter < MAX_ALPHA_ITER));
     return(exp(log_a));
 }

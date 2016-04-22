@@ -105,10 +105,8 @@ public:
     void loadFromParams(std::string folder_path);
 
 private:
-    //! the gamma latent dirichet parameter
-    std::vector<std::vector<double>> varGamma;
-    //! the phi latent dirichlet parameter
-    std::vector<std::vector<std::vector<double>>> phi;
+    std::vector<std::vector<double>> varGamma; /*!< gamma latent dirichet parameter */
+    std::vector<std::vector<std::vector<double>>> phi; /*!< phi latent dirichlet parameter */
 
     //! randomly initiliase the given sufficient statistics
     void randomSSInit(suff_stats& ss);
