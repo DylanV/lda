@@ -30,8 +30,5 @@
 
 # intellij files
 .idea/
-encodings.xml
 lda.xml
-misc.xml
-modules.xml
-workspace.xml
+
