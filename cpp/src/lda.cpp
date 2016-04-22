@@ -15,6 +15,10 @@
 
 lda::lda(doc_corpus &corp)
 {
+/*!
+     The constructor for the lda class. Accepts a reference to the document corpus,
+     \param corp a reference to the document corpus for the lda.
+ */
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
@@ -22,6 +26,11 @@ lda::lda(doc_corpus &corp)
 
 void lda::train(int num_topics)
 {
+/*!
+    Perform variational bayes on the corpus to get the dirichlet parameters
+    (logProbW->beta and alpha) for the corpus.
+    \param num_topics an int for the number of topics to train on
+*/
 
     numTopics = num_topics;
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
@@ -71,6 +80,15 @@ void lda::train(int num_topics)
 double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
                        std::vector<std::vector<double>>& phi)
 {
+/*!
+    Calls inference to update the latent parameters (gamma, phi) for the current document \sa inference().
+    Then updates the sufficient statistics for the lda.
+    \param doc reference to current document \sa document
+    \param ss reference to the model sufficient statistics \sa suff_stats
+    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
+    \param phi reference to the current document topic-word distributionn \sa phi
+    \return the log likelihood for the document
+ */
     double likelihood = inference(doc, var_gamma, phi);
 
     double gamma_sum = 0;
@@ -96,6 +114,15 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
 
 double lda::inference(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi)
 {
+/*!
+    Performs inference to update the latent dirichlet factors gamma and phi for the given document.
+    \param doc reference to current document \sa document
+    \param ss reference to the model sufficient statistics \sa suff_stats
+    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
+    \param phi reference to the current document topic-word distribution \sa phi
+    \return the log likelihood for the document
+    \sa doc_e_step(), compute_likelihood()
+ */
     std::vector<double> old_phi(numTopics);
     std::vector<double> digamma_gam(numTopics);
 
@@ -148,7 +175,13 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 double lda::compute_likelihood(document const &doc, std::vector<double>& var_gamma,
                                std::vector<std::vector<double>>& phi)
 {
-
+/*!
+    \param doc reference to current document \sa document
+    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
+    \param phi reference to the current document topic-word distribution  \sa phi
+    \return the log likelihood for the document
+    \sa doc_e_step(), compute_likelihood()
+ */
     double likelihood = 0;
     double var_gamma_sum = 0;
     std::vector<double> dig(numTopics);
@@ -178,7 +211,13 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
 
 void lda::mle(suff_stats &ss, bool optAlpha=true)
 {
-
+/*!
+    Calculates a maximum likelihood model for the lda given the sufficient stats.
+    Newton-Raphson update on alpha is optional. optAlpha default is true.
+    \param ss a reference to the sufficient statistics struct for the lda
+    \param optAlpha set to true if alpha should be inferred
+    \sa suff_stats
+ */
     for(int k=0; k<numTopics;k++){
         for(int w=0; w<numTerms; w++){
             if(ss.classWord[k][w] > 0){
@@ -268,6 +307,13 @@ void lda::writeGammaToFile(std::string folder_path)
 
 void lda::writeParams(std::string folder_path)
 {
+/*!
+    Writes the lda alpha, beta and gamma dirchlet parameters to files.
+    File contains the shape of the parameter in the first line. Followed by the parameter line seperated
+    by vector indix if 2d vector and space separated for 1d vector. So a 2d beta parameter will have each
+    space separated topic distribtion on a new line.
+    /param folder_path the path to the folder where the parameter files will be written.
+ */
     writeBetaToFile(folder_path);
     writeGammaToFile(folder_path);
     writeAlphaToFile(folder_path);
@@ -275,6 +321,10 @@ void lda::writeParams(std::string folder_path)
 
 void lda::loadFromParams(std::string folder_path)
 {
+/*!
+    /param folder_path the path to the folder containing the parameter files
+    /sa writeParams()
+ */
     char sep = ' ';
     logProbW = loadBetaFromFile(folder_path + "beta.dat");
 }
