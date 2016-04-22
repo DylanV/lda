@@ -43,7 +43,7 @@ void lda::train(int num_topics)
 
     varGamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
     phi = std::vector<std::vector<std::vector<double>>>(numDocs);
-    for(int d=0; d<corpus.numDocs; d++){
+    for(int d=0; d<corpus.numDocs; d++){  
         phi[d] = std::vector<std::vector<double>>(corpus.docs[d].uniqueCount, std::vector<double>((numTopics)));
     }
 

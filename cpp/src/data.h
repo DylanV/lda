@@ -12,23 +12,26 @@
 #include "lda.h"
 #include <string>
 
+//! settings struct for the lda model
 struct lda_settings {
-    double converged_threshold = 1e-4;
-    int min_iterations = 2;
-    int max_iterations = 100;
-    double inference_converged_threshold = 1e-6;
-    int inference_max_iterations = 20;
+    double converged_threshold = 1e-4;      /*!< The convergance threshold used in training */
+    int min_iterations = 2;                 /*!< Minimum number of iterations to train for */
+    int max_iterations = 100;               /*!< Maximum number of iterations to train for */
+    double inf_converged_threshold = 1e-6;  /*!< Document inference convergance threshold*/
+    int inf_max_iterations = 20;            /*!< Document inference max iterations*/
 };
 
+//! settings struct for alpha updates
 struct alpha_settings {
-    bool singular = true;
-    double newton_threshold = 1e-5;
-    int max_iterations = 1000;
+    bool singular = true;           /*!< whether alpha is singuler or a vector*/
+    double newton_threshold = 1e-5; /*!< threshold for newtons method*/
+    int max_iterations = 1000;      /*!< Maximum number of iterations for alpha update*/
 };
 
+//! settings struct for file writing and reading for params mostly
 struct file_settings {
-    char param_sep = ' ';
-    char param_nl = '\n';
+    char param_sep = ' ';   /*!< Item seperator on line*/
+    char param_nl = '\n';   /*!< Line seperator*/
 };
 
 //! load a corpus from a file
