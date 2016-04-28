@@ -4,6 +4,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include "data.h"
 
 std::vector<std::string> split(std::string const& str, char delim)
@@ -51,10 +52,15 @@ doc_corpus load_corpus(std::string file_path)
                         std::vector<std::string> wc_str = split(str, item_delim);
                         int word_id = stoi(wc_str[0]);
                         int word_count = stoi(wc_str[1]);
+
                         vocab.insert(word_id);
                         word_counts[word_id] += word_count;
                         count += word_count;
                     }
+                }
+
+                if(word_counts.size() != unique_count){
+                    std::cout << "The corpus lies" << std::endl;
                 }
 
                 doc.wordCounts = word_counts;

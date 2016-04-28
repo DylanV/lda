@@ -66,8 +66,8 @@ void lda::train(int num_topics)
         }
         mle(ss, true);
 
-//        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
-//            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
+        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
+            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
@@ -126,8 +126,19 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     std::vector<double> old_phi(numTopics);
     std::vector<double> digamma_gam(numTopics);
 
-    phi = std::vector<std::vector<double>>(doc.uniqueCount, std::vector<double>(numTopics, 1/numTopics));
-    var_gamma = std::vector<double>(numTopics, alpha + doc.count/numTopics);
+//    phi = std::vector<std::vector<double>>(doc.uniqueCount, std::vector<double>(numTopics, 1/numTopics));
+//    var_gamma = std::vector<double>(numTopics, alpha + doc.count/numTopics);
+
+    for(int w=0; w<doc.uniqueCount; w++){
+        for(int k=0; k<numTopics; k++){
+            phi[w][k] = 1/numTopics;
+        }
+    }
+
+    double init = alpha + doc.count/numTopics;
+    for(int k=0; k<numTopics; k++){
+        var_gamma[k] = init;
+    }
 
     for(int k=0; k<numTopics; k++){
         digamma_gam[k] = digamma(var_gamma[k]);
@@ -249,8 +260,16 @@ void lda::randomSSInit(suff_stats& ss)
 
 void lda::zeroSSInit(suff_stats& ss)
 {
-    ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0.0));
-    ss.classTotal = std::vector<double>(numTopics, 0.0);
+//    ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0.0));
+//    ss.classTotal = std::vector<double>(numTopics, 0.0);
+
+    for(int k=0; k<numTopics; k++){
+        for(int w=0; w<numTerms; w++){
+            ss.classWord[k][w] = 0;
+        }
+        ss.classTotal[k] = 0;
+    }
+
     ss.numDocs = 0;
     ss.alphaSS = 0;
 }
