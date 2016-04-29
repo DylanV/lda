@@ -59,10 +59,12 @@ void lda::train(int num_topics)
         zeroSSInit(ss);
 
         for(int d=0; d<numDocs; d++){
-            document doc = corpus.docs[d];
-            std::vector<double>& var_gamma = varGamma[d];
-            std::vector<std::vector<double>>& doc_phi = phi[d];
-            likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
+            if(d != 0){
+                document doc = corpus.docs[d];
+                std::vector<double>& var_gamma = varGamma[d];
+                std::vector<std::vector<double>>& doc_phi = phi[d];
+                likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
+            }
         }
         mle(ss, true);
 
@@ -284,7 +286,10 @@ void lda::writeBetaToFile(std::string folder_path)
         beta_fs << numTopics << sep << corpus.numTerms << nl;
         for(int k=0; k<numTopics; k++){
             for(int n=0; n<corpus.numTerms; n++){
-                beta_fs << exp(logProbW[k][n]) << sep;
+                beta_fs << exp(logProbW[k][n]);
+                if(n != corpus.numTerms-1){
+                    beta_fs << sep;
+                }
             }
             beta_fs << nl;
         }
@@ -317,7 +322,10 @@ void lda::writeGammaToFile(std::string folder_path)
         fs << numDocs << sep << numTopics << nl;
         for(int d=0; d<numDocs; d++){
             for(int k=0; k<numTopics; k++){
-                fs << varGamma[d][k]/gammaSum[d] << sep;
+                fs << varGamma[d][k]/gammaSum[d];
+                if(k != numTopics - 1){
+                    fs << sep;
+                }
             }
             fs << nl;
         }

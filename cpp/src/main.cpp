@@ -64,10 +64,10 @@ void check_big_dummy(void){
     doc_corpus corpus = load_corpus("../datasets/dummy2.dat");
     lda vb(corpus);
 
-    cout << "Training lda:" << endl;
+    cout << "Training lda" << endl;
     clock_t start = clock();
     vb.train(10);
-    cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
+    cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << endl;
 
     vb.writeParams("../params/dat/");
 }
@@ -76,13 +76,13 @@ void run_ratings_lda(void){
     cout << "Loading corpus" << endl;
     doc_corpus corpus = load_corpus("../datasets/rating.dat");
     lda vb(corpus);
-
+    int topics = 150;
     cout << "Training lda:" << endl;
     clock_t start = clock();
-    vb.train(150);
-    cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
-
-    vb.writeParams("../params/ratings/");
+    vb.train(topics);
+    cout << "Trained with "<< topics << " topics in "
+        << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << endl;
+    vb.writeParams("../params/ratings/150/");
 }
 
 int main() {
