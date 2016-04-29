@@ -35,3 +35,6 @@ lda.xml
 .DS_Store
 .ipynb_checkpoints/
 cpp/build/
+
+docs/html
+docs/latex
