@@ -16,4 +16,5 @@ double digamma(double x);
 //! the log sum of a and b
 double log_sum(double log_a, double log_b);
 
+
 #endif //LDA_UTIL_H

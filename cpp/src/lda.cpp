@@ -34,12 +34,11 @@ void lda::train(int num_topics)
 
     numTopics = num_topics;
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
+    alpha = std::vector<double>(numTopics, 1.0/numTopics);
 
     suff_stats ss;
     randomSSInit(ss);
     mle(ss, false);
-
-    alpha = 1.0/numTopics;
 
     varGamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
     phi = std::vector<std::vector<std::vector<double>>>(numDocs);
@@ -96,9 +95,11 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     double gamma_sum = 0;
     for(int k=0; k<numTopics; k++){
         gamma_sum += var_gamma[k];
-        ss.alphaSS += digamma(var_gamma[k]);
     }
-    ss.alphaSS -= numTopics * digamma(gamma_sum);
+
+    for(int k=0; k<numTopics; k++){
+        ss.alphaSS[k] += digamma(var_gamma[k]) - digamma(gamma_sum);
+    }
 
     int n=0;
     for(auto const& word_count : doc.wordCounts){
@@ -137,9 +138,8 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         }
     }
 
-    double init = alpha + doc.count/numTopics;
     for(int k=0; k<numTopics; k++){
-        var_gamma[k] = init;
+        var_gamma[k] = alpha[k] + doc.count/numTopics;
     }
 
     for(int k=0; k<numTopics; k++){
@@ -205,10 +205,9 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
     }
     double digsum = digamma(var_gamma_sum);
 
-    likelihood = lgamma(alpha * numTopics) - numTopics * lgamma(alpha) - lgamma(var_gamma_sum);
-
     for(int k=0; k<numTopics; k++){
-        likelihood += (alpha - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
+        likelihood += lgamma(alpha[k] * numTopics) - numTopics * lgamma(alpha[k]) - lgamma(var_gamma_sum);
+        likelihood += (alpha[k] - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
 
         int n=0;
         for(auto const& word_count: doc.wordCounts){
@@ -241,7 +240,8 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
         }
     }
     if(optAlpha){
-        alpha = opt_alpha(ss.alphaSS, ss.numDocs, numTopics);
+//        alpha = opt_alpha(ss.alphaSS, ss.numDocs, numTopics);
+        update_alpha(alpha, ss.alphaSS, ss.numDocs, numTopics);
     }
 }
 
@@ -249,6 +249,7 @@ void lda::randomSSInit(suff_stats& ss)
 {
     ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
     ss.classTotal = std::vector<double>(numTopics, 0.0);
+    ss.alphaSS = std::vector<double>(numTopics, 1/numTopics);
 
     srand(time(NULL));
 
@@ -256,6 +257,7 @@ void lda::randomSSInit(suff_stats& ss)
         for(int n=0; n<numTerms; n++){
             ss.classWord[k][n] += rand();
             ss.classTotal[k] += ss.classWord[k][n];
+            ss.alphaSS[k] += rand();
         }
     }
 }
@@ -270,10 +272,10 @@ void lda::zeroSSInit(suff_stats& ss)
             ss.classWord[k][w] = 0;
         }
         ss.classTotal[k] = 0;
+        ss.alphaSS[k]= 0;
     }
 
     ss.numDocs = 0;
-    ss.alphaSS = 0;
 }
 
 void lda::writeBetaToFile(std::string folder_path)
@@ -299,10 +301,14 @@ void lda::writeBetaToFile(std::string folder_path)
 void lda::writeAlphaToFile(std::string folder_path)
 {
     char nl = '\n';
+    char sep = ' ';
     std::fstream fs;
     fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
     if(fs.is_open()){
-        fs << alpha << nl;
+        for(int k=0; k<numTopics; k++){
+            fs << alpha[k] << sep;
+        }
+        fs << nl;
     }
 }
 

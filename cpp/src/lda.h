@@ -46,7 +46,7 @@ struct suff_stats {
     std::vector<std::vector<double>> classWord; /*!< 2d vector for the topic-word sufficient stats for beta.*/
     std::vector<double> classTotal;             /*!< vector (K) for the topic sufficient stats for  beta.*/
 
-    double alphaSS; /*!< the (singular) alpha sufficient statistics */
+    std::vector<double> alphaSS; /*!< the alpha sufficient statistics */
     int numDocs;    /*!< the number of documents include in the suff stats so far */
 };
 
@@ -68,7 +68,7 @@ public:
     int numTerms;       /*!< total number of terms(words) in the corpus. */
 
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
-    double alpha;   /*!< the lda alpha parameter */
+    std::vector<double> alpha;   /*!< the lda alpha parameter */
 
     double likelihood;  /*!< the total log-likelihood for the corpus */
 

@@ -17,9 +17,9 @@ void check_ap(void){
 
     cout << "Training lda:" << endl;
     clock_t start = clock();
-    vb.train(150);
+    vb.train(200);
     cout << "Trained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
-//    vb.writeParams("../params/ap150topic/");
+    vb.writeParams("../params/dat/");
 
 //    vb.loadFromParams("../params/");
 
@@ -87,8 +87,8 @@ void run_ratings_lda(void){
 
 int main() {
     cout << "Starting" << endl;
-//    check_ap();
+    check_ap();
 //    check_big_dummy();
-    run_ratings_lda();
+//    run_ratings_lda();
     return 0;
 }

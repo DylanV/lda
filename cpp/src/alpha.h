@@ -7,6 +7,8 @@
 #ifndef LDA_ALPHA_H
 #define LDA_ALPHA_H
 
+#include <vector>
+
 #define NEWTON_THRESH 1e-5
 #define MAX_ALPHA_ITER 1000
 
@@ -18,5 +20,7 @@ double d_alhood(double a, double ss, int D, int K);
 double d2_alhood(double a, int D, int K);
 //! newton-raphson update of alpha
 double opt_alpha(double ss, int D, int K);
+//! newton-raphson update of vector alpha
+void update_alpha(std::vector<double> & alpha, std::vector<double> ss, int D, int K);
 
 #endif //LDA_ALPHA_H
