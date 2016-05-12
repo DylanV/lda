@@ -1,0 +1,12 @@
+LDA 5
+converged_threshold 1e-4
+min_iterations 2
+max_iterations 100
+inf_converged_threshold 1e-6
+inf_max_iterations 20
+
+ALPHA 4
+estimate_alpha true
+concentration true
+newton_threshold 1e-5
+max_iterations 1000

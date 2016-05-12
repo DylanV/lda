@@ -23,15 +23,10 @@ struct lda_settings {
 
 //! settings struct for alpha updates
 struct alpha_settings {
-    bool singular = true;           /*!< whether alpha is singuler or a vector*/
+    bool estimate_alpha = true;     /*!< Whether to estimate alpha*/
+    bool singular = true;           /*!< Whether alpha should be the concentration parameter or the dirichlet mean*/
     double newton_threshold = 1e-5; /*!< threshold for newtons method*/
     int max_iterations = 1000;      /*!< Maximum number of iterations for alpha update*/
-};
-
-//! settings struct for file writing and reading for params mostly
-struct file_settings {
-    char param_sep = ' ';   /*!< Item seperator on line*/
-    char param_nl = '\n';   /*!< Line seperator*/
 };
 
 //! load a corpus from a file

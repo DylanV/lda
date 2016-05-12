@@ -75,14 +75,16 @@ void check_big_dummy(void){
 void run_ratings_lda(void){
     cout << "Loading corpus" << endl;
     doc_corpus corpus = load_corpus("../datasets/rating.dat");
+    corpus.numDocs -= 1;
+    corpus.docs.erase(corpus.docs.begin());
     lda vb(corpus);
-    int topics = 150;
+    int topics = 50;
     cout << "Training lda:" << endl;
     clock_t start = clock();
     vb.train(topics);
     cout << "Trained with "<< topics << " topics in "
         << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << endl;
-    vb.writeParams("../params/ratings/150/");
+    vb.writeParams("../params/ratings/50/");
 }
 
 int main() {
