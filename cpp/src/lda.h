@@ -54,6 +54,7 @@ struct suff_stats {
 /*!
     A class for a latent dirichlet allocation model. Holds the model parameters.
     Can be trained on a corpus given a number of topics or loaded from a parameter file.
+    http://videolectures.net/mlss09uk_blei_tm/
  */
 class lda {
 
@@ -67,7 +68,7 @@ public:
     int numDocs;        /*!< total number of documents in the corpus. */
     int numTerms;       /*!< total number of terms(words) in the corpus. */
 
-    std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
+    std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob */
     std::vector<double> alpha;   /*!< the lda alpha parameter */
 
     double likelihood;  /*!< the total log-likelihood for the corpus */

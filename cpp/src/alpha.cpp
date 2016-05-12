@@ -5,6 +5,7 @@
 #include "alpha.h"
 #include <math.h>
 #include <cmath>
+#include <iostream>
 #include "util.h"
 
 double alhood(double a, double ss, int D, int K)
@@ -45,7 +46,9 @@ double opt_alpha(double ss, int D, int K)
     return(exp(log_a));
 }
 
+
 void update_alpha(std::vector<double> & alpha, std::vector<double> ss, int D, int K){
+
     int iteration = 0;
     double thresh = 0;
     double alpha_sum = 0;
@@ -65,7 +68,7 @@ void update_alpha(std::vector<double> & alpha, std::vector<double> ss, int D, in
 
         for(int k=0; k<K; k++){
             gradient[k] = D * (digamma(alpha_sum) - digamma(alpha[k])) + ss[k];
-            hessian[k] = -1.0*(D * trigamma(alpha[k]));
+            hessian[k] = -1.0*D*(D * trigamma(alpha[k]));
             sum_g_h += gradient[k] / hessian[k];
             sum_1_h += 1.0/hessian[k];
         }
