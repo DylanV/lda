@@ -91,6 +91,10 @@ int main() {
     cout << "Starting" << endl;
 //    check_ap();
 //    check_big_dummy();
-    run_ratings_lda();
+//    run_ratings_lda();
+    lda_settings l;
+    alpha_settings a;
+    load_settings("../settings.txt", a, l);
+    cout << "load settings" << endl;
     return 0;
 }
