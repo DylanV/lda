@@ -66,7 +66,7 @@ void lda::train(int num_topics)
         }
         mle(ss, true);
 
-        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
+        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
             << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
