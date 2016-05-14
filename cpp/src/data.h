@@ -12,6 +12,7 @@
 #include "lda.h"
 #include <string>
 
+
 //! settings struct for the lda model
 struct lda_settings {
     double converged_threshold = 1e-4;      /*!< The convergance threshold used in training */
@@ -23,15 +24,10 @@ struct lda_settings {
 
 //! settings struct for alpha updates
 struct alpha_settings {
-    bool singular = true;           /*!< whether alpha is singuler or a vector*/
+    bool estimate_alpha = true;     /*!< Whether to estimate alpha*/
+    bool concentration = true;           /*!< Whether alpha should be the concentration parameter or the dirichlet mean*/
     double newton_threshold = 1e-5; /*!< threshold for newtons method*/
     int max_iterations = 1000;      /*!< Maximum number of iterations for alpha update*/
-};
-
-//! settings struct for file writing and reading for params mostly
-struct file_settings {
-    char param_sep = ' ';   /*!< Item seperator on line*/
-    char param_nl = '\n';   /*!< Line seperator*/
 };
 
 //! load a corpus from a file
@@ -40,5 +36,7 @@ doc_corpus load_corpus(std::string file_path);
 std::vector<std::string> split(std::string const& str, char delim);
 //! load vocab from file
 std::vector<std::string> load_vocab(std::string file_path);
+//! load settings from file
+void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda);
 
 #endif //LDA_DATA_H

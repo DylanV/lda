@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 #include "data.h"
 
 std::vector<std::string> split(std::string const& str, char delim)
@@ -91,4 +92,67 @@ std::vector<std::string> load_vocab(std::string file_path)
         }
     }
     return vocab;
+}
+
+void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda){
+
+    std::ifstream fs(file_path);
+    const char line_delim = ' ';
+    int numAlpha = 0;
+    int numLDA = 0;
+    bool loadingLDA = false;
+    bool loadingAlpha = false;
+
+    if(fs.is_open()){
+        std::string line;
+        while(!fs.eof()){
+            getline(fs, line);
+            if(line != ""){
+                std::vector<std::string> items = split(line, line_delim);
+                if(items.size() == 2){
+
+                    std::string value = items[1];
+                    value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
+                    value.erase(std::remove(value.begin(), value.end(), '\r'), value.end());
+                    value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
+
+                    if(items[0] == "LDA"){
+                        numLDA = std::stoi(items[1]);
+                        loadingLDA = true;
+                        loadingAlpha = false;
+                    }
+
+                    else if(items[0] == "ALPHA"){
+                        numAlpha = std::stoi(items[1]);
+                        loadingLDA = false;
+                        loadingAlpha = true;
+                    }
+
+                    if(loadingLDA){
+                        if(items[0] == "converged_threshold")
+                            lda.converged_threshold = std::stod(value);
+                        else if(items[0] == "min_iterations")
+                            lda.min_iterations = std::stoi(value);
+                        else if(items[0] == "max_iterations")
+                            lda.max_iterations = std::stoi(value);
+                        else if(items[0] == "inf_converged_threshold")
+                            lda.inf_converged_threshold = std::stod(value);
+                        else if(items[0] == "inf_max_iterations")
+                            lda.inf_max_iterations = std::stoi(value);
+                    }
+
+                    if(loadingAlpha){
+                        if(items[0] == "estimate_alpha")
+                            alpha.estimate_alpha = (value == "true");
+                        else if(items[0] == "concentration")
+                            alpha.concentration = (value == "true");
+                        else if(items[0] == "newton_threshold")
+                            alpha.newton_threshold = std::stod(value);
+                        else if(items[0] == "max_iterations")
+                            alpha.max_iterations = std::stoi(value);
+                    }
+                }
+            }
+        }
+    }
 }

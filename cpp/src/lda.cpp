@@ -59,16 +59,14 @@ void lda::train(int num_topics)
         zeroSSInit(ss);
 
         for(int d=0; d<numDocs; d++){
-            if(d != 0){
-                document doc = corpus.docs[d];
-                std::vector<double>& var_gamma = varGamma[d];
-                std::vector<std::vector<double>>& doc_phi = phi[d];
-                likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
-            }
+            document doc = corpus.docs[d];
+            std::vector<double>& var_gamma = varGamma[d];
+            std::vector<std::vector<double>>& doc_phi = phi[d];
+            likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
         mle(ss, true);
 
-        std::cout << "Iteration: " << iteration << " with likelihood: " << likelihood
+        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
             << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
