@@ -134,6 +134,9 @@ int main(int argc, char* argv[]) {
         doc_corpus corpus = load_corpus(corpus_path);
         cout << "Corpus loaded with " << corpus.numDocs << " documents.\n" << endl;
 
+        corpus.numDocs -= 1;
+        corpus.docs.erase(corpus.docs.begin());
+
         lda_settings l;
         alpha_settings a;
         if(settings_path_passed){

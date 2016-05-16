@@ -6,8 +6,6 @@
 #include "alpha.h"
 #include "util.h"
 #include "data.h"
-#include <stdlib.h>
-#include <time.h>
 #include <math.h>
 #include <iostream>
 #include <fstream>
