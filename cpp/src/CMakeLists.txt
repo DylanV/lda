@@ -7,6 +7,7 @@ set(SOURCE
         ${src}/alpha.cpp
         ${src}/util.cpp
         ${src}/data.cpp
+        ${src}/dirichlet.cpp
         PARENT_SCOPE
         )
 set(HEADERS
@@ -15,5 +16,6 @@ set(HEADERS
         ${src}/alpha.h
         ${src}/util.h
         ${src}/data.h
+        ${src}/dirichlet.h
         PARENT_SCOPE
         )
