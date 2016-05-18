@@ -88,9 +88,6 @@ void run_ratings_lda(void){
 }
 
 int main(int argc, char* argv[]) {
-//    check_ap();
-//    check_big_dummy();
-//    run_ratings_lda();
 
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;
@@ -121,7 +118,7 @@ int main(int argc, char* argv[]) {
             else if(argument == "-param"){
                 param_dir.assign(argv[i+1]);
                 if(param_dir.find_last_of("\\/") != param_dir.size()-1){
-                    param_dir.append("/");
+                    param_dir.append("/"); // If the directory does not end in a slash add one
                 }
             }
             else if(argument == "-setting"){
@@ -146,7 +143,7 @@ int main(int argc, char* argv[]) {
             cout << "Using default inference settings\n" << endl;
         }
 
-        lda vb(corpus);
+        lda vb(corpus, l);
         cout << "Training lda with " << numTopics << " topics:" << endl;
         clock_t start = clock();
         vb.train(numTopics);

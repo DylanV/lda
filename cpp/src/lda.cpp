@@ -11,7 +11,7 @@
 #include <fstream>
 #include <assert.h>
 
-lda::lda(doc_corpus &corp)
+lda::lda(doc_corpus &corp, lda_settings settings)
 {
 /*!
      The constructor for the lda class. Accepts a reference to the document corpus,
@@ -20,6 +20,12 @@ lda::lda(doc_corpus &corp)
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
+
+    double CONV_THRESHHOLD = settings.converged_threshold;
+    int MIN_ITER = settings.min_iterations;
+    int MAX_ITER = settings.max_iterations;
+    double INF_CONV_THRESH = settings.inf_converged_threshold;
+    int INF_MAX_ITER = settings.inf_max_iterations;
 }
 
 void lda::train(int num_topics)
@@ -50,7 +56,7 @@ void lda::train(int num_topics)
     double old_likelihood = 0;
     double converged = 1;
 
-    while ( ( (converged <0) || (converged>1e-4) ) && ( (iteration <= 2) || (iteration <= 100) ) ) {
+    while ( ( (converged <0) || (converged>CONV_THRESHHOLD) ) && ( (iteration <= MIN_ITER) || (iteration <= MAX_ITER) ) ) {
         iteration++;
         likelihood = 0;
         clock_t start = clock();
@@ -148,7 +154,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     double likelihood = 0;
     double old_likelihood = 0;
 
-    while((converged > 1e-6) && (iteration < 20)){
+    while((converged > INF_CONV_THRESH) && (iteration < INF_MAX_ITER)){
         iteration++;
         int n=0;
 

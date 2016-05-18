@@ -13,6 +13,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include "data.h"
 
 
 //! A document struct
@@ -59,7 +60,7 @@ class lda {
 
 public:
     //! lda constructor
-    lda(doc_corpus& corp);
+    lda(doc_corpus& corp, lda_settings settings);
 
     doc_corpus corpus;  /*!< document corpus for the lda */
 
@@ -82,6 +83,14 @@ public:
     void loadFromParams(std::string folder_path);
 
 private:
+    //Training Settings
+    double CONV_THRESHHOLD = 1e-4;      /*!< The convergance threshold used in training */
+    int MIN_ITER = 2;                 /*!< Minimum number of iterations to train for */
+    int MAX_ITER = 100;               /*!< Maximum number of iterations to train for */
+    //Document E-step Inference Settings
+    double INF_CONV_THRESH = 1e-6;  /*!< Document inference convergance threshold*/
+    int INF_MAX_ITER = 20;            /*!< Document inference max iterations*/
+
     std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
 
