@@ -13,29 +13,9 @@
 #include <vector>
 #include <set>
 #include <string>
+#include "dirichlet.h"
 #include "data.h"
 
-
-//! A document struct
-/*!
-    Represents a document in bag of words style.
- */
-struct document {
-    std::map<int,int> wordCounts;   /*!< Map for the word counts. Maps id to count. */
-    int count;                      /*!< The total number of words in the document. */
-    int uniqueCount;                /*!< The number of unique words in the document. */
-};
-
-//! A corpus struct
-/*!
-    Represents a corpus of documents.
-    \sa document
- */
-struct doc_corpus {
-    std::vector<document> docs; /*! vector of document structs. \sa document */
-    int numTerms;               /*! the total number of unique terms in the corpus. */
-    int numDocs;                /*! the total number of documents. */
-};
 
 //! A sufficient statistics struct
 /*!
@@ -69,12 +49,12 @@ public:
     int numTerms;       /*!< total number of terms(words) in the corpus. */
 
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
-    double alpha;   /*!< the lda alpha parameter */
+    dirichlet alpha;   /*!< the lda alpha parameter */
 
     double likelihood;  /*!< the total log-likelihood for the corpus */
 
     //! Train the lda on the corpus given the number of topics.
-    void train(int num_topics);
+    void train(int num_topics, alpha_settings a_settings);
 
     //! Write the dirichlet parameters to files in the given folder
     void writeParams(std::string folder_path);
@@ -84,12 +64,14 @@ public:
 
 private:
     //Training Settings
-    double CONV_THRESHHOLD = 1e-4;      /*!< The convergance threshold used in training */
-    int MIN_ITER = 2;                 /*!< Minimum number of iterations to train for */
-    int MAX_ITER = 100;               /*!< Maximum number of iterations to train for */
+    double CONV_THRESHHOLD;      /*!< The convergance threshold used in training */
+    int MIN_ITER;                 /*!< Minimum number of iterations to train for */
+    int MAX_ITER;               /*!< Maximum number of iterations to train for */
     //Document E-step Inference Settings
-    double INF_CONV_THRESH = 1e-6;  /*!< Document inference convergance threshold*/
-    int INF_MAX_ITER = 20;            /*!< Document inference max iterations*/
+    double INF_CONV_THRESH;  /*!< Document inference convergance threshold*/
+    int INF_MAX_ITER;            /*!< Document inference max iterations*/
+    //Settings regarding alpha
+    bool EST_ALPHA;
 
     std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
@@ -98,6 +80,9 @@ private:
     void randomSSInit(suff_stats& ss);
     //! zero initialise the given sufficient statistics
     void zeroSSInit(suff_stats& ss);
+
+    //! Sets up alpha given the settings
+    dirichlet setup_alpha(alpha_settings settings);
 
     //! get the maximum likelihood model from the sufficient statistics
     void mle(suff_stats& ss, bool optAlpha);

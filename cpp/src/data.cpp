@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <set>
+#include <set>
 #include "data.h"
 
 std::vector<std::string> split(std::string const& str, char delim)
@@ -150,6 +152,10 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
                             alpha.newton_threshold = std::stod(value);
                         else if(items[0] == "max_iterations")
                             alpha.max_iterations = std::stoi(value);
+                        else if(items[0] == "inti_prec")
+                            alpha.init_prec = std::stod(value);
+                        else if(items[0] == "init_s")
+                            alpha.init_s = std::stoi(value);
                     }
                 }
             }

@@ -21,14 +21,14 @@ lda::lda(doc_corpus &corp, lda_settings settings)
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
 
-    double CONV_THRESHHOLD = settings.converged_threshold;
-    int MIN_ITER = settings.min_iterations;
-    int MAX_ITER = settings.max_iterations;
-    double INF_CONV_THRESH = settings.inf_converged_threshold;
-    int INF_MAX_ITER = settings.inf_max_iterations;
+    CONV_THRESHHOLD = settings.converged_threshold;
+    MIN_ITER = settings.min_iterations;
+    MAX_ITER = settings.max_iterations;
+    INF_CONV_THRESH = settings.inf_converged_threshold;
+    INF_MAX_ITER = settings.inf_max_iterations;
 }
 
-void lda::train(int num_topics)
+void lda::train(int num_topics, alpha_settings a_settings)
 {
 /*!
     Perform variational bayes on the corpus to get the dirichlet parameters
@@ -39,11 +39,12 @@ void lda::train(int num_topics)
     numTopics = num_topics;
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
+    EST_ALPHA = a_settings.estimate_alpha;
+    alpha = setup_alpha(a_settings);
+
     suff_stats ss;
     randomSSInit(ss);
     mle(ss, false);
-
-    alpha = 1.0/numTopics;
 
     varGamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
     phi = std::vector<std::vector<std::vector<double>>>(numDocs);
@@ -68,7 +69,7 @@ void lda::train(int num_topics)
             std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
-        mle(ss, true);
+        mle(ss, EST_ALPHA);
 
         std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
             << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
@@ -139,7 +140,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         }
     }
 
-    double init = alpha + doc.count/numTopics;
+    double init = alpha.s + doc.count/numTopics;
     for(int k=0; k<numTopics; k++){
         var_gamma[k] = init;
     }
@@ -207,10 +208,10 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
     }
     double digsum = digamma(var_gamma_sum);
 
-    likelihood = lgamma(alpha * numTopics) - numTopics * lgamma(alpha) - lgamma(var_gamma_sum);
+    likelihood = lgamma(alpha.s * numTopics) - numTopics * lgamma(alpha.s) - lgamma(var_gamma_sum);
 
     for(int k=0; k<numTopics; k++){
-        likelihood += (alpha - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
+        likelihood += (alpha.s - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
 
         int n=0;
         for(auto const& word_count: doc.wordCounts){
@@ -243,8 +244,12 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
         }
     }
     if(optAlpha){
-        alpha = opt_alpha(ss.alphaSS, ss.numDocs, numTopics);
+        alpha.estimate_precision(ss.alphaSS, ss.numDocs);
     }
+}
+
+dirichlet lda::setup_alpha(alpha_settings settings){
+    return dirichlet(numTopics, settings);
 }
 
 void lda::randomSSInit(suff_stats& ss)
@@ -304,7 +309,7 @@ void lda::writeAlphaToFile(std::string folder_path)
     std::fstream fs;
     fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
     if(fs.is_open()){
-        fs << alpha << nl;
+        fs << alpha.s << nl;
     }
 }
 
