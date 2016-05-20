@@ -6,9 +6,9 @@ inf_converged_threshold 1e-6
 inf_max_iterations 20
 
 ALPHA 6
-estimate_alpha true
-concentration false
+estimate_alpha false
+concentration true
 newton_threshold 1e-5
 max_iterations 1000
 init_prec 0.1
-init_s 1
+init_s 100

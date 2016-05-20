@@ -3,7 +3,6 @@
 //
 
 #include "lda.h"
-#include "alpha.h"
 #include "util.h"
 #include "data.h"
 #include <math.h>
@@ -83,16 +82,6 @@ void lda::train(int num_topics, alpha_settings a_settings)
     }
     std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
     lda::likelihood = likelihood;
-    std::cout << "Alpha: " << std::endl;
-
-    for(int k=0; k<numTopics; k++){
-        std::cout << alpha.mean[k] << " ";
-    }
-    std::cout << std::endl;
-    for(int k=0; k<numTopics; k++){
-        std::cout << alpha.alpha[k] << " ";
-    }
-    std::cout << std::endl;
 }
 
 double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
@@ -158,9 +147,12 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         }
     }
 
-    double init = alpha.s + doc.count/numTopics;
     for(int k=0; k<numTopics; k++){
-        var_gamma[k] = init;
+        if(FULL_ALPHA){
+            var_gamma[k] = alpha.mean[k] + doc.count/numTopics;
+        } else{
+            var_gamma[k] = alpha.s + doc.count/numTopics;
+        }
     }
 
     for(int k=0; k<numTopics; k++){
@@ -333,6 +325,15 @@ void lda::writeAlphaToFile(std::string folder_path)
     fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
     if(fs.is_open()){
         fs << alpha.s << nl;
+        for(int k=0; k<numTopics; k++){
+            fs << alpha.mean[k] << ' ';
+        }
+        fs << '\n';
+        for(int k=0; k<numTopics; k++) {
+            fs << alpha.alpha[k] << ' ';
+        }
+        fs << '\n';
+
     }
 }
 
