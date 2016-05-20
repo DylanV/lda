@@ -15,8 +15,12 @@ dirichlet::dirichlet()
 dirichlet::dirichlet(std::vector<double> init_mean, alpha_settings settings)
 {
     s = settings.init_prec;
+
     mean = init_mean;
     K = int(mean.size());
+    if(s == 0){
+        s = 1.0/K;
+    }
     alpha = std::vector<double>(K);
     for(int i=0; i<K; i++){
         alpha[i] = mean[i]*s;
@@ -31,6 +35,9 @@ dirichlet::dirichlet(int K, alpha_settings settings)
 {
     s = settings.init_prec;
     dirichlet::K = K;
+    if(s == 0){
+        s = 1.0/K;
+    }
     mean = std::vector<double>(K, 1.0/K);
     alpha = std::vector<double>(K);
     for(int i=0; i<K; i++){
@@ -49,6 +56,7 @@ void dirichlet::estimate_precision(double ss, int D)
     int iter = 0;
 
     log_s = log(init_s);
+    double prev_s = dirichlet::s;
     do{
         iter++;
         s = exp(log_s);
@@ -62,5 +70,8 @@ void dirichlet::estimate_precision(double ss, int D)
         d2f = D * (K * K * trigamma(K * s) - K * trigamma(s));
         log_s = log_s - df/(d2f * s + df);
     } while ((fabs(df) > NEWTON_THRESH) && (iter < MAX_ALPHA_ITER));
-    dirichlet::s = exp(log_s);
+
+    if(!isnan(exp(log_s))){
+        dirichlet::s = exp(log_s);
+    }
 }

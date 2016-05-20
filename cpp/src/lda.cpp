@@ -245,6 +245,7 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
     }
     if(optAlpha){
         alpha.estimate_precision(ss.alphaSS, ss.numDocs);
+        std::cout << alpha.s << std::endl;
     }
 }
 
