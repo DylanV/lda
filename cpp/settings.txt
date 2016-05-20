@@ -10,5 +10,5 @@ estimate_alpha true
 concentration false
 newton_threshold 1e-5
 max_iterations 1000
-init_prec 0
+init_prec 0.1
 init_s 1
