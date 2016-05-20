@@ -72,6 +72,9 @@ private:
     int INF_MAX_ITER;            /*!< Document inference max iterations*/
     //Settings regarding alpha
     bool EST_ALPHA;
+    bool FULL_ALPHA;
+
+    std::vector<double> alpha_ss_vec;
 
     std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */

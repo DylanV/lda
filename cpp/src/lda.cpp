@@ -40,7 +40,10 @@ void lda::train(int num_topics, alpha_settings a_settings)
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
     EST_ALPHA = a_settings.estimate_alpha;
+    FULL_ALPHA = !a_settings.concentration;
     alpha = setup_alpha(a_settings);
+
+    alpha_ss_vec = std::vector<double>(numTopics, 0);
 
     suff_stats ss;
     randomSSInit(ss);
@@ -80,6 +83,12 @@ void lda::train(int num_topics, alpha_settings a_settings)
     }
     std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
     lda::likelihood = likelihood;
+    std::cout << "Alpha: " << std::endl;
+
+    for(int k=0; k<numTopics; k++){
+        std::cout << alpha.mean[k] << " ";
+    }
+    std::cout << std::endl;
 }
 
 double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
@@ -100,8 +109,13 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     for(int k=0; k<numTopics; k++){
         gamma_sum += var_gamma[k];
         ss.alphaSS += digamma(var_gamma[k]);
+        alpha_ss_vec[k] += digamma(var_gamma[k]);
     }
     ss.alphaSS -= numTopics * digamma(gamma_sum);
+
+    for(int k=0; k<numTopics; k++){
+        alpha_ss_vec[k] -= digamma(gamma_sum);
+    }
 
     int n=0;
     for(auto const& word_count : doc.wordCounts){
@@ -244,8 +258,12 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
         }
     }
     if(optAlpha){
-        alpha.estimate_precision(ss.alphaSS, ss.numDocs);
-        std::cout << alpha.s << std::endl;
+        if(FULL_ALPHA){
+            alpha.update(alpha_ss_vec, ss.numDocs);
+        } else {
+            alpha.estimate_precision(ss.alphaSS, ss.numDocs);
+            std::cout << alpha.s << std::endl;
+        }
     }
 }
 

@@ -24,6 +24,7 @@ public:
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
 
     void estimate_precision(double ss, int D);
+    void update(std::vector<double> ss, int D);
 
 private:
     int INIT_S = 100;
