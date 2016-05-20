@@ -51,6 +51,14 @@ dirichlet::dirichlet(int K, alpha_settings settings)
 
 void dirichlet::estimate_precision(double ss, int D)
 {
+/*!
+Update the precision of the dirichlet given some sufficient statistic. The sufficient statistic is the observed samples
+of the dirichlet in question put in the form sum(digamma(samples) - K * digamma(sum(samples))))
+Estimates and updates the precision (s) of the dirichlet only, however the alpha will change.
+The mean remains unchanged.
+\param ss the sufficient statistics
+\param D the number of observed samples for the sufficient statistics
+*/
     double s, log_s, init_s = INIT_S;
     double f, df, d2f;
     int iter = 0;
@@ -73,11 +81,22 @@ void dirichlet::estimate_precision(double ss, int D)
 
     if(!isnan(exp(log_s))){
         dirichlet::s = exp(log_s);
+        for(int i=0; i<K; i++){
+            alpha[i] = mean[i]*s;
+        }
     }
 }
 
-void dirichlet::update(std::vector<double> ss, int D){
-
+void dirichlet::update(std::vector<double> ss, int D)
+{
+/*!
+Performs Newton-Raphson for dirichlet with special hessian. Linear time
+Fully updates the dirichlet from the given sufficient statistics. Mean and precision are estimated.
+Sufficient statistics are the observed samples of the dirichlet where for one sample and dimension k:
+ss[k] += digamma(sample[k]) - digamma(sum(samples))
+/param ss the sufficient statistics in a K dimension vector
+/param D the number of samples in the sufficient statistics
+*/
     int iteration = 0;
     double thresh = 0;
     double alpha_sum = 0;
