@@ -79,18 +79,21 @@ public:
     int numDocs;        /*!< total number of documents in the corpus. */
     int numTerms;       /*!< total number of terms(words) in the corpus. */
 
+    // model parameters
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
     dirichlet alpha;   /*!< the lda alpha parameter */
+
     // variational parameters
     std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
 
-    double likelihood;  /*!< the total log-likelihood for the corpus */
+    double likelihood;  /*!< the total log-likelihood for the corpus (I think - might be the lower bound) */
 
     //! Train the lda on the corpus given the number of topics.
     void train(int num_topics, alpha_settings a_settings);
 
 private:
+    //Settings
     //Training Settings
     double CONV_THRESHHOLD;      /*!< The convergance threshold used in training */
     int MIN_ITER;                 /*!< Minimum number of iterations to train for */
@@ -102,7 +105,8 @@ private:
     bool EST_ALPHA;
     bool FULL_ALPHA;
 
-    std::vector<double> alpha_ss_vec;
+    // TODO move to the suff stats struct
+    std::vector<double> alpha_ss_vec; /*!< Sufficient stats for asymmetric alpha */
 
     //! randomly initialise the given sufficient statistics
     void randomSSInit(suff_stats& ss);

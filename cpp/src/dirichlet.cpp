@@ -38,6 +38,7 @@ dirichlet::dirichlet(int K, alpha_settings settings)
     if(s == 0){
         s = 1.0/K;
     }
+
     mean = std::vector<double>(K, 1.0);
     alpha = std::vector<double>(K, 1.0/K);
     for(int i=0; i<K; i++){
@@ -104,12 +105,11 @@ ss[k] += digamma(sample[k]) - digamma(sum(samples))
     std::vector<double> hessian(K);
     double sum_g_h, sum_1_h;
     double z, c;
+    int decay = 0;
 
     do {
         iteration++;
-        for(int k=0; k<K; k++){
-            alpha_sum += alpha[k];
-        }
+        alpha_sum = sum(alpha);
 
         z = D*trigamma(alpha_sum);
         sum_g_h = 0, sum_1_h = 0;
@@ -123,35 +123,36 @@ ss[k] += digamma(sample[k]) - digamma(sum(samples))
 
         c = sum_g_h / ((1.0 / z) + sum_1_h);
 
-        std::vector<double> alpha_new(alpha);
-        bool broke = false;
-
+        std::vector<double> alpha_new(this->alpha);
         std::vector<double> step_size(K);
-        for(int k=0; k<K;  k++) {
-            step_size[k] = 0.001*(gradient[k] - c) / hessian[k];
-            alpha_new[k] -= step_size[k];
-        }
 
-        for(int k=0; k<K; k++) {
-            thresh += fabs(alpha_new[k] - alpha[k]);
-            if(alpha_new[k] < 0){
-                broke = true;
+        thresh = 0;
+
+        while(true){
+            bool singular_hessian = false;
+            for(int k=0; k<K; k++){
+                step_size[k] = pow(0.9,decay)*(gradient[k] - c) / hessian[k];
+                if(step_size[k] >= this->alpha[k]){
+                    singular_hessian = true;
+                }
+            }
+            if(singular_hessian){
+                decay++;
+                if(decay > 10){
+                    break;
+                }
+            }else{
+                for(int k=0; k<K; k++){
+                    alpha_new[k] -= step_size[k];
+                    thresh += fabs(step_size[k]);
+                }
+                break;
             }
         }
-        thresh /= K;
-
-        if(broke){
-            iteration = MAX_ALPHA_ITER;
-        }else{
-            alpha = alpha_new;
-        }
-
-    }while((iteration < MAX_ALPHA_ITER && thresh > NEWTON_THRESH) || iteration < 50);
-
-    alpha_sum = 0;
-    for(int k=0; k<K; k++){
-        alpha_sum += alpha[k];
-    }
+        alpha = alpha_new;
+    }while(iteration < MAX_ALPHA_ITER and thresh > NEWTON_THRESH);
+    // update class members
+    alpha_sum = sum(alpha);
     s = alpha_sum;
     for(int k=0; k<K; k++){
         mean[k] = alpha[k] / alpha_sum;

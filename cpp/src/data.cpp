@@ -5,7 +5,6 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <set>
 #include <math.h>
 #include "data.h"

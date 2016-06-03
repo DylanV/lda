@@ -7,8 +7,8 @@ inf_max_iterations 20
 
 ALPHA 6
 estimate_alpha true
-concentration true
+concentration false
 newton_threshold 1e-5
-max_iterations 1000
+max_iterations 100
 init_prec 0
 init_s 100

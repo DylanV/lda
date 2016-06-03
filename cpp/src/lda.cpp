@@ -70,12 +70,12 @@ void lda::train(int num_topics, alpha_settings a_settings)
         }
         mle(ss, EST_ALPHA);
 
-        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
-            << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds." << std::endl;
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
 
+        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
+        << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds. (" << converged << ")" << std::endl;
     }
     std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
     lda::likelihood = likelihood;
@@ -145,7 +145,6 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 
     for(int k=0; k<numTopics; k++){
         var_gamma[k] = alpha.alpha[k] + doc.count/numTopics;
-        digamma_gam[k] = digamma(var_gamma[k]);
     }
 
     int iteration = 0;
@@ -157,6 +156,10 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     while((converged > INF_CONV_THRESH) && (iteration < INF_MAX_ITER)){
         iteration++;
         int n=0;
+        for(int k=0; k<numTopics; k++){
+            digamma_gam[k] = digamma(var_gamma[k]);
+            var_gamma[k] = alpha.alpha[k];
+        }
 
         for(auto const& word_count : doc.wordCounts){
             phisum = 0;
@@ -179,8 +182,6 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
             }
             n++;
         }
-
-        norm(var_gamma);
 
         likelihood = compute_likelihood(doc, var_gamma, phi);
         if(isnan(likelihood)){
