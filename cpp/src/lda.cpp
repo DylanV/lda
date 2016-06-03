@@ -6,7 +6,6 @@
 #include "util.h"
 #include <math.h>
 #include <iostream>
-#include <assert.h>
 
 lda::lda(doc_corpus &corp, lda_settings settings)
 {
@@ -133,7 +132,6 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     \return the log likelihood for the document
     \sa doc_e_step(), compute_likelihood()
  */
-    std::vector<double> old_phi(numTopics);
     std::vector<double> digamma_gam(numTopics);
 
 //    phi = std::vector<std::vector<double>>(doc.uniqueCount, std::vector<double>(numTopics, 1/numTopics));
@@ -141,19 +139,12 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 
     for(int w=0; w<doc.uniqueCount; w++){
         for(int k=0; k<numTopics; k++){
-            phi[w][k] = 1/numTopics;
+            phi[w][k] = 0;
         }
     }
 
     for(int k=0; k<numTopics; k++){
-        if(FULL_ALPHA){
-            var_gamma[k] = alpha.mean[k] + doc.count/numTopics;
-        } else{
-            var_gamma[k] = alpha.alpha[0] + doc.count/numTopics;
-        }
-    }
-
-    for(int k=0; k<numTopics; k++){
+        var_gamma[k] = alpha.alpha[k] + doc.count/numTopics;
         digamma_gam[k] = digamma(var_gamma[k]);
     }
 
@@ -170,8 +161,10 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         for(auto const& word_count : doc.wordCounts){
             phisum = 0;
             for(int k=0; k<numTopics; k++){
-                old_phi[k] = phi[n][k];
                 phi[n][k] = digamma_gam[k] + logProbW[k][word_count.first];
+                if(isnan(phi[n][k]) or isinf(phi[n][k])){
+                    std::cout << "wat" << std::endl;
+                }
 
                 if(k>0){
                     phisum = log_sum(phisum, phi[n][k]);
@@ -182,13 +175,17 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 
             for(int k=0; k<numTopics; k++){
                 phi[n][k] = exp(phi[n][k] - phisum);
-                var_gamma[k] = alpha.alpha[k] + var_gamma[k] + word_count.second*(phi[n][k] - old_phi[k]);
-                digamma_gam[k] = digamma(var_gamma[k]);
+                var_gamma[k] += word_count.second*(phi[n][k]);
             }
             n++;
         }
 
+        norm(var_gamma);
+
         likelihood = compute_likelihood(doc, var_gamma, phi);
+        if(isnan(likelihood)){
+            std::cout << "wat" << std::endl;
+        }
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
     }
@@ -216,10 +213,12 @@ double lda::compute_likelihood(document const &doc, std::vector<double>& var_gam
     }
     double digsum = digamma(var_gamma_sum);
 
-    likelihood = lgamma(alpha.s * numTopics) - numTopics * lgamma(alpha.s) - lgamma(var_gamma_sum);
 
     for(int k=0; k<numTopics; k++){
-        likelihood += (alpha.s - 1)*(dig[k] - digsum) + lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
+        likelihood += lgamma(alpha.alpha[k] * numTopics);
+        likelihood -= numTopics * lgamma(alpha.alpha[k]) - lgamma(var_gamma_sum);
+        likelihood += (alpha.alpha[k] - 1)*(dig[k] - digsum);
+        likelihood += lgamma(var_gamma[k]) - (var_gamma[k] - 1)*(dig[k] - digsum);
 
         int n=0;
         for(auto const& word_count: doc.wordCounts){
@@ -256,7 +255,6 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
             alpha.update(alpha_ss_vec, ss.numDocs);
         } else {
             alpha.estimate_precision(ss.alphaSS, ss.numDocs);
-            std::cout << alpha.s << std::endl;
         }
     }
 }
