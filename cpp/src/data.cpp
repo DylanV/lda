@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
-#include <set>
+#include <math.h>
 #include "data.h"
 
 std::vector<std::string> split(std::string const& str, char delim)
@@ -162,3 +162,81 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
         }
     }
 }
+
+void write_parameters_to_file(std::string param_dir, const lda& model) {
+    /*!
+    Writes the lda alpha, beta and gamma dirchlet parameters to files.
+    File contains the vector as a space seperated array. Each row on a new line.
+    /param folder_path the path to the folder where the parameter files will be written.
+ */
+    std::fstream fs; //get the filestream
+
+    //get beta from logProbW
+    std::vector<std::vector<double> > beta
+            = std::vector<std::vector<double> >(model.numTopics, std::vector<double>(model.numTerms, 0));
+    for(int k=0; k<model.numTopics; k++){
+        for(int n=0; n<model.corpus.numTerms; n++){
+            beta[k][n] = exp(model.logProbW[k][n]);
+        }
+    }
+    //write beta
+    fs.open(param_dir+"beta.dat", std::fstream::out | std::fstream::trunc);
+    write_2d_vector_to_fs(fs, beta);
+    fs.close();
+
+    //write gamma
+    fs.open(param_dir+"gamma.dat", std::fstream::out | std::fstream::trunc);
+    write_2d_vector_to_fs(fs, model.varGamma);
+    fs.close();
+
+    //write alpha
+    fs.open(param_dir+"alpha.dat", std::fstream::out | std::fstream::trunc);
+    write_vector_to_fs(fs, model.alpha.alpha);
+    fs.close();
+}
+
+//void lda::loadFromParams(std::string folder_path)
+//{
+///*!
+//    /param folder_path the path to the folder containing the parameter files
+//    /sa writeParams()
+// */
+//    char sep = ' ';
+//    logProbW = loadBetaFromFile(folder_path + "beta.dat");
+//}
+//
+//std::vector<std::vector<double>> lda::loadBetaFromFile(std::string file_path) {
+//
+//    std::vector<std::vector<double>> beta;
+//    char sep = ' ';
+//
+//    std::ifstream fs(file_path);
+//    if(fs.is_open()){
+//        std::string line;
+//        bool readFirst = false;
+//
+//        while(!fs.eof()){
+//            getline(fs, line);
+//            std::vector<std::string> items = split(line, sep);
+//
+//            if(!readFirst){
+//                assert(items.size() == 2);
+//                readFirst = true;
+//                numTopics = stoi(items[0]);
+//                numTerms = stoi(items[1]);
+//                assert(numTerms == corpus.numTerms);
+//            } else{
+//                if(line != ""){
+//                    assert(items.size() == numTerms);
+//                    std::vector<double> top_probs;
+//                    for(auto const& item : items){
+//                        top_probs.push_back(stod(item));
+//                    }
+//                    beta.push_back(top_probs);
+//                }
+//            }
+//        }
+//    }
+//
+//    return beta;
+//}

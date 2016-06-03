@@ -7,7 +7,19 @@
 
 
 #include <vector>
-#include "data.h"
+
+//! settings struct for alpha updates
+struct alpha_settings {
+    alpha_settings() : estimate_alpha(true), concentration(true), newton_threshold(1e-5),
+                       max_iterations(1000), init_prec(1), init_s(100) {}
+
+    bool estimate_alpha;     /*!< Whether to estimate alpha*/
+    bool concentration;      /*!< Whether alpha should be the concentration parameter or the dirichlet mean*/
+    double newton_threshold; /*!< threshold for newtons method*/
+    int max_iterations;      /*!< Maximum number of iterations for alpha update*/
+    double init_prec;        /*!< Initial value for the concentration parameter*/
+    int init_s;              /*!< Initial value for the conc coeff when estimating*/
+};
 
 //! Represents a K dimension dirichlet distribution
 /*!

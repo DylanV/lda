@@ -14,8 +14,39 @@
 #include <set>
 #include <string>
 #include "dirichlet.h"
-#include "data.h"
 
+//! A document struct
+/*!
+    Represents a document in bag of words style.
+ */
+struct document {
+    std::map<int,int> wordCounts;   /*!< Map for the word counts. Maps id to count. */
+    int count;                      /*!< The total number of words in the document. */
+    int uniqueCount;                /*!< The number of unique words in the document. */
+};
+
+//! A corpus struct
+/*!
+    Represents a corpus of documents.
+    \sa document
+ */
+struct doc_corpus {
+    std::vector<document> docs; /*! vector of document structs. \sa document */
+    int numTerms;               /*! the total number of unique terms in the corpus. */
+    int numDocs;                /*! the total number of documents. */
+};
+
+//! settings struct for the lda model
+struct lda_settings {
+    lda_settings() : converged_threshold(1e-4), min_iterations(2),
+                     max_iterations(100), inf_converged_threshold(1e-6), inf_max_iterations(20){}
+
+    double converged_threshold;     /*!< The convergance threshold used in training */
+    int min_iterations;             /*!< Minimum number of iterations to train for */
+    int max_iterations;             /*!< Maximum number of iterations to train for */
+    double inf_converged_threshold; /*!< Document inference convergance threshold*/
+    int inf_max_iterations;         /*!< Document inference max iterations*/
+};
 
 //! A sufficient statistics struct
 /*!
@@ -50,17 +81,14 @@ public:
 
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
     dirichlet alpha;   /*!< the lda alpha parameter */
+    // variational parameters
+    std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
+    std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
 
     double likelihood;  /*!< the total log-likelihood for the corpus */
 
     //! Train the lda on the corpus given the number of topics.
     void train(int num_topics, alpha_settings a_settings);
-
-    //! Write the dirichlet parameters to files in the given folder
-    void writeParams(std::string folder_path);
-
-    //! load the lda model parameters from the parameter files in the given folder.
-    void loadFromParams(std::string folder_path);
 
 private:
     //Training Settings
@@ -75,9 +103,6 @@ private:
     bool FULL_ALPHA;
 
     std::vector<double> alpha_ss_vec;
-
-    std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
-    std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
 
     //! randomly initialise the given sufficient statistics
     void randomSSInit(suff_stats& ss);
@@ -102,15 +127,6 @@ private:
     double compute_likelihood(document const& doc, std::vector<double>& var_gamma,
                               std::vector<std::vector<double>>& phi);
 
-    //! normalise logProbW and writes to file
-    void writeBetaToFile(std::string folder_path);
-    //! writes alpha to file
-    void writeAlphaToFile(std::string folder_path);
-    //! write gamma to file
-    void writeGammaToFile(std::string folder_path);
-
-    //! loads beta to logProbW from file
-    std::vector<std::vector<double>> loadBetaFromFile(std::string file_path);
 };
 
 

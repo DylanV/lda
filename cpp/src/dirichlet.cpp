@@ -38,11 +38,11 @@ dirichlet::dirichlet(int K, alpha_settings settings)
     if(s == 0){
         s = 1.0/K;
     }
-    mean = std::vector<double>(K, 1.0/K);
+    mean = std::vector<double>(K, 1.0);
     alpha = std::vector<double>(K, 1.0/K);
-//    for(int i=0; i<K; i++){
-//        alpha[i] = mean[i]*s;
-//    }
+    for(int i=0; i<K; i++){
+        alpha[i] = mean[i]*s;
+    }
 
     INIT_S = settings.init_s;
     NEWTON_THRESH = settings.newton_threshold;

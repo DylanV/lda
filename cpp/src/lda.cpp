@@ -4,10 +4,8 @@
 
 #include "lda.h"
 #include "util.h"
-#include "data.h"
 #include <math.h>
 #include <iostream>
-#include <fstream>
 #include <assert.h>
 
 lda::lda(doc_corpus &corp, lda_settings settings)
@@ -151,7 +149,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         if(FULL_ALPHA){
             var_gamma[k] = alpha.mean[k] + doc.count/numTopics;
         } else{
-            var_gamma[k] = alpha.s + doc.count/numTopics;
+            var_gamma[k] = alpha.alpha[0] + doc.count/numTopics;
         }
     }
 
@@ -184,7 +182,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 
             for(int k=0; k<numTopics; k++){
                 phi[n][k] = exp(phi[n][k] - phisum);
-                var_gamma[k] = var_gamma[k] + word_count.second*(phi[n][k] - old_phi[k]);
+                var_gamma[k] = alpha.alpha[k] + var_gamma[k] + word_count.second*(phi[n][k] - old_phi[k]);
                 digamma_gam[k] = digamma(var_gamma[k]);
             }
             n++;
@@ -298,130 +296,7 @@ void lda::zeroSSInit(suff_stats& ss)
     ss.alphaSS = 0;
 }
 
-void lda::writeBetaToFile(std::string folder_path)
-{
-    char sep = ' ';
-    char nl = '\n';
-    std::fstream beta_fs;
-    beta_fs.open(folder_path+"beta.dat", std::fstream::out | std::fstream::trunc);
-    if(beta_fs.is_open()){
-        beta_fs << numTopics << sep << corpus.numTerms << nl;
-        for(int k=0; k<numTopics; k++){
-            for(int n=0; n<corpus.numTerms; n++){
-                beta_fs << exp(logProbW[k][n]);
-                if(n != corpus.numTerms-1){
-                    beta_fs << sep;
-                }
-            }
-            beta_fs << nl;
-        }
-    }
-}
 
-void lda::writeAlphaToFile(std::string folder_path)
-{
-    char nl = '\n';
-    std::fstream fs;
-    fs.open(folder_path+"alpha.dat", std::fstream::out | std::fstream::trunc);
-    if(fs.is_open()){
-        fs << alpha.s << nl;
-        for(int k=0; k<numTopics; k++){
-            fs << alpha.mean[k] << ' ';
-        }
-        fs << '\n';
-        for(int k=0; k<numTopics; k++) {
-            fs << alpha.alpha[k] << ' ';
-        }
-        fs << '\n';
-
-    }
-}
-
-void lda::writeGammaToFile(std::string folder_path)
-{
-    char sep = ' ';
-    char nl = '\n';
-    std::fstream fs;
-    fs.open(folder_path+"gamma.dat", std::fstream::out | std::fstream::trunc);
-    if(fs.is_open()){
-        std::vector<double> gammaSum(numDocs,0);
-        for(int d=0; d<numDocs; d++){
-            for(int k=0; k<numTopics; k++){
-                gammaSum[d] += varGamma[d][k];
-            }
-        }
-        fs << numDocs << sep << numTopics << nl;
-        for(int d=0; d<numDocs; d++){
-            for(int k=0; k<numTopics; k++){
-                fs << varGamma[d][k]/gammaSum[d];
-                if(k != numTopics - 1){
-                    fs << sep;
-                }
-            }
-            fs << nl;
-        }
-    }
-}
-
-void lda::writeParams(std::string folder_path)
-{
-/*!
-    Writes the lda alpha, beta and gamma dirchlet parameters to files.
-    File contains the shape of the parameter in the first line. Followed by the parameter line seperated
-    by vector indix if 2d vector and space separated for 1d vector. So a 2d beta parameter will have each
-    space separated topic distribtion on a new line.
-    /param folder_path the path to the folder where the parameter files will be written.
- */
-    writeBetaToFile(folder_path);
-    writeGammaToFile(folder_path);
-    writeAlphaToFile(folder_path);
-}
-
-void lda::loadFromParams(std::string folder_path)
-{
-/*!
-    /param folder_path the path to the folder containing the parameter files
-    /sa writeParams()
- */
-    char sep = ' ';
-    logProbW = loadBetaFromFile(folder_path + "beta.dat");
-}
-
-std::vector<std::vector<double>> lda::loadBetaFromFile(std::string file_path) {
-
-    std::vector<std::vector<double>> beta;
-    char sep = ' ';
-
-    std::ifstream fs(file_path);
-    if(fs.is_open()){
-        std::string line;
-        bool readFirst = false;
-
-        while(!fs.eof()){
-            getline(fs, line);
-            std::vector<std::string> items = split(line, sep);
-
-            if(!readFirst){
-                assert(items.size() == 2);
-                readFirst = true;
-                numTopics = stoi(items[0]);
-                numTerms = stoi(items[1]);
-                assert(numTerms == corpus.numTerms);
-            } else{
-                if(line != ""){
-                    assert(items.size() == numTerms);
-                    std::vector<double> top_probs;
-                    for(auto const& item : items){
-                        top_probs.push_back(stod(item));
-                    }
-                    beta.push_back(top_probs);
-                }
-            }
-        }
-    }
-
-    return beta;
-}
 
 
 
