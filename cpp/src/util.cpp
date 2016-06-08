@@ -46,3 +46,19 @@ double log_sum(double log_a, double log_b)
     }
     return(v);
 }
+
+std::vector<double> dirichlet_expectation(const std::vector<double>& prob) {
+    std::vector<double> result = std::vector<double>(prob.size());
+    double sum = 0;
+    for(int i=0; i<prob.size(); ++i){
+        sum += prob[i];
+    }
+
+    sum = digamma(sum);
+
+    for(int i=0; i<result.size(); ++i){
+        result[i] = digamma(prob[i]) - sum;
+    }
+
+    return result;
+}

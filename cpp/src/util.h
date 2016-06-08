@@ -36,4 +36,6 @@ void norm(std::vector<T>& vec) {
     }
 }
 
+std::vector<double> dirichlet_expectation(const std::vector<double>& prob);
+
 #endif //LDA_UTIL_H

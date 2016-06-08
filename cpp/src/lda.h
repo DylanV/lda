@@ -38,7 +38,7 @@ struct doc_corpus {
 
 //! settings struct for the lda model
 struct lda_settings {
-    lda_settings() : converged_threshold(1e-4), min_iterations(2),
+    lda_settings() : converged_threshold(1e-6), min_iterations(2),
                      max_iterations(100), inf_converged_threshold(1e-6), inf_max_iterations(20){}
 
     double converged_threshold;     /*!< The convergance threshold used in training */

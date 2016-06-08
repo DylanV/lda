@@ -7,6 +7,8 @@
 #include <iostream>
 #include <set>
 #include <math.h>
+#include <string>
+#include <algorithm>
 #include "data.h"
 
 std::vector<std::string> split(std::string const& str, char delim)
