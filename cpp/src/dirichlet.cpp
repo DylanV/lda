@@ -14,7 +14,7 @@ dirichlet::dirichlet()
 
 dirichlet::dirichlet(std::vector<double> init_mean, alpha_settings settings)
 {
-    s = settings.init_prec;
+    s = settings.init;
 
     mean = init_mean;
     K = int(mean.size());
@@ -29,11 +29,12 @@ dirichlet::dirichlet(std::vector<double> init_mean, alpha_settings settings)
     INIT_S = settings.init_s;
     NEWTON_THRESH = settings.newton_threshold;
     MAX_ALPHA_ITER = settings.max_iterations;
+    SYMMETRIC = settings.symmetric;
 }
 
 dirichlet::dirichlet(int K, alpha_settings settings)
 {
-    s = settings.init_prec;
+    s = settings.init;
     dirichlet::K = K;
     if(s == 0){
         s = 1.0/K;
@@ -48,9 +49,23 @@ dirichlet::dirichlet(int K, alpha_settings settings)
     INIT_S = settings.init_s;
     NEWTON_THRESH = settings.newton_threshold;
     MAX_ALPHA_ITER = settings.max_iterations;
+    SYMMETRIC = settings.symmetric;
 }
 
-void dirichlet::estimate_precision(double ss, int D)
+void dirichlet::update(std::vector<double> ss, int D) {
+    if(SYMMETRIC){
+        double total_ss = 0;
+        for(const double& val : ss){
+            total_ss += val;
+        }
+        symmetric_update(total_ss, D);
+    }
+    else{
+        asymmetric_update(ss, D);
+    }
+}
+
+void dirichlet::symmetric_update(double ss, int D)
 {
 /*!
 Update the precision of the dirichlet given some sufficient statistic. The sufficient statistic is the observed samples
@@ -88,7 +103,7 @@ The mean remains unchanged.
     }
 }
 
-void dirichlet::update(std::vector<double> ss, int D)
+void dirichlet::asymmetric_update(std::vector<double> ss, int D)
 {
 /*!
 Performs Newton-Raphson for dirichlet with special hessian. Linear time

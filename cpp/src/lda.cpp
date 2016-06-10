@@ -22,6 +22,7 @@ lda::lda(doc_corpus &corp, lda_settings settings)
     MAX_ITER = settings.max_iterations;
     INF_CONV_THRESH = settings.inf_converged_threshold;
     INF_MAX_ITER = settings.inf_max_iterations;
+    EST_ALPHA = settings.estimate_alpha;
 }
 
 void lda::train(int num_topics, alpha_settings a_settings)
@@ -35,11 +36,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
     numTopics = num_topics;
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
-    EST_ALPHA = a_settings.estimate_alpha;
-    FULL_ALPHA = !a_settings.concentration;
     alpha = setup_alpha(a_settings);
-
-    alpha_ss_vec = std::vector<double>(numTopics, 0);
 
     suff_stats ss;
     randomSSInit(ss);
@@ -97,13 +94,11 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     double gamma_sum = 0;
     for(int k=0; k<numTopics; k++){
         gamma_sum += var_gamma[k];
-        ss.alphaSS += digamma(var_gamma[k]);
-        alpha_ss_vec[k] += digamma(var_gamma[k]);
+        ss.alpha_ss[k] += digamma(var_gamma[k]);
     }
-    ss.alphaSS -= numTopics * digamma(gamma_sum);
 
     for(int k=0; k<numTopics; k++){
-        alpha_ss_vec[k] -= digamma(gamma_sum);
+        ss.alpha_ss[k] -= digamma(gamma_sum);
     }
 
     int n=0;
@@ -144,7 +139,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     double old_likelihood = 0;
     std::vector<double> old_phi = std::vector<double>(numTopics);
 
-    while((converged > INF_CONV_THRESH) && (iteration < INF_MAX_ITER) || (iteration < 2)){
+    while((converged > INF_CONV_THRESH) && (iteration < INF_MAX_ITER)){
         iteration++;
 
 //        digamma_gam = dirichlet_expectation(var_gamma);
@@ -247,11 +242,7 @@ void lda::mle(suff_stats &ss, bool optAlpha=true)
         }
     }
     if(optAlpha){
-        if(FULL_ALPHA){
-            alpha.update(alpha_ss_vec, ss.numDocs);
-        } else {
-            alpha.estimate_precision(ss.alphaSS, ss.numDocs);
-        }
+        alpha.update(ss.alpha_ss, ss.numDocs);
     }
 }
 
@@ -263,6 +254,7 @@ void lda::randomSSInit(suff_stats& ss)
 {
     ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
     ss.classTotal = std::vector<double>(numTopics, 0.0);
+    ss.alpha_ss = std::vector<double>(numTopics, 0);
 
     srand(time(NULL));
 
@@ -276,18 +268,16 @@ void lda::randomSSInit(suff_stats& ss)
 
 void lda::zeroSSInit(suff_stats& ss)
 {
-//    ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0.0));
-//    ss.classTotal = std::vector<double>(numTopics, 0.0);
 
     for(int k=0; k<numTopics; k++){
         for(int w=0; w<numTerms; w++){
             ss.classWord[k][w] = 0;
         }
         ss.classTotal[k] = 0;
+        ss.alpha_ss[k] = 0;
     }
 
     ss.numDocs = 0;
-    ss.alphaSS = 0;
 }
 
 

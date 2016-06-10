@@ -39,13 +39,15 @@ struct doc_corpus {
 //! settings struct for the lda model
 struct lda_settings {
     lda_settings() : converged_threshold(1e-6), min_iterations(2),
-                     max_iterations(100), inf_converged_threshold(1e-6), inf_max_iterations(20){}
+                     max_iterations(100), inf_converged_threshold(1e-6),
+                     inf_max_iterations(20), estimate_alpha(false){}
 
     double converged_threshold;     /*!< The convergance threshold used in training */
     int min_iterations;             /*!< Minimum number of iterations to train for */
     int max_iterations;             /*!< Maximum number of iterations to train for */
     double inf_converged_threshold; /*!< Document inference convergance threshold*/
     int inf_max_iterations;         /*!< Document inference max iterations*/
+    bool estimate_alpha;            /*!< Whether to estimate alpha*/
 };
 
 //! A sufficient statistics struct
@@ -58,7 +60,7 @@ struct suff_stats {
     std::vector<std::vector<double>> classWord; /*!< 2d vector for the topic-word sufficient stats for beta.*/
     std::vector<double> classTotal;             /*!< vector (K) for the topic sufficient stats for  beta.*/
 
-    double alphaSS; /*!< the (singular) alpha sufficient statistics */
+    std::vector<double> alpha_ss; /*!< Sufficient stats for alpha */
     int numDocs;    /*!< the number of documents include in the suff stats so far */
 };
 
@@ -103,10 +105,6 @@ private:
     int INF_MAX_ITER;            /*!< Document inference max iterations*/
     //Settings regarding alpha
     bool EST_ALPHA;
-    bool FULL_ALPHA;
-
-    // TODO move to the suff stats struct
-    std::vector<double> alpha_ss_vec; /*!< Sufficient stats for asymmetric alpha */
 
     //! randomly initialise the given sufficient statistics
     void randomSSInit(suff_stats& ss);

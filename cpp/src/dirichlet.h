@@ -10,14 +10,13 @@
 
 //! settings struct for alpha updates
 struct alpha_settings {
-    alpha_settings() : estimate_alpha(false), concentration(true), newton_threshold(1e-5),
-                       max_iterations(1000), init_prec(0), init_s(100) {}
+    alpha_settings() : symmetric(true), newton_threshold(1e-5),
+                       max_iterations(1000), init(0), init_s(100) {}
 
-    bool estimate_alpha;     /*!< Whether to estimate alpha*/
-    bool concentration;      /*!< Whether alpha should be the concentration parameter or the dirichlet mean*/
+    bool symmetric;      /*!< Whether alpha should be the symmetric*/
     double newton_threshold; /*!< threshold for newtons method*/
     int max_iterations;      /*!< Maximum number of iterations for alpha update*/
-    double init_prec;        /*!< Initial value for the concentration parameter*/
+    double init;        /*!< Initial value for the concentration parameter*/
     int init_s;              /*!< Initial value for the conc coeff when estimating*/
 };
 
@@ -45,9 +44,7 @@ public:
     int K;                      /*!< The number of dimensions*/
     std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
-    //! Estimate the precision / concentration coeeficient of the dirichlet
-    void estimate_precision(double ss, int D);
-    //! Estimate the alpha and precision of the dirichlet
+
     void update(std::vector<double> ss, int D);
 
 private:
@@ -55,6 +52,12 @@ private:
     int INIT_S = 100;               /*! The initial precision for the precision update */
     double NEWTON_THRESH = 1e-5;    /*! The threshold for netwon-raphson update convergance */
     int MAX_ALPHA_ITER = 1000;      /*! Max number of iterations for newton-raphson */
+    bool SYMMETRIC = false;
+
+    //! Update the dirichlet alpha assuming alhpa is symmetric
+    void symmetric_update(double ss, int D);
+    //! Fully update the dirichlet alpha
+    void asymmetric_update(std::vector<double> ss, int D);
 };
 
 

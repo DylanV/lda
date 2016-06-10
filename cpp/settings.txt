@@ -1,14 +1,14 @@
-LDA 5
+LDA 6
 converged_threshold 1e-6
 min_iterations 2
 max_iterations 100
 inf_converged_threshold 1e-6
 inf_max_iterations 50
-
-ALPHA 6
 estimate_alpha false
-concentration false
+
+ALPHA 5
+symmetric false
 newton_threshold 1e-5
 max_iterations 100
-init_prec 10
+init 1
 init_s 100

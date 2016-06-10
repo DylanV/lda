@@ -142,19 +142,19 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
                             lda.inf_converged_threshold = std::stod(value);
                         else if(items[0] == "inf_max_iterations")
                             lda.inf_max_iterations = std::stoi(value);
+                        if(items[0] == "estimate_alpha")
+                            lda.estimate_alpha = (value == "true");
                     }
 
                     if(loadingAlpha){
-                        if(items[0] == "estimate_alpha")
-                            alpha.estimate_alpha = (value == "true");
-                        else if(items[0] == "concentration")
-                            alpha.concentration = (value == "true");
+                        if(items[0] == "symmetric")
+                            alpha.symmetric = (value == "true");
                         else if(items[0] == "newton_threshold")
                             alpha.newton_threshold = std::stod(value);
                         else if(items[0] == "max_iterations")
                             alpha.max_iterations = std::stoi(value);
-                        else if(items[0] == "init_prec")
-                            alpha.init_prec = std::stod(value);
+                        else if(items[0] == "init")
+                            alpha.init = std::stod(value);
                         else if(items[0] == "init_s")
                             alpha.init_s = std::stoi(value);
                     }
