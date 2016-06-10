@@ -12,41 +12,23 @@ dirichlet::dirichlet()
     K = 0;
 }
 
-dirichlet::dirichlet(std::vector<double> init_mean, alpha_settings settings)
-{
-    s = settings.init;
-
-    mean = init_mean;
-    K = int(mean.size());
-    if(s == 0){
-        s = 1.0/K;
-    }
-    alpha = std::vector<double>(K);
-    for(int i=0; i<K; i++){
-        alpha[i] = mean[i]*s;
-    }
-
-    INIT_S = settings.init_s;
-    NEWTON_THRESH = settings.newton_threshold;
-    MAX_ALPHA_ITER = settings.max_iterations;
-    SYMMETRIC = settings.symmetric;
-}
-
 dirichlet::dirichlet(int K, alpha_settings settings)
 {
-    s = settings.init;
+    double a = settings.init;
     dirichlet::K = K;
-    if(s == 0){
-        s = 1.0/K;
+    if(a == 0){
+        a = 1.0/K;
     }
 
-    mean = std::vector<double>(K, 1.0);
-    alpha = std::vector<double>(K, 1.0/K);
+    mean = std::vector<double>(K, 1.0/K);
+    alpha = std::vector<double>(K, 1.0);
+    s = 0;
     for(int i=0; i<K; i++){
-        alpha[i] = mean[i]*s;
+        alpha[i] = alpha[i]*a;
+        s += alpha[i];
     }
 
-    INIT_S = settings.init_s;
+    INIT_A = settings.init_s;
     NEWTON_THRESH = settings.newton_threshold;
     MAX_ALPHA_ITER = settings.max_iterations;
     SYMMETRIC = settings.symmetric;
@@ -68,37 +50,37 @@ void dirichlet::update(std::vector<double> ss, int D) {
 void dirichlet::symmetric_update(double ss, int D)
 {
 /*!
-Update the precision of the dirichlet given some sufficient statistic. The sufficient statistic is the observed samples
-of the dirichlet in question put in the form sum(digamma(samples) - K * digamma(sum(samples))))
-Estimates and updates the precision (s) of the dirichlet only, however the alpha will change.
+Update alpha of the dirichlet given the sufficient statistics. Alpha is updated as symmetric.
+ The sufficient stats are the sum of the observed samples of the diriclet.
 The mean remains unchanged.
 \param ss the sufficient statistics
 \param D the number of observed samples for the sufficient statistics
 */
-    double s, log_s, init_s = INIT_S;
+    double a, log_a, init_a = INIT_A;
     double f, df, d2f;
     int iter = 0;
 
-    log_s = log(init_s);
-    double prev_s = dirichlet::s;
+    log_a = log(init_a);
+    double prev_a = a;
     do{
         iter++;
-        s = exp(log_s);
-        if (isnan(s)){
-            init_s = init_s * 10;
-            s = init_s;
-            log_s = log(s);
+        a = exp(log_a);
+        if (isnan(a)){
+            init_a = init_a * 10;
+            a = init_a;
+            log_a = log(a);
         }
-        f = D * (lgamma(K * s) - K * lgamma(s) + (s - 1) * ss);
-        df = D * (K * digamma(K * s) - K * digamma(s)) + ss;
-        d2f = D * (K * K * trigamma(K * s) - K * trigamma(s));
-        log_s = log_s - df/(d2f * s + df);
+        f = D * (lgamma(K * a) - K * lgamma(a) + (a - 1) * ss);
+        df = D * (K * digamma(K * a) - K * digamma(a)) + ss;
+        d2f = D * (K * K * trigamma(K * a) - K * trigamma(a));
+        log_a = log_a - df/(d2f * a + df);
     } while ((fabs(df) > NEWTON_THRESH) && (iter < MAX_ALPHA_ITER));
 
-    if(!isnan(exp(log_s))){
-        dirichlet::s = exp(log_s);
+    if(!isnan(exp(log_a))){
+        a = exp(log_a);
+        this->s = K*a;
         for(int i=0; i<K; i++){
-            alpha[i] = mean[i]*s;
+            alpha[i] = a;
         }
     }
 }

@@ -65,7 +65,11 @@ void lda::train(int num_topics, alpha_settings a_settings)
             std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
-        mle(ss, EST_ALPHA);
+        if(iteration % 5 == 0){
+            mle(ss, EST_ALPHA);
+        }else{
+            mle(ss, false);
+        }
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
@@ -91,14 +95,20 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
  */
     double likelihood = inference(doc, var_gamma, phi);
 
-    double gamma_sum = 0;
-    for(int k=0; k<numTopics; k++){
-        gamma_sum += var_gamma[k];
-        ss.alpha_ss[k] += digamma(var_gamma[k]);
-    }
+//    double gamma_sum = 0;
+//    for(int k=0; k<numTopics; k++){
+//        gamma_sum += var_gamma[k];
+//        ss.alpha_ss[k] += digamma(var_gamma[k]);
+//    }
+//
+//    for(int k=0; k<numTopics; k++){
+//        ss.alpha_ss[k] -= digamma(gamma_sum);
+//    }
 
-    for(int k=0; k<numTopics; k++){
-        ss.alpha_ss[k] -= digamma(gamma_sum);
+    int k=0;
+    for(const double& val: dirichlet_expectation(var_gamma)){
+        ss.alpha_ss[k] += val;
+        k++;
     }
 
     int n=0;
@@ -139,7 +149,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
     double old_likelihood = 0;
     std::vector<double> old_phi = std::vector<double>(numTopics);
 
-    while((converged > INF_CONV_THRESH) && (iteration < INF_MAX_ITER)){
+    while(((converged < 0) || (converged > INF_CONV_THRESH)) && (iteration < INF_MAX_ITER)){
         iteration++;
 
 //        digamma_gam = dirichlet_expectation(var_gamma);
@@ -153,6 +163,7 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
         for(auto const& word_count : doc.wordCounts){
             phisum = 0;
             for(int k=0; k<numTopics; k++){
+                old_phi[k] = phi[n][k];
                 phi[n][k] = digamma_gam[k] + logProbW[k][word_count.first];
 
                 if(k>0){
@@ -164,17 +175,9 @@ double lda::inference(document const& doc, std::vector<double>& var_gamma, std::
 
             for(int k=0; k<numTopics; k++){
                 phi[n][k] = exp(phi[n][k] - phisum);
-                var_gamma[k] += word_count.second*(phi[n][k]);
+                var_gamma[k] = var_gamma[k] + word_count.second*(phi[n][k]);
             }
             n++;
-        }
-
-        double var_gamma_sum = 0;
-        for(int k=0; k<numTopics; k++){
-            var_gamma_sum += var_gamma[k];
-        }
-        for(int k=0; k<numTopics; k++){
-            var_gamma[k] /= var_gamma_sum;
         }
 
         likelihood = compute_likelihood(doc, var_gamma, phi);

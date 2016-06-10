@@ -35,10 +35,8 @@ class dirichlet {
 public:
     //! Default constructor
     dirichlet();
-    //! Constructor to start with centered dirichlet
+    //! Constructor to start with symmetric dirichlet
     dirichlet(int K, alpha_settings settings);
-    //! Constructor with mean specified
-    dirichlet(std::vector<double> init_mean, alpha_settings settings);
 
     double s;                   /*!< The concentration coefficient or precision of the dirichlet.*/
     int K;                      /*!< The number of dimensions*/
@@ -49,7 +47,7 @@ public:
 
 private:
     // Update settings
-    int INIT_S = 100;               /*! The initial precision for the precision update */
+    int INIT_A = 100;               /*! The initial precision for the precision update */
     double NEWTON_THRESH = 1e-5;    /*! The threshold for netwon-raphson update convergance */
     int MAX_ALPHA_ITER = 1000;      /*! Max number of iterations for newton-raphson */
     bool SYMMETRIC = false;
