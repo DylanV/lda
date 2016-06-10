@@ -40,7 +40,8 @@ struct doc_corpus {
 struct lda_settings {
     lda_settings() : converged_threshold(1e-6), min_iterations(2),
                      max_iterations(100), inf_converged_threshold(1e-6),
-                     inf_max_iterations(20), estimate_alpha(false){}
+                     inf_max_iterations(20), estimate_alpha(false),
+                     alpha_update_interval(1){}
 
     double converged_threshold;     /*!< The convergance threshold used in training */
     int min_iterations;             /*!< Minimum number of iterations to train for */
@@ -48,6 +49,7 @@ struct lda_settings {
     double inf_converged_threshold; /*!< Document inference convergance threshold*/
     int inf_max_iterations;         /*!< Document inference max iterations*/
     bool estimate_alpha;            /*!< Whether to estimate alpha*/
+    int alpha_update_interval;      /*!< interval to update alpha on*/
 };
 
 //! A sufficient statistics struct
@@ -105,6 +107,7 @@ private:
     int INF_MAX_ITER;            /*!< Document inference max iterations*/
     //Settings regarding alpha
     bool EST_ALPHA;
+    int UPDATE_INTERVAL;
 
     //! randomly initialise the given sufficient statistics
     void randomSSInit(suff_stats& ss);

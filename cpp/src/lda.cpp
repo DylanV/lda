@@ -23,6 +23,7 @@ lda::lda(doc_corpus &corp, lda_settings settings)
     INF_CONV_THRESH = settings.inf_converged_threshold;
     INF_MAX_ITER = settings.inf_max_iterations;
     EST_ALPHA = settings.estimate_alpha;
+    UPDATE_INTERVAL = settings.alpha_update_interval;
 }
 
 void lda::train(int num_topics, alpha_settings a_settings)
@@ -65,7 +66,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
             std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
-        if(iteration % 5 == 0){
+        if(iteration % UPDATE_INTERVAL == 0){
             mle(ss, EST_ALPHA);
         }else{
             mle(ss, false);
@@ -94,16 +95,6 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
     \return the log likelihood for the document
  */
     double likelihood = inference(doc, var_gamma, phi);
-
-//    double gamma_sum = 0;
-//    for(int k=0; k<numTopics; k++){
-//        gamma_sum += var_gamma[k];
-//        ss.alpha_ss[k] += digamma(var_gamma[k]);
-//    }
-//
-//    for(int k=0; k<numTopics; k++){
-//        ss.alpha_ss[k] -= digamma(gamma_sum);
-//    }
 
     int k=0;
     for(const double& val: dirichlet_expectation(var_gamma)){
