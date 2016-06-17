@@ -7,7 +7,7 @@
 
 double digamma(double x)
 {
-    double p;
+    double p = 1;
     x+=6;
     p/=(x*x);
     p=(((0.004166666666667*p-0.003968253986254)*p+
@@ -18,7 +18,7 @@ double digamma(double x)
 
 double trigamma(double x)
 {
-    double p;
+    double p = 1;
     int i;
 
     x+=6;
