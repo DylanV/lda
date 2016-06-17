@@ -5,11 +5,11 @@ max_iterations 100
 inf_converged_threshold 1e-6
 inf_max_iterations 50
 estimate_alpha true
-alpha_update_interval 1
+alpha_update_interval 3
 
 ALPHA 5
-symmetric false
+symmetric true
 newton_threshold 1e-5
 max_iterations 100
-init 0
+init 1
 init_s 100

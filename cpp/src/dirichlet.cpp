@@ -128,7 +128,7 @@ ss[k] += digamma(sample[k]) - digamma(sum(samples))
         while(true){
             bool singular_hessian = false;
             for(int k=0; k<K; k++){
-                step_size[k] = pow(0.9,decay)*(gradient[k] - c) / hessian[k];
+                step_size[k] = pow(0.8,decay)*(gradient[k] - c) / hessian[k];
                 if(step_size[k] >= this->alpha[k]){
                     singular_hessian = true;
                 }

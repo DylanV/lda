@@ -43,10 +43,10 @@ struct lda_settings {
                      inf_max_iterations(20), estimate_alpha(false),
                      alpha_update_interval(1){}
 
-    double converged_threshold;     /*!< The convergance threshold used in training */
+    double converged_threshold;     /*!< The convergence threshold used in training */
     int min_iterations;             /*!< Minimum number of iterations to train for */
     int max_iterations;             /*!< Maximum number of iterations to train for */
-    double inf_converged_threshold; /*!< Document inference convergance threshold*/
+    double inf_converged_threshold; /*!< Document inference convergence threshold*/
     int inf_max_iterations;         /*!< Document inference max iterations*/
     bool estimate_alpha;            /*!< Whether to estimate alpha*/
     int alpha_update_interval;      /*!< interval to update alpha on*/
