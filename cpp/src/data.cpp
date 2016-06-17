@@ -34,7 +34,7 @@ doc_corpus load_corpus(std::string file_path)
     std::vector<document> docs;
 
     if(fs.is_open()){
-        int doc_count = 0;
+        size_t doc_count = 0;
         std::string line;
 
         std::set<int> vocab;
@@ -44,12 +44,12 @@ doc_corpus load_corpus(std::string file_path)
             if(line != ""){
                 std::vector<std::string> items = split(line, line_delim);
 
-                int unique_count = stoi(items[0]);
+                size_t unique_count = size_t(stoi(items[0]));
                 items.erase(items.begin());
 
                 document doc;
                 std::map<int, int> word_counts;
-                int count =0;
+                size_t count =0;
 
                 for(std::string const& str : items){
                     if(str != "\r" && str != "\n"){
@@ -101,8 +101,8 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
 
     std::ifstream fs(file_path);
     const char line_delim = ' ';
-    int numAlpha = 0;
-    int numLDA = 0;
+//    int numAlpha = 0;
+//    int numLDA = 0;
     bool loadingLDA = false;
     bool loadingAlpha = false;
 
@@ -120,13 +120,13 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
                     value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
 
                     if(items[0] == "LDA"){
-                        numLDA = std::stoi(items[1]);
+//                        numLDA = std::stoi(items[1]);
                         loadingLDA = true;
                         loadingAlpha = false;
                     }
 
                     else if(items[0] == "ALPHA"){
-                        numAlpha = std::stoi(items[1]);
+//                        numAlpha = std::stoi(items[1]);
                         loadingLDA = false;
                         loadingAlpha = true;
                     }

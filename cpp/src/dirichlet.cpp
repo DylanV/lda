@@ -12,7 +12,7 @@ dirichlet::dirichlet()
     K = 0;
 }
 
-dirichlet::dirichlet(int K, alpha_settings settings)
+dirichlet::dirichlet(size_t K, alpha_settings settings)
 {
     double a = settings.init;
     dirichlet::K = K;
@@ -34,7 +34,7 @@ dirichlet::dirichlet(int K, alpha_settings settings)
     SYMMETRIC = settings.symmetric;
 }
 
-void dirichlet::update(std::vector<double> ss, int D) {
+void dirichlet::update(std::vector<double> ss, size_t D) {
     if(SYMMETRIC){
         double total_ss = 0;
         for(const double& val : ss){
@@ -47,7 +47,7 @@ void dirichlet::update(std::vector<double> ss, int D) {
     }
 }
 
-void dirichlet::symmetric_update(double ss, int D)
+void dirichlet::symmetric_update(double ss, size_t D)
 {
 /*!
 Update alpha of the dirichlet given the sufficient statistics. Alpha is updated as symmetric.
@@ -57,11 +57,11 @@ The mean remains unchanged.
 \param D the number of observed samples for the sufficient statistics
 */
     double a, log_a, init_a = INIT_A;
-    double f, df, d2f;
+    double df, d2f;
     int iter = 0;
 
     log_a = log(init_a);
-    double prev_a = a;
+
     do{
         iter++;
         a = exp(log_a);
@@ -70,7 +70,6 @@ The mean remains unchanged.
             a = init_a;
             log_a = log(a);
         }
-        f = D * (lgamma(K * a) - K * lgamma(a) + (a - 1) * ss);
         df = D * (K * digamma(K * a) - K * digamma(a)) + ss;
         d2f = D * (K * K * trigamma(K * a) - K * trigamma(a));
         log_a = log_a - df/(d2f * a + df);
@@ -85,7 +84,7 @@ The mean remains unchanged.
     }
 }
 
-void dirichlet::asymmetric_update(std::vector<double> ss, int D)
+void dirichlet::asymmetric_update(std::vector<double> ss, size_t D)
 {
 /*!
 Performs Newton-Raphson for dirichlet with special hessian. Linear time

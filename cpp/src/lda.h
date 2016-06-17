@@ -21,8 +21,8 @@
  */
 struct document {
     std::map<int,int> wordCounts;   /*!< Map for the word counts. Maps id to count. */
-    int count;                      /*!< The total number of words in the document. */
-    int uniqueCount;                /*!< The number of unique words in the document. */
+    size_t count;                      /*!< The total number of words in the document. */
+    size_t uniqueCount;                /*!< The number of unique words in the document. */
 };
 
 //! A corpus struct
@@ -32,8 +32,8 @@ struct document {
  */
 struct doc_corpus {
     std::vector<document> docs; /*! vector of document structs. \sa document */
-    int numTerms;               /*! the total number of unique terms in the corpus. */
-    int numDocs;                /*! the total number of documents. */
+    size_t numTerms;               /*! the total number of unique terms in the corpus. */
+    size_t numDocs;                /*! the total number of documents. */
 };
 
 //! settings struct for the lda model
@@ -63,7 +63,7 @@ struct suff_stats {
     std::vector<double> classTotal;             /*!< vector (K) for the topic sufficient stats for  beta.*/
 
     std::vector<double> alpha_ss; /*!< Sufficient stats for alpha */
-    int numDocs;    /*!< the number of documents include in the suff stats so far */
+    size_t numDocs;    /*!< the number of documents include in the suff stats so far */
 };
 
 //! A latent dirichlet allocation model class
@@ -79,9 +79,9 @@ public:
 
     doc_corpus corpus;  /*!< document corpus for the lda */
 
-    int numTopics;      /*!< number of topics */
-    int numDocs;        /*!< total number of documents in the corpus. */
-    int numTerms;       /*!< total number of terms(words) in the corpus. */
+    size_t numTopics;      /*!< number of topics */
+    size_t numDocs;        /*!< total number of documents in the corpus. */
+    size_t numTerms;       /*!< total number of terms(words) in the corpus. */
 
     // model parameters
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */

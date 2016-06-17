@@ -36,14 +36,14 @@ public:
     //! Default constructor
     dirichlet();
     //! Constructor to start with symmetric dirichlet
-    dirichlet(int K, alpha_settings settings);
+    dirichlet(size_t K, alpha_settings settings);
 
     double s;                   /*!< The concentration coefficient or precision of the dirichlet.*/
-    int K;                      /*!< The number of dimensions*/
+    size_t K;                      /*!< The number of dimensions*/
     std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
 
-    void update(std::vector<double> ss, int D);
+    void update(std::vector<double> ss, size_t D);
 
 private:
     // Update settings
@@ -53,9 +53,9 @@ private:
     bool SYMMETRIC = false;
 
     //! Update the dirichlet alpha assuming alhpa is symmetric
-    void symmetric_update(double ss, int D);
+    void symmetric_update(double ss, size_t D);
     //! Fully update the dirichlet alpha
-    void asymmetric_update(std::vector<double> ss, int D);
+    void asymmetric_update(std::vector<double> ss, size_t D);
 };
 
 

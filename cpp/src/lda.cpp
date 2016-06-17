@@ -34,7 +34,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
     \param num_topics an int for the number of topics to train on
 */
 
-    numTopics = num_topics;
+    numTopics = size_t(num_topics);
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
     alpha = setup_alpha(a_settings);
@@ -53,7 +53,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
     double likelihood  = 0;
     double old_likelihood = 0;
     double converged = 1;
-    bool update_alpha = false;
+    bool update_alpha;
 
     while ( ( (converged <0) or (converged>CONV_THRESHHOLD) ) and ( (iteration <= MIN_ITER) or (iteration <= MAX_ITER) ) ) {
         iteration++;
@@ -98,10 +98,10 @@ double lda::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>&
  */
     double likelihood = inference(doc, var_gamma, phi);
 
-    int k=0;
+    int topic=0;
     for(const double& val: dirichlet_expectation(var_gamma)){
-        ss.alpha_ss[k] += val;
-        k++;
+        ss.alpha_ss[topic] += val;
+        topic++;
     }
 
     int n=0;
