@@ -55,7 +55,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
     double converged = 1;
     bool update_alpha;
 
-    while ( ( (converged <0) or (converged>CONV_THRESHHOLD) ) and ( (iteration <= MIN_ITER) or (iteration <= MAX_ITER) ) ) {
+    while ( ( (converged>CONV_THRESHHOLD) ) and ( (iteration <= MIN_ITER) or (iteration <= MAX_ITER) ) ) {
         iteration++;
         likelihood = 0;
         clock_t start = clock();
@@ -70,7 +70,7 @@ void lda::train(int num_topics, alpha_settings a_settings)
         update_alpha = ((iteration % UPDATE_INTERVAL == 0) and (EST_ALPHA));
         mle(ss, update_alpha);
 
-        converged = (old_likelihood - likelihood)/old_likelihood;
+        converged = fabs((old_likelihood - likelihood)/old_likelihood);
         old_likelihood = likelihood;
 
         std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood

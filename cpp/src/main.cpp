@@ -6,6 +6,8 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
+    bool ratings = false;
+
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;
         std::cerr << "Standard usage is -corpus <infile> -param <outdir> -topics <numtopics>" << endl;
@@ -48,8 +50,10 @@ int main(int argc, char* argv[]) {
         doc_corpus corpus = load_corpus(corpus_path);
         cout << "Corpus loaded with " << corpus.numDocs << " documents.\n" << endl;
 
-        corpus.numDocs -= 1;
-        corpus.docs.erase(corpus.docs.begin());
+        if(ratings){
+            corpus.numDocs -= 1;
+            corpus.docs.erase(corpus.docs.begin());
+        }
 
         lda_settings l;
         alpha_settings a;

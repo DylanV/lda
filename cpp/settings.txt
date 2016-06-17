@@ -2,9 +2,9 @@ LDA 7
 converged_threshold 1e-6
 min_iterations 2
 max_iterations 100
-inf_converged_threshold 1e-6
+inf_converged_threshold 1e-5
 inf_max_iterations 50
-estimate_alpha true
+estimate_alpha false
 alpha_update_interval 3
 
 ALPHA 5
