@@ -74,7 +74,7 @@ The mean remains unchanged.
         df = D * (K * digamma(K * a) - K * digamma(a)) + ss;
         d2f = D * (K * K * trigamma(K * a) - K * trigamma(a));
         log_a = log_a - df/(d2f * a + df);
-    } while ((fabs(df) > NEWTON_THRESH) && (iter < MAX_ALPHA_ITER));
+    } while ((fabs(df) > NEWTON_THRESH) and (iter < MAX_ALPHA_ITER));
 
     if(!isnan(exp(log_a))){
         a = exp(log_a);

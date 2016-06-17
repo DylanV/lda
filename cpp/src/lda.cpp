@@ -53,8 +53,9 @@ void lda::train(int num_topics, alpha_settings a_settings)
     double likelihood  = 0;
     double old_likelihood = 0;
     double converged = 1;
+    bool update_alpha = false;
 
-    while ( ( (converged <0) || (converged>CONV_THRESHHOLD) ) && ( (iteration <= MIN_ITER) || (iteration <= MAX_ITER) ) ) {
+    while ( ( (converged <0) or (converged>CONV_THRESHHOLD) ) and ( (iteration <= MIN_ITER) or (iteration <= MAX_ITER) ) ) {
         iteration++;
         likelihood = 0;
         clock_t start = clock();
@@ -66,17 +67,18 @@ void lda::train(int num_topics, alpha_settings a_settings)
             std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
-        if(iteration % UPDATE_INTERVAL == 0){
-            mle(ss, EST_ALPHA);
-        }else{
-            mle(ss, false);
-        }
+        update_alpha = ((iteration % UPDATE_INTERVAL == 0) and (EST_ALPHA));
+        mle(ss, update_alpha);
 
         converged = (old_likelihood - likelihood)/old_likelihood;
         old_likelihood = likelihood;
 
         std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood
-        << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds. (" << converged << ")" << std::endl;
+        << " in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds. (" << converged << ")";
+        if(update_alpha){
+            std::cout << " (alpha update)";
+        }
+        std::cout << std::endl;
     }
     std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
     lda::likelihood = likelihood;
