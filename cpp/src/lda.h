@@ -99,12 +99,12 @@ public:
 private:
     //Settings
     //Training Settings
-    double CONV_THRESHHOLD;      /*!< The convergance threshold used in training */
-    int MIN_ITER;                 /*!< Minimum number of iterations to train for */
+    double CONV_THRESHHOLD;     /*!< The convergence threshold used in training */
+    int MIN_ITER;               /*!< Minimum number of iterations to train for */
     int MAX_ITER;               /*!< Maximum number of iterations to train for */
     //Document E-step Inference Settings
-    double INF_CONV_THRESH;  /*!< Document inference convergance threshold*/
-    int INF_MAX_ITER;            /*!< Document inference max iterations*/
+    double INF_CONV_THRESH;     /*!< Document inference convergence threshold*/
+    int INF_MAX_ITER;           /*!< Document inference max iterations*/
     //Settings regarding alpha
     bool EST_ALPHA;
     int UPDATE_INTERVAL;

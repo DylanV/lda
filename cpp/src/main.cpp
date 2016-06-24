@@ -6,7 +6,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    bool ratings = false;
+    const bool ratings = true;
 
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;
@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
                              "-param <outdir> -topics <numtopics> -setting <infile>" << endl;
         std::cin.get();
         exit(0);
+
     } else {
         string corpus_path = "", param_dir="", settings_path="";
         int numTopics = 0;
@@ -68,7 +69,8 @@ int main(int argc, char* argv[]) {
         cout << "Training lda with " << numTopics << " topics:" << endl;
         clock_t start = clock();
         vb.train(numTopics, a);
-        cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC << " seconds.\n" << endl;
+        cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
+        << " seconds. With a final likelihood of"<< vb.likelihood << "\n" << endl;
 
         cout << "Writing dirichlet parameters to files in "<< param_dir << endl;
 //        vb.writeParams(param_dir);
