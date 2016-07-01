@@ -12,9 +12,9 @@ Standard cmake build. Builds into the /cpp/build/ directory by default
 
 ## Example programs
 * Dummy dataset 10 topics
--corpus ../datasets/dummy2.dat -topics 10 -setting ../settings.txt -param ../param/dummy/
+-corpus ../../datasets/dummy2.dat -topics 10 -setting ../default_settings.txt -param ../../param/dummy/
 * Associated press dataset 100 topics
--corpus ../datasets/ap/ap.dat -topics 100 -setting ../settings.txt -param ../param/ap/
+-corpus ../../datasets/ap/ap.dat -topics 100 -setting ../default_settings.txt -param ../../param/ap/
 
 ## Documentation
 Doxygen is supported. To generate run the command : 'doxygen DoxyConfig' in the /cpp/ directory
