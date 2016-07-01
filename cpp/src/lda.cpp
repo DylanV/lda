@@ -29,8 +29,8 @@ lda::lda(doc_corpus &corp, lda_settings settings)
 void lda::train(int num_topics, alpha_settings a_settings)
 {
 /*!
-    Perform variational bayes on the corpus to get the dirichlet parameters
-    (logProbW->beta and alpha) for the corpus.
+    Perform variational bayes on the corpus to get the dirichlet hyperparameters
+    (logProbW->theta and alpha) for the corpus.
     \param num_topics an int for the number of topics to train on
 */
 
