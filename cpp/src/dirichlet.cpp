@@ -52,7 +52,7 @@ void dirichlet::symmetric_update(double ss, size_t D)
 /*!
 Update alpha of the dirichlet given the sufficient statistics. Alpha is updated as symmetric.
  The sufficient stats are the sum of the observed samples of the diriclet.
-The mean remains unchanged.
+The mean remains unchanged. Precision can change
 \param ss the sufficient statistics
 \param D the number of observed samples for the sufficient statistics
 */

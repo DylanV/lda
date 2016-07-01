@@ -20,16 +20,13 @@ struct alpha_settings {
     int init_s;              /*!< Initial value for the conc coeff when estimating*/
 };
 
-//! Represents a K dimension dirichlet distribution
+//! Represents a K dimension dirichlet distribution with special hessian
 /*!
     Keeps track of the three dirichlet parameters.
-    Alpha, mean and s (precision, concentration coeeficient)
+    Alpha, mean and s (precision, concentration coefficient)
     Can update the dirichlet from observed samples.
-    Class is limited in the assumption that is works with LDA. As such the sufficient statistics
-    are calculated externally then passed to the dirichlet. It would perhaps be better to have
-    a less specific implementation that simply gets passed the observed samples for the update.
-    It is however probably slightly more efficient to calculate the ss in the lda document inference
-    as it saves a D sized for loop to calculate the ss.
+    Class is limited in the assumption that is works with LDA. Assumes that the diriclet has a hessian
+    in the form that allows for linear time update.
  */
 class dirichlet {
 public:
