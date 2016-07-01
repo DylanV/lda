@@ -182,8 +182,8 @@ void write_parameters_to_file(std::string param_dir, const lda& model) {
             beta[k][n] = exp(model.logProbW[k][n]);
         }
     }
-    //write theta
-    fs.open(param_dir+"theta.dat", std::fstream::out | std::fstream::trunc);
+    //write beta
+    fs.open(param_dir+"beta.dat", std::fstream::out | std::fstream::trunc);
     write_2d_vector_to_fs(fs, beta);
     fs.close();
 

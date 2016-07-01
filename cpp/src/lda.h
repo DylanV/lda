@@ -84,7 +84,7 @@ public:
     size_t numTerms;       /*!< total number of terms(words) in the corpus. */
 
     // model parameters
-    std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised p(w|z)) */
+    std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
     dirichlet alpha;   /*!< the lda alpha parameter */
 
     // variational parameters
