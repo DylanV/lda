@@ -1,19 +1,19 @@
+#project(lda_lib)
 set(src ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCE
-        ${SOURCE}
-        ${src}/main.cpp
-        ${src}/lda.cpp
-        ${src}/util.cpp
-        ${src}/data.cpp
-        ${src}/dirichlet.cpp
-        PARENT_SCOPE
+        lda.cpp
+        util.cpp
+        data.cpp
+        dirichlet.cpp
         )
 set(HEADERS
-        ${HEADERS}
-        ${src}/lda.h
-        ${src}/util.h
-        ${src}/data.h
-        ${src}/dirichlet.h
-        PARENT_SCOPE
+        lda.h
+        util.h
+        data.h
+        dirichlet.h
         )
+
+add_library(lib ${SOURCE} ${HEADERS} )
+
+target_include_directories(lib PUBLIC include)

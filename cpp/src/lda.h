@@ -85,11 +85,11 @@ public:
 
     // model parameters
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
-    dirichlet alpha;   /*!< the lda alpha parameter */
+    dirichlet alpha;   /*!< the alpha parameter */
 
     // variational parameters
-    std::vector<std::vector<double>> varGamma;          /*!< gamma latent dirichlet parameter */
-    std::vector<std::vector<std::vector<double>>> phi;  /*!< phi latent dirichlet parameter */
+    std::vector<std::vector<double>> varGamma;          /*!< gamma: per document topic distribution */
+    std::vector<std::vector<std::vector<double>>> phi;  /*!< per document word topic assignments */
 
     double likelihood;  /*!< the total log-likelihood for the corpus (I think - might be the lower bound) */
 
