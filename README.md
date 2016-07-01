@@ -1,4 +1,5 @@
-# lda
+# lda - Latent Dirichlet Allocation
+Implements latent dirichlet allocation with variational inference as in Blei's lda paper
 
 ## Build
 Standard cmake build. Builds into the /cpp/build/ directory by default
