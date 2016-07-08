@@ -60,3 +60,14 @@ TEST(NormTest, NormaliseVector) {
         ASSERT_EQ(1.0/length, vec[i]);
     }
 }
+
+TEST(DirichletExpectationTest, DirihletExpectationOfVectorRV) {
+    std::vector<double> rv;
+    rv.push_back(0.4);
+    rv.push_back(0.5);
+    rv.push_back(0.1);
+    std::vector<double> result = dirichlet_expectation(rv);
+    ASSERT_NEAR(-1.984168879683583, result[0], 1e-10);
+    ASSERT_NEAR(-1.386294361119890, result[1], 1e-10);
+    ASSERT_NEAR(-9.846539275509543, result[2], 1e-10);
+}
