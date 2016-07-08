@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "util.h"
+#include <math.h>
 
 TEST(DigammaTest, IntegerValues) {
     ASSERT_NEAR(1.2561176684318004, digamma(4), 1e-10);
@@ -25,4 +26,14 @@ TEST(TrigammaTest, IntegerValues) {
 TEST(TrigammaTest, FractionValues) {
     ASSERT_NEAR(101.43329915079275881721, trigamma(0.1), 1e-5);
     ASSERT_NEAR(2501.5981181918680666, trigamma(0.02), 1e-5);
+}
+
+TEST(LogSumTest, IntegerValues) {
+    ASSERT_EQ(log(7), log_sum(log(3), log(4)));
+    ASSERT_EQ(log(30), log_sum(log(10), log(20)));
+    ASSERT_EQ(log(2), log_sum(log(1), log(1)));
+}
+
+TEST(LogSumTest, FractionValues) {
+    ASSERT_NEAR(log(5.0), log_sum(log(2.5),log(2.5)), 1e-10);
 }
