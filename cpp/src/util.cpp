@@ -18,18 +18,23 @@ double digamma(double x)
 
 double trigamma(double x)
 {
-    double p = 1;
-    int i;
+    double p = 0;
 
-    x+=6;
-    p/=(x*x);
-    p=(((((0.075757575757576*p-0.033333333333333)*p+0.0238095238095238)
-         *p-0.033333333333333)*p+0.166666666666667)*p+1)/x+0.5*p;
-    for (i=0; i<6 ;i++) {
-        x--;
-        p/=(x*x)+p;
+//    x+=6.0;
+//    p=1.0/(x*x);
+//    p=(((((0.075757575757576*p-0.033333333333333)*p+0.0238095238095238)
+//         *p-0.033333333333333)*p+0.166666666666667)*p+1)/x+0.5*p;
+//    for (int i=0; i<6 ;i++) {
+//        x--;
+//        p = 1.0/(x*x)+p;
+//    }
+
+    int iter = 200000;
+    for(int i=0; i<iter; i++){
+        p += 1/((x+i)*(x+i));
     }
-    return(p);
+
+    return p;
 }
 
 double log_sum(double log_a, double log_b)
