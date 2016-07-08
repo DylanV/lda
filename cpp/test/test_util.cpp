@@ -5,6 +5,7 @@
 #include "gtest/gtest.h"
 #include "util.h"
 #include <math.h>
+#include <vector>
 
 TEST(DigammaTest, IntegerValues) {
     ASSERT_NEAR(1.2561176684318004, digamma(4), 1e-10);
@@ -36,4 +37,26 @@ TEST(LogSumTest, IntegerValues) {
 
 TEST(LogSumTest, FractionValues) {
     ASSERT_NEAR(log(5.0), log_sum(log(2.5),log(2.5)), 1e-10);
+}
+
+TEST(SumTest, SumVector){
+    int length = 3;
+    std::vector<double> vec;
+    for(int i=0; i<length; i++){
+        vec.push_back(1);
+    }
+    double result = sum(vec);
+    ASSERT_EQ(length, result);
+}
+
+TEST(NormTest, NormaliseVector) {
+    int length = 3;
+    std::vector<double> vec;
+    for(int i=0; i<length; i++){
+        vec.push_back(1);
+    }
+    norm(vec);
+    for(int i=0; i<length; i++){
+        ASSERT_EQ(1.0/length, vec[i]);
+    }
 }
