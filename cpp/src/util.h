@@ -14,7 +14,7 @@
 double trigamma(double x);
 //! the digamma function
 double digamma(double x);
-//! the log sum of a and b
+//! the log sum of log_a and log_b, log(a+b)
 double log_sum(double log_a, double log_b);
 
 //! sum a vector

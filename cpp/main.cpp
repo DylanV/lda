@@ -1,6 +1,6 @@
 #include <iostream>
 #include "data.h"
-#include "lda.h"
+#include "var_bayes.h"
 
 using namespace std;
 
@@ -65,16 +65,17 @@ int main(int argc, char* argv[]) {
             cout << "Using default inference settings\n" << endl;
         }
 
-        lda vb(corpus, l);
+        var_bayes inference_model = var_bayes(corpus, l, a);
+
+        lda_model * model = &inference_model;
         cout << "Training lda with " << numTopics << " topics:" << endl;
         clock_t start = clock();
-        vb.train(numTopics, a);
+        model->train(numTopics);
         cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
-        << " seconds. With a final likelihood of"<< vb.likelihood << "\n" << endl;
+        << " seconds. \n" << endl;
 
         cout << "Writing dirichlet parameters to files in "<< param_dir << endl;
-//        vb.writeParams(param_dir);
-        write_parameters_to_file(param_dir, vb);
+        model->save_parameters(param_dir);
     }
 
     return 0;

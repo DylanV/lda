@@ -20,7 +20,7 @@ double trigamma(double x)
 {
     double p = 0;
 
-    int iter = 200000;
+    int iter = 200000; // this can be adjusted for more accuracy at the cost of performance
     for(int i=0; i<iter; i++){
         p += 1.0/((x+i)*(x+i));
     }

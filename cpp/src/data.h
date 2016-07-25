@@ -25,8 +25,7 @@ std::vector<std::string> split(std::string const& str, char delim);
 std::vector<std::string> load_vocab(std::string file_path);
 //! load settings from file
 void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda);
-//! write lda parameter to files in a directory
-void write_parameters_to_file(std::string param_dir, const lda& model);
+
 
 //! write vector to file stream
 template <typename T>

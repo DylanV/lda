@@ -1,56 +1,12 @@
 //
-// Created by Dylan on 13/04/2016.
+// Created by Dylan Verrezen on 2016/07/25.
 //
 
-/*!
- * \file lda.h
- */
+#ifndef LDA_VAR_BAYES_H
+#define LDA_VAR_BAYES_H
 
-#ifndef LDA_LDA_H
-#define LDA_LDA_H
-
-#include <map>
-#include <vector>
-#include <set>
-#include <string>
+#include "lda_model.h"
 #include "dirichlet.h"
-
-//! A document struct
-/*!
-    Represents a document in bag of words style.
- */
-struct document {
-    std::map<int,int> wordCounts;   /*!< Map for the word counts. Maps id to count. */
-    size_t count;                      /*!< The total number of words in the document. */
-    size_t uniqueCount;                /*!< The number of unique words in the document. */
-};
-
-//! A corpus struct
-/*!
-    Represents a corpus of documents.
-    \sa document
- */
-struct doc_corpus {
-    std::vector<document> docs; /*! vector of document structs. \sa document */
-    size_t numTerms;               /*! the total number of unique terms in the corpus. */
-    size_t numDocs;                /*! the total number of documents. */
-};
-
-//! settings struct for the lda model
-struct lda_settings {
-    lda_settings() : converged_threshold(1e-6), min_iterations(2),
-                     max_iterations(100), inf_converged_threshold(1e-6),
-                     inf_max_iterations(20), estimate_alpha(false),
-                     alpha_update_interval(1){}
-
-    double converged_threshold;     /*!< The convergence threshold used in training */
-    int min_iterations;             /*!< Minimum number of iterations to train for */
-    int max_iterations;             /*!< Maximum number of iterations to train for */
-    double inf_converged_threshold; /*!< Document inference convergence threshold*/
-    int inf_max_iterations;         /*!< Document inference max iterations*/
-    bool estimate_alpha;            /*!< Whether to estimate alpha*/
-    int alpha_update_interval;      /*!< interval to update alpha on*/
-};
 
 //! A sufficient statistics struct
 /*!
@@ -66,38 +22,37 @@ struct suff_stats {
     size_t numDocs;    /*!< the number of documents include in the suff stats so far */
 };
 
-//! A latent dirichlet allocation model class
-/*!
-    A class for a latent dirichlet allocation model. Holds the model parameters.
-    Can be trained on a corpus given a number of topics or loaded from a parameter file.
- */
-class lda {
-
+class var_bayes : public lda_model{
 public:
-    //! lda constructor
-    lda(doc_corpus& corp, lda_settings settings);
+    var_bayes(doc_corpus& corp, lda_settings settings, alpha_settings a_settings);
 
+    void train(size_t numTopics);
+    void save_parameters(std::string file_dir);
+
+private:
     doc_corpus corpus;  /*!< document corpus for the lda */
+    double likelihood;  /*!< the total log-likelihood for the corpus */
 
+    // Convenience constants
+    // =====================
     size_t numTopics;      /*!< number of topics */
     size_t numDocs;        /*!< total number of documents in the corpus. */
     size_t numTerms;       /*!< total number of terms(words) in the corpus. */
 
-    // model parameters
+    // Model parameters
+    // ================
     std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
     dirichlet alpha;   /*!< the alpha parameter */
 
-    // variational parameters
+    // Variational parameters
+    // ======================
     std::vector<std::vector<double>> varGamma;          /*!< gamma: per document topic distribution */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< per document word topic assignments */
 
-    double likelihood;  /*!< the total log-likelihood for the corpus */
-
-    //! Train the lda on the corpus given the number of topics.
-    void train(int num_topics, alpha_settings a_settings);
-
-private:
     // Settings
+    // ========
+    // Alpha
+    alpha_settings ALPHA_SETTINGS;
     // Training Settings
     double CONV_THRESHHOLD;     /*!< The convergence threshold used in training */
     int MIN_ITER;               /*!< Minimum number of iterations to train for */
@@ -109,6 +64,12 @@ private:
     bool EST_ALPHA;
     int UPDATE_INTERVAL;
 
+    // Functions
+    // =========
+    //! Train the lda on the corpus given the number of topics with the given settings for alpha
+    void train(int num_topics, alpha_settings a_settings);
+
+    // Inference helper functions
     //! randomly initialise the given sufficient statistics
     void randomSSInit(suff_stats& ss);
     //! zero initialise the given sufficient statistics
@@ -131,8 +92,7 @@ private:
     //! calculates the log likelihood for the current document
     double compute_likelihood(document const& doc, std::vector<double>& var_gamma,
                               std::vector<std::vector<double>>& phi);
-
 };
 
 
-#endif //LDA_LDA_H
+#endif //LDA_VAR_BAYES_H

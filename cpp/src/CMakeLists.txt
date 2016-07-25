@@ -2,17 +2,22 @@
 set(src ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCE
+        lda_model.cpp
         lda.cpp
         util.cpp
         data.cpp
         dirichlet.cpp
-        )
+        gibbs.cpp var_bayes.cpp
+        var_bayes.h)
+
 set(HEADERS
+        lda_model.H
         lda.h
         util.h
         data.h
         dirichlet.h
-        )
+        gibbs.h
+        var_bayes.h)
 
 add_library(lib ${SOURCE} ${HEADERS} )
 # Adding the headers is not necessary when each has an associated cpp source file, consider just adding sources
