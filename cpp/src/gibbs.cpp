@@ -6,6 +6,7 @@
 #include "util.h"
 #include "data.h"
 #include <random>
+#include <iostream>
 
 gibbs::gibbs(doc_corpus& corp){
     corpus = corp;
@@ -20,7 +21,7 @@ void gibbs::train(size_t numTopics) {
     zero_init_counts();
     random_assign_topics();
 
-    for(int iter=0; iter<100; ++iter){
+    for(int iter=0; iter<30; ++iter){
         for(int d=0; d<numDocs; ++d){
 
             document curr_doc = corpus.docs[d];
@@ -63,10 +64,12 @@ void gibbs::save_parameters(std::string file_dir) {
     //write phi
     fs.open(file_dir+"phi.dat", std::fstream::out | std::fstream::trunc);
     write_2d_vector_to_fs(fs, phi);
+    fs.close();
 
     //write theta
     fs.open(file_dir+"theta.dat", std::fstream::out | std::fstream::trunc);
     write_2d_vector_to_fs(fs, theta);
+    fs.close();
 }
 
 void gibbs::zero_init_counts() {
@@ -82,9 +85,9 @@ void gibbs::zero_init_counts() {
 }
 
 void gibbs::random_assign_topics() {
-
-    std::default_random_engine generator;
-    std::uniform_int_distribution<int> uniform(0,numTopics);
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::uniform_int_distribution<int> uniform(0,numTopics-1);
 
     for(int d=0; d<numDocs; d++){
         document curr_doc = corpus.docs[d];
@@ -121,7 +124,9 @@ std::vector<double> gibbs::get_pz(int d, int w) {
 }
 
 int gibbs::sample_multinomial(std::vector<double> probabilities) {
-    std::default_random_engine generator;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+
     std::discrete_distribution<int> multi (probabilities.begin(), probabilities.end());
     return multi(generator);
 }

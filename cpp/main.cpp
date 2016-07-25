@@ -1,6 +1,7 @@
 #include <iostream>
 #include "data.h"
 #include "var_bayes.h"
+#include "gibbs.h"
 
 using namespace std;
 
@@ -64,10 +65,14 @@ int main(int argc, char* argv[]) {
         } else {
             cout << "Using default inference settings\n" << endl;
         }
+
         lda_model * model;
 
-        var_bayes bayes_model = var_bayes(corpus, l, a);
-        model = &bayes_model;
+//        var_bayes bayes_model = var_bayes(corpus, l, a);
+//        model = &bayes_model;
+
+        gibbs gibbs_model = gibbs(corpus);
+        model = &gibbs_model;
 
         cout << "Training lda with " << numTopics << " topics:" << endl;
         clock_t start = clock();
