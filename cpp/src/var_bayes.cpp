@@ -289,7 +289,7 @@ void var_bayes::randomSSInit(suff_stats& ss)
 
     for(int k=0; k<numTopics; k++){
         for(int n=0; n<numTerms; n++){
-            ss.classWord[k][n] += rand();
+            ss.classWord[k][n] += rand() / RAND_MAX;
             ss.classTotal[k] += ss.classWord[k][n];
         }
     }
