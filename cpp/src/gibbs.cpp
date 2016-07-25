@@ -4,6 +4,7 @@
 
 #include "gibbs.h"
 #include "util.h"
+#include "data.h"
 #include <random>
 
 gibbs::gibbs(doc_corpus& corp){
@@ -57,7 +58,15 @@ void gibbs::train(size_t numTopics) {
 }
 
 void gibbs::save_parameters(std::string file_dir) {
+    std::fstream fs; //get the filestream
 
+    //write phi
+    fs.open(file_dir+"phi.dat", std::fstream::out | std::fstream::trunc);
+    write_2d_vector_to_fs(fs, phi);
+
+    //write theta
+    fs.open(file_dir+"theta.dat", std::fstream::out | std::fstream::trunc);
+    write_2d_vector_to_fs(fs, theta);
 }
 
 void gibbs::zero_init_counts() {
