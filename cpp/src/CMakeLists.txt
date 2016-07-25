@@ -3,7 +3,6 @@ set(src ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCE
         lda_model.cpp
-        lda.cpp
         util.cpp
         data.cpp
         dirichlet.cpp
@@ -12,7 +11,6 @@ set(SOURCE
 
 set(HEADERS
         lda_model.H
-        lda.h
         util.h
         data.h
         dirichlet.h

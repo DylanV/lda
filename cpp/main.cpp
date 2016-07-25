@@ -60,14 +60,15 @@ int main(int argc, char* argv[]) {
         alpha_settings a;
         if(settings_path_passed){
             cout << "Loading settings from "<< settings_path << endl;
-            load_settings("../settings.txt", a, l);
+            load_settings(settings_path, a, l);
         } else {
             cout << "Using default inference settings\n" << endl;
         }
+        lda_model * model;
 
-        var_bayes inference_model = var_bayes(corpus, l, a);
+        var_bayes bayes_model = var_bayes(corpus, l, a);
+        model = &bayes_model;
 
-        lda_model * model = &inference_model;
         cout << "Training lda with " << numTopics << " topics:" << endl;
         clock_t start = clock();
         model->train(numTopics);

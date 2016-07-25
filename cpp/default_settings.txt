@@ -11,5 +11,5 @@ ALPHA 5
 symmetric true
 newton_threshold 1e-5
 max_iterations 100
-init 0.5
+init 1
 init_s 100

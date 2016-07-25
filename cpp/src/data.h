@@ -14,8 +14,8 @@
 #include <vector>
 #include <fstream>
 
-#include "lda.h"
 #include "dirichlet.h"
+#include "lda_model.h"
 
 //! load a corpus from a file
 doc_corpus load_corpus(std::string file_path);
