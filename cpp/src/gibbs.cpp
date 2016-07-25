@@ -53,6 +53,7 @@ void gibbs::train(size_t numTopics) {
             }
         }
     }
+    estimate_parameters();
 }
 
 void gibbs::save_parameters(std::string file_dir) {
@@ -114,4 +115,38 @@ int gibbs::sample_multinomial(std::vector<double> probabilities) {
     std::default_random_engine generator;
     std::discrete_distribution<int> multi (probabilities.begin(), probabilities.end());
     return multi(generator);
+}
+
+void gibbs::estimate_parameters() {
+    // calculate phi
+    phi = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
+    double total = 0;
+    for(int k=0; k<numTopics; ++k){
+        for(int w=0; w<numTerms; ++w){
+            phi[k][w] = n_kw[k][w] + beta;
+            total += n_kw[k][w];
+        }
+    }
+    total += numTerms*beta;
+    for(int k=0; k<numTopics; ++k){
+        for(int w=0; w<numTerms; ++w){
+            phi[k][w] /= total;
+        }
+    }
+
+    // calculate theta
+    theta = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
+    total = 0;
+    for(int d=0; d<numDocs; ++d){
+        for(int k=0; k<numTopics; ++k){
+            theta[d][k] = n_dk[d][k] + alpha;
+            total += n_dk[d][k];
+        }
+    }
+    total += numTopics*alpha;
+    for(int d=0; d<numDocs; ++d){
+        for(int k=0; k<numTopics; ++k){
+            theta[d][k] /= total;
+        }
+    }
 }

@@ -25,6 +25,9 @@ private:
     // ================
     double alpha = 0.1;
     double beta = 0.01;
+    std::vector<std::vector<double>> phi;
+    std::vector<std::vector<double>> theta;
+
 
     // Convenience constants
     // =====================
