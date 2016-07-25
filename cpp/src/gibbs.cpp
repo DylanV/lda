@@ -1,27 +1,33 @@
-//
-// Created by Dylan Verrezen on 2016/07/25.
-//
+/*!
+ \file gibbs.cpp
+ */
 
 #include "gibbs.h"
 #include "util.h"
 #include "data.h"
-#include <random>
 #include <iostream>
+#include <sstream>
 
 gibbs::gibbs(doc_corpus& corp){
+/*!
+    The class constructor for the gibbs class. Just requires a document corpus.
+    \param corp A reference to a document corpus. \sa doc_corpus
+ */
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
-
+    auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator =  std::default_random_engine(seed);
 };
 
 void gibbs::train(size_t numTopics) {
+
     this->numTopics = numTopics;
 
     zero_init_counts();
     random_assign_topics();
 
-    for(int iter=0; iter<30; ++iter){
+    for(int iter=0; iter<100; ++iter){
         for(int d=0; d<numDocs; ++d){
 
             document curr_doc = corpus.docs[d];
@@ -55,6 +61,7 @@ void gibbs::train(size_t numTopics) {
             }
         }
     }
+    // update phi and theta
     estimate_parameters();
 }
 
@@ -85,8 +92,6 @@ void gibbs::zero_init_counts() {
 }
 
 void gibbs::random_assign_topics() {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
     std::uniform_int_distribution<int> uniform(0,numTopics-1);
 
     for(int d=0; d<numDocs; d++){
@@ -124,9 +129,6 @@ std::vector<double> gibbs::get_pz(int d, int w) {
 }
 
 int gibbs::sample_multinomial(std::vector<double> probabilities) {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator(seed);
-
     std::discrete_distribution<int> multi (probabilities.begin(), probabilities.end());
     return multi(generator);
 }

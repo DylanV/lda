@@ -1,6 +1,6 @@
-//
-// Created by Dylan on 18/05/2016.
-//
+/*!
+ \file dirichlet.h
+ */
 
 #ifndef LDA_DIRICHLET_H
 #define LDA_DIRICHLET_H

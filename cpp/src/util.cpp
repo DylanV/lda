@@ -1,6 +1,6 @@
-//
-// Created by Dylan on 13/04/2016.
-//
+/*!
+ \file util.cpp
+ */
 
 #include "util.h"
 #include <math.h>

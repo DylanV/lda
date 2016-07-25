@@ -1,6 +1,6 @@
-//
-// Created by Dylan on 18/05/2016.
-//
+/*!
+ \file dirichlet.cpp
+ */
 
 #include "dirichlet.h"
 #include "util.h"

@@ -1,7 +1,3 @@
-//
-// Created by Dylan on 13/04/2016.
-//
-
 /*!
  \file util.h
  */
@@ -10,14 +6,14 @@
 #define LDA_UTIL_H
 #include <vector>
 
-//! the trigamma function
+//! Trigamma of x
 double trigamma(double x);
-//! the digamma function
+//! Digamma of x
 double digamma(double x);
-//! the log sum of log_a and log_b, log(a+b)
+//! Log sum of log_a and log_b, i.e. log(a+b)
 double log_sum(double log_a, double log_b);
 
-//! sum a vector
+//! Sum a vector
 template <typename T> inline
 T sum(const std::vector<T>& vec) {
     T sum = 0;
@@ -27,6 +23,7 @@ T sum(const std::vector<T>& vec) {
     return sum;
 }
 
+//! Normalise a vector
 template <typename T> inline
 void norm(std::vector<T>& vec) {
     T vec_sum = sum(vec);
@@ -36,6 +33,7 @@ void norm(std::vector<T>& vec) {
     }
 }
 
+//! Dirichlet expectation of vector prob
 std::vector<double> dirichlet_expectation(const std::vector<double>& prob);
 
 #endif //LDA_UTIL_H

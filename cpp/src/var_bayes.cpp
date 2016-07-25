@@ -1,6 +1,6 @@
-//
-// Created by Dylan Verrezen on 2016/07/25.
-//
+/*!
+ \file var_bayes.cpp
+ */
 
 #include "var_bayes.h"
 #include "util.h"
@@ -12,7 +12,7 @@
 var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_settings)
 {
 /*!
-     The constructor for the lda class. Accepts a reference to the document corpus,
+     The constructor for the var_bayes class. Accepts a reference to the document corpus, as well as settings structs.
      \param corp a reference to the document corpus for the lda.
  */
     corpus = corp;
@@ -31,6 +31,10 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_s
 }
 
 void var_bayes::train(size_t numTopics) {
+/*!
+    Inherited from superclass lda_model (\sa lda_model). Calls overloaded class function with alpha settings.
+    \param numTopics The number of topics to train the model with.
+ */
     train(numTopics, ALPHA_SETTINGS);
 }
 

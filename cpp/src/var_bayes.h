@@ -1,6 +1,6 @@
-//
-// Created by Dylan Verrezen on 2016/07/25.
-//
+/*!
+ \file var_bayes.h
+ */
 
 #ifndef LDA_VAR_BAYES_H
 #define LDA_VAR_BAYES_H

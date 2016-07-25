@@ -1,9 +1,5 @@
-//
-// Created by Dylan Verrezen on 2016/07/25.
-//
-
 /*!
- * \file lda.h
+ * \file lda_model.h
  */
 
 #ifndef LDA_LDA_MODEL_H
@@ -13,7 +9,7 @@
 #include <map>
 #include <string>
 
-//! A document struct
+//! Document struct
 /*!
     Represents a document in bag of words style.
  */
@@ -23,7 +19,7 @@ struct document {
     size_t uniqueCount;                /*!< The number of unique words in the document. */
 };
 
-//! A corpus struct
+//! Corpus struct
 /*!
     Represents a corpus of documents.
     \sa document
@@ -34,7 +30,7 @@ struct doc_corpus {
     size_t numDocs;                /*! the total number of documents. */
 };
 
-//! settings struct for the lda model
+//! Settings struct for the lda model
 struct lda_settings {
     lda_settings() : converged_threshold(1e-6), min_iterations(2),
                      max_iterations(100), inf_converged_threshold(1e-6),

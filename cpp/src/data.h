@@ -1,7 +1,3 @@
-//
-// Created by Dylan on 14/04/2016.
-//
-
 /*!
  \file data.h
  */

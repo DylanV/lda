@@ -2,7 +2,6 @@
 set(src ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(SOURCE
-        lda_model.cpp
         util.cpp
         data.cpp
         dirichlet.cpp

@@ -1,3 +1,7 @@
+/*!
+ \file main.cpp
+ */
+
 #include <iostream>
 #include "data.h"
 #include "var_bayes.h"
