@@ -52,5 +52,4 @@ public:
     virtual void save_parameters(std::string file_dir) = 0;
 };
 
-
 #endif //LDA_LDA_MODEL_H
