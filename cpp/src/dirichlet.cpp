@@ -47,6 +47,7 @@ void dirichlet::update(std::vector<double> ss, size_t D) {
     }
 }
 
+
 void dirichlet::symmetric_update(double ss, size_t D)
 {
 /*!

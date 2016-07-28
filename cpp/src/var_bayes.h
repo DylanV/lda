@@ -66,7 +66,12 @@ private:
 
     // Functions
     // =========
-    //! Train the lda on the corpus given the number of topics with the given settings for alpha
+    //! Train the lda on the corpus with the number of topics supplied
+    /*!
+     *
+     * @param [in] num_topics Number of topics for the model
+     * @param [in] a_settings Settings for the alpha dirichlet prior. @sa dirichlet
+     */
     void train(int num_topics, alpha_settings a_settings);
 
     // Inference helper functions

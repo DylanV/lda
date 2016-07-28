@@ -11,6 +11,12 @@
 #include <algorithm>
 #include "data.h"
 
+/*!
+ *
+ * @param [in] str
+ * @param [in] delim
+ * @return
+ */
 std::vector<std::string> split(std::string const& str, char delim)
 {
     std::vector<std::string> items;
@@ -24,6 +30,11 @@ std::vector<std::string> split(std::string const& str, char delim)
     return items;
 }
 
+/*!
+ *
+ * @param file_path
+ * @return
+ */
 doc_corpus load_corpus(std::string file_path)
 {
     std::ifstream fs(file_path);
@@ -81,7 +92,11 @@ doc_corpus load_corpus(std::string file_path)
     corpus.docs = docs;
     return corpus;
 }
-
+/*!
+ *
+ * @param file_path
+ * @return
+ */
 std::vector<std::string> load_vocab(std::string file_path)
 {
     std::ifstream fs(file_path);

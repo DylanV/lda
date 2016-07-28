@@ -9,28 +9,27 @@
 #include <map>
 #include <string>
 
-//! Document struct
-/*!
-    Represents a document in bag of words style.
+/*! Represents a document bag of words style.
+ * A document is a collection of words. Word order does not matter only word frequency is recoreded.
  */
 struct document {
-    std::map<int,int> wordCounts;   /*!< Map for the word counts. Maps id to count. */
-    size_t count;                      /*!< The total number of words in the document. */
-    size_t uniqueCount;                /*!< The number of unique words in the document. */
+    std::map<int,int> wordCounts;      /*! Map of word id to word counts. */
+    size_t count;                      /*! The total number of words in the document. */
+    size_t uniqueCount;                /*! The number of unique words (tokens) in the document. */
 };
 
-//! Corpus struct
-/*!
-    Represents a corpus of documents.
-    \sa document
+/*! Represents a corpus of documents.
+ * @sa document
  */
 struct doc_corpus {
-    std::vector<document> docs; /*! vector of document structs. \sa document */
+    std::vector<document> docs;    /*! vector of document structs. \sa document */
     size_t numTerms;               /*! the total number of unique terms in the corpus. */
     size_t numDocs;                /*! the total number of documents. */
 };
 
-//! Settings struct for the lda model
+/*! Holds all of the settings for the lda model.
+ * @sa gibbs @sa var_bayes
+ */
 struct lda_settings {
     lda_settings() : converged_threshold(1e-6), min_iterations(2),
                      max_iterations(100), inf_converged_threshold(1e-6),
@@ -46,6 +45,9 @@ struct lda_settings {
     int alpha_update_interval;      /*!< interval to update alpha on*/
 };
 
+/*!
+ * Class represent a latent dirichlet allocation model/
+ */
 class lda_model {
 public:
     virtual void train(size_t numTopics) = 0;

@@ -67,12 +67,6 @@ void var_bayes::save_parameters(std::string file_dir) {
 
 void var_bayes::train(int num_topics, alpha_settings a_settings)
 {
-/*!
-    Perform variational bayes on the corpus to get the dirichlet hyperparameters
-    (logProbW->beta and alpha) for the corpus.
-    \param num_topics an int for the number of topics to train on
-*/
-
     numTopics = size_t(num_topics);
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
@@ -217,10 +211,6 @@ double var_bayes::inference(document const& doc, std::vector<double>& var_gamma,
 
     return compute_likelihood(doc, var_gamma, phi);;
 }
-
-double var_bayes::compute_likelihood(document const &doc, std::vector<double>& var_gamma,
-                               std::vector<std::vector<double>>& phi)
-{
 /*!
     \param doc reference to current document \sa document
     \param var_gamma reference to the current document topic distribution parameter \sa varGamma
@@ -228,6 +218,10 @@ double var_bayes::compute_likelihood(document const &doc, std::vector<double>& v
     \return the log likelihood for the document
     \sa doc_e_step(), compute_likelihood()
  */
+double var_bayes::compute_likelihood(document const &doc, std::vector<double>& var_gamma,
+                               std::vector<std::vector<double>>& phi)
+{
+
     double likelihood = 0;
     double var_gamma_sum = 0;
     std::vector<double> dig(numTopics);

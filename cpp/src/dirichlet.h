@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <stdlib.h>
 
 //! settings struct for alpha updates
 struct alpha_settings {
