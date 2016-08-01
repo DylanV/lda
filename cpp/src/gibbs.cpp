@@ -32,7 +32,7 @@ void gibbs::train(size_t numTopics) {
 
 //    this->beta = 1/numTerms;
 
-    for(int iter=0; iter<100; ++iter){
+    for(int iter=0; iter<200; ++iter){
         for(int d=0; d<numDocs; ++d){
 
             document curr_doc = corpus.docs[d];
