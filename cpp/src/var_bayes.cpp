@@ -114,7 +114,7 @@ void var_bayes::train(int num_topics, alpha_settings a_settings)
         std::cout << std::endl;
     }
     std::cout << "Converged in " << iteration << " iterations with likelihood of " << likelihood << std::endl;
-    var_bayes::likelihood = likelihood;
+    this->likelihood = likelihood;
 }
 
 double var_bayes::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
@@ -197,7 +197,7 @@ double var_bayes::inference(document const& doc, std::vector<double>& var_gamma,
 
             for(int k=0; k<numTopics; k++){
                 phi[n][k] = exp(phi[n][k] - phisum);
-                var_gamma[k] = var_gamma[k] + word_count.second*(phi[n][k]);
+                var_gamma[k] += word_count.second*(phi[n][k]);
             }
             n++;
         }
@@ -287,7 +287,7 @@ void var_bayes::randomSSInit(suff_stats& ss)
 
     for(int k=0; k<numTopics; k++){
         for(int n=0; n<numTerms; n++){
-            ss.classWord[k][n] += rand() / RAND_MAX;
+            ss.classWord[k][n] += rand();
             ss.classTotal[k] += ss.classWord[k][n];
         }
     }

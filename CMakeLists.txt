@@ -15,20 +15,20 @@ target_link_libraries(lda lib)
 ###########
 # Testing #
 ###########
-#
-#add_subdirectory("${PROJECT_SOURCE_DIR}/cpp/ext/gtest")
-#enable_testing()
-#
-#include_directories(${GTEST_INCLUDE_DIRS})
-#
-#add_subdirectory("${PROJECT_SOURCE_DIR}/cpp/test")
-#include_directories("${PROJECT_SOURCE_DIR}/cpp/test")
-#
-#add_executable(testBasic ${TEST_FILES})
-#add_dependencies(testBasic googletest)
-#
-#target_link_libraries(testBasic lib)
-#target_link_libraries(testBasic ${GTEST_LIBS_DIR}/libgtest.a ${GTEST_LIBS_DIR}/libgtest_main.a)
-#target_link_libraries(testBasic ${CMAKE_THREAD_LIBS_INIT})
-#
-#add_test(test1 testBasic)
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/cpp/ext/gtest")
+enable_testing()
+
+include_directories(${GTEST_INCLUDE_DIRS})
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/cpp/test")
+include_directories("${PROJECT_SOURCE_DIR}/cpp/test")
+
+add_executable(testBasic ${TEST_FILES})
+add_dependencies(testBasic googletest)
+
+target_link_libraries(testBasic lib)
+target_link_libraries(testBasic ${GTEST_LIBS_DIR}/libgtest.a ${GTEST_LIBS_DIR}/libgtest_main.a)
+target_link_libraries(testBasic ${CMAKE_THREAD_LIBS_INIT})
+
+add_test(test1 testBasic)

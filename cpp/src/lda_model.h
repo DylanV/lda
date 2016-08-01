@@ -51,8 +51,7 @@ struct lda_settings {
  */
 class lda_model {
 public:
-    /*! Train the model
-     * Trains the model on the corpus given the number of topics
+    /*! Train the model on the corpus given the number of topics
      * @param [in] numTopics Number of topics to train with/
      */
     virtual void train(size_t numTopics) = 0;

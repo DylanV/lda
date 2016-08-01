@@ -8,18 +8,16 @@
 #include "lda_model.h"
 #include "dirichlet.h"
 
-//! A sufficient statistics struct
-/*!
-    Convenience struct to hold the sufficient statistics to update alpha and beta (varGamma)
-    \sa lda
+/*! Sufficient statistics for all the model paramters.
+ * Sufficient statistics for alpha and beta.
  */
 struct suff_stats {
-
+    // beta
     std::vector<std::vector<double>> classWord; /*!< 2d vector for the topic-word sufficient stats for beta.*/
-    std::vector<double> classTotal;             /*!< vector (K) for the topic sufficient stats for  beta.*/
-
-    std::vector<double> alpha_ss; /*!< Sufficient stats for alpha */
-    size_t numDocs;    /*!< the number of documents include in the suff stats so far */
+    std::vector<double> classTotal;             /*!< Vector (K) for the topic sufficient stats for  beta.*/
+    // alpha
+    std::vector<double> alpha_ss; /*!< Sufficient stats for alpha .*/
+    size_t numDocs;    /*!< Number of documents included in the suff stats. */
 };
 
 class var_bayes : public lda_model{
@@ -30,24 +28,24 @@ public:
     void save_parameters(std::string file_dir);
 
 private:
-    doc_corpus corpus;  /*!< document corpus for the lda */
-    double likelihood;  /*!< the total log-likelihood for the corpus */
+    doc_corpus corpus;  /*!< Document corpus for the lda. */
+    double likelihood;  /*!< Total log-likelihood for the corpus. */
 
     // Convenience constants
     // =====================
-    size_t numTopics;      /*!< number of topics */
-    size_t numDocs;        /*!< total number of documents in the corpus. */
-    size_t numTerms;       /*!< total number of terms(words) in the corpus. */
+    size_t numTopics;      /*!< Number of topics. */
+    size_t numDocs;        /*!< Total number of documents in the corpus. */
+    size_t numTerms;       /*!< Total number of terms(words) in the corpus. */
 
     // Model parameters
     // ================
-    std::vector<std::vector<double>> logProbW;  /*!< the topic-word log prob (unnormalised beta) */
-    dirichlet alpha;   /*!< the alpha parameter */
+    std::vector<std::vector<double>> logProbW;  /*!< Topic-word log prob (unnormalised beta) */
+    dirichlet alpha;   /*!< Alpha parameter :  topic distribution */
 
     // Variational parameters
     // ======================
-    std::vector<std::vector<double>> varGamma;          /*!< gamma: per document topic distribution */
-    std::vector<std::vector<std::vector<double>>> phi;  /*!< per document word topic assignments */
+    std::vector<std::vector<double>> varGamma;          /*!< Gamma : per document topic distribution */
+    std::vector<std::vector<std::vector<double>>> phi;  /*!< Phi : per document word topic assignments */
 
     // Settings
     // ========
@@ -61,14 +59,12 @@ private:
     double INF_CONV_THRESH;     /*!< Document inference convergence threshold*/
     int INF_MAX_ITER;           /*!< Document inference max iterations*/
     // Settings regarding alpha
-    bool EST_ALPHA;
-    int UPDATE_INTERVAL;
+    bool EST_ALPHA;             /*!< Whether alpha should be estimated */
+    int UPDATE_INTERVAL;        /*!< The iteration interval on which alpha is estimated */
 
     // Functions
     // =========
-    //! Train the lda on the corpus with the number of topics supplied
-    /*!
-     *
+    /*! Train the lda on the corpus with the number of topics supplied
      * @param [in] num_topics Number of topics for the model
      * @param [in] a_settings Settings for the alpha dirichlet prior. @sa dirichlet
      */
