@@ -5,8 +5,8 @@
 #include "util.h"
 #include <math.h>
 
-double digamma(double x)
-{
+double digamma(double x) {
+
     double p = 1;
     x+=6;
     p/=(x*x);
@@ -16,8 +16,8 @@ double digamma(double x)
     return p;
 }
 
-double trigamma(double x)
-{
+double trigamma(double x) {
+
     double p = 0;
 
     int iter = 20000000; // this can be adjusted for more accuracy at the cost of performance
@@ -28,22 +28,20 @@ double trigamma(double x)
     return p;
 }
 
-double log_sum(double log_a, double log_b)
-{
-    double v;
+double log_sum(const double log_a, const double log_b) {
 
-    if (log_a < log_b)
-    {
+    double v=0;
+
+    if (log_a < log_b) {
         v = log_b+log(1 + exp(log_a-log_b));
-    }
-    else
-    {
+    } else {
         v = log_a+log(1 + exp(log_b-log_a));
     }
-    return(v);
+    return v;
 }
 
 std::vector<double> dirichlet_expectation(const std::vector<double>& prob) {
+
     std::vector<double> result = std::vector<double>(prob.size());
     double sum = 0;
     for(int i=0; i<prob.size(); ++i){
