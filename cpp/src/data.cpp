@@ -1,7 +1,6 @@
 /*!
  \file data.cpp
  */
-
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -11,14 +10,9 @@
 #include <algorithm>
 #include "data.h"
 
-/*!
- *
- * @param [in] str
- * @param [in] delim
- * @return
- */
-std::vector<std::string> split(std::string const& str, char delim)
-{
+
+std::vector<std::string> split(std::string const& str, char delim) {
+
     std::vector<std::string> items;
     std::stringstream ss(str);
     std::string item;
@@ -30,13 +24,8 @@ std::vector<std::string> split(std::string const& str, char delim)
     return items;
 }
 
-/*!
- *
- * @param file_path
- * @return
- */
-doc_corpus load_corpus(std::string file_path)
-{
+doc_corpus load_corpus(std::string file_path) {
+
     std::ifstream fs(file_path);
 
     const char line_delim = ' ';
@@ -92,13 +81,9 @@ doc_corpus load_corpus(std::string file_path)
     corpus.docs = docs;
     return corpus;
 }
-/*!
- *
- * @param file_path
- * @return
- */
-std::vector<std::string> load_vocab(std::string file_path)
-{
+
+std::vector<std::string> load_vocab(std::string file_path) {
+
     std::ifstream fs(file_path);
     std::vector<std::string> vocab;
 
@@ -112,7 +97,7 @@ std::vector<std::string> load_vocab(std::string file_path)
     return vocab;
 }
 
-void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda){
+void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda) {
 
     std::ifstream fs(file_path);
     const char line_delim = ' ';

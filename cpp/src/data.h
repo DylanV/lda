@@ -13,17 +13,42 @@
 #include "dirichlet.h"
 #include "lda_model.h"
 
-//! load a corpus from a file
+/*! Load a corpus from file
+ * Load a bag of words style corpus from a file. Each document on a new line. Document format is as follows:
+ * <numver of unique terms> <word id>:<count> <word id>:<count>
+ * Word ids are assumed continuos and zero indexed.
+ * @param file_path Path to file
+ * @return Document corpus struct. @sa doc_corpus
+ */
 doc_corpus load_corpus(std::string file_path);
-//! split a string with the given delimiter
+
+/*! Split a string with a given delimiter
+ * @param str String to be split
+ * @param delim Delimiter
+ * @return Vector of substrings
+ */
 std::vector<std::string> split(std::string const& str, char delim);
-//! load vocab from file
+
+/*! Load a vocabulary file
+ * @param [in] file_path
+ * @return Vector of words in vocabulary
+ */
 std::vector<std::string> load_vocab(std::string file_path);
-//! load settings from file
+
+/*! Load settings from a file.
+ * Loads lda settings and alpha settings from a settings file.
+ * @param [in] file_path Path to the settings file.
+ * @param [out] alpha Alpha settings struct. @sa alpha_settings
+ * @param [out] lda LDA settings struct. @sa lda_settings
+ */
 void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda);
 
 
-//! write vector to file stream
+/*! Write a vector to the given file stream.
+ * Writes the vector to a single line in the given file stream. Items are space seperated.
+ * @param [in] fs File stream.
+ * @param [in] vec Vector to be written.
+ */
 template <typename T>
 void write_vector_to_fs(std::fstream& fs, const std::vector<T>& vec) {
     char sep = ' ';
@@ -35,7 +60,11 @@ void write_vector_to_fs(std::fstream& fs, const std::vector<T>& vec) {
     }
 }
 
-//! write 2d vector to file stream
+/*! Write a 2d vector to a filestream.
+ * Each vector is written to a line. Items are space seperated.
+ * @param [in,out] fs File stream.
+ * @param [in] vec Vector of vectors to be written.
+ */
 template <typename T>
 void write_2d_vector_to_fs(std::fstream& fs, const std::vector<std::vector<T> >& vec) {
     char nl = '\n';
