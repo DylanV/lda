@@ -9,12 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_settings)
-{
-/*!
-     The constructor for the var_bayes class. Accepts a reference to the document corpus, as well as settings structs.
-     \param corp a reference to the document corpus for the lda.
- */
+var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_settings) {
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
@@ -31,10 +26,6 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_s
 }
 
 void var_bayes::train(size_t numTopics) {
-/*!
-    Inherited from superclass lda_model (\sa lda_model). Calls overloaded class function with alpha settings.
-    \param numTopics The number of topics to train the model with.
- */
     train(numTopics, ALPHA_SETTINGS);
 }
 
@@ -65,8 +56,7 @@ void var_bayes::save_parameters(std::string file_dir) {
     fs.close();
 }
 
-void var_bayes::train(int num_topics, alpha_settings a_settings)
-{
+void var_bayes::train(int num_topics, alpha_settings a_settings) {
     numTopics = size_t(num_topics);
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
@@ -117,18 +107,9 @@ void var_bayes::train(int num_topics, alpha_settings a_settings)
     this->likelihood = likelihood;
 }
 
-double var_bayes::doc_e_step(document const& doc, suff_stats &ss, std::vector<double>& var_gamma,
-                       std::vector<std::vector<double>>& phi)
-{
-/*!
-    Calls inference method to update the latent parameters (gamma, phi) for the current document \sa inference().
-    Then updates the sufficient statistics for the lda.
-    \param doc reference to current document \sa document
-    \param ss reference to the model sufficient statistics \sa suff_stats
-    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
-    \param phi reference to the current document topic-word distributionn \sa phi
-    \return the log likelihood for the document
- */
+double var_bayes::doc_e_step(const document &doc, suff_stats &ss, std::vector<double>& var_gamma,
+                       std::vector<std::vector<double>>& phi) {
+
     double likelihood = inference(doc, var_gamma, phi);
 
     int topic=0;
@@ -151,17 +132,9 @@ double var_bayes::doc_e_step(document const& doc, suff_stats &ss, std::vector<do
     return likelihood;
 }
 
-double var_bayes::inference(document const& doc, std::vector<double>& var_gamma, std::vector<std::vector<double>>& phi)
-{
-/*!
-    Performs inference to update the latent dirichlet factors gamma and phi for the given document.
-    \param doc reference to current document \sa document
-    \param ss reference to the model sufficient statistics \sa suff_stats
-    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
-    \param phi reference to the current document topic-word distribution \sa phi
-    \return the log likelihood for the document
-    \sa doc_e_step(), compute_likelihood()
- */
+double var_bayes::inference(const document &doc, std::vector<double>& var_gamma,
+                            std::vector<std::vector<double>>& phi) {
+
     std::vector<double> digamma_gam(numTopics);
 
     for(int k=0; k<numTopics; k++){
@@ -211,16 +184,9 @@ double var_bayes::inference(document const& doc, std::vector<double>& var_gamma,
 
     return compute_likelihood(doc, var_gamma, phi);;
 }
-/*!
-    \param doc reference to current document \sa document
-    \param var_gamma reference to the current document topic distribution parameter \sa varGamma
-    \param phi reference to the current document topic-word distribution  \sa phi
-    \return the log likelihood for the document
-    \sa doc_e_step(), compute_likelihood()
- */
-double var_bayes::compute_likelihood(document const &doc, std::vector<double>& var_gamma,
-                               std::vector<std::vector<double>>& phi)
-{
+
+double var_bayes::compute_likelihood(const document &doc, const std::vector<double> &var_gamma,
+                               const std::vector<std::vector<double>> &phi) {
 
     double likelihood = 0;
     double var_gamma_sum = 0;
@@ -250,15 +216,8 @@ double var_bayes::compute_likelihood(document const &doc, std::vector<double>& v
     return likelihood;
 }
 
-void var_bayes::mle(suff_stats &ss, bool optAlpha=true)
-{
-/*!
-    Calculates a maximum likelihood model for the lda given the sufficient stats.
-    Newton-Raphson update on alpha is optional. optAlpha default is true.
-    \param ss a reference to the sufficient statistics struct for the lda
-    \param optAlpha set to true if alpha should be inferred
-    \sa suff_stats
- */
+void var_bayes::mle(suff_stats &ss, const bool optAlpha=true) {
+    // estimate log beta
     for(int k=0; k<numTopics;k++){
         for(int w=0; w<numTerms; w++){
             if(ss.classWord[k][w] > 0){
@@ -268,17 +227,17 @@ void var_bayes::mle(suff_stats &ss, bool optAlpha=true)
             }
         }
     }
+    // estimate alpha if necessary
     if(optAlpha){
         alpha.update(ss.alpha_ss, ss.numDocs);
     }
 }
 
-dirichlet var_bayes::setup_alpha(alpha_settings settings){
+dirichlet var_bayes::setup_alpha(alpha_settings settings) {
     return dirichlet(numTopics, settings);
 }
 
-void var_bayes::randomSSInit(suff_stats& ss)
-{
+void var_bayes::randomSSInit(suff_stats& ss) {
     ss.classWord = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
     ss.classTotal = std::vector<double>(numTopics, 0.0);
     ss.alpha_ss = std::vector<double>(numTopics, 0);
@@ -293,8 +252,7 @@ void var_bayes::randomSSInit(suff_stats& ss)
     }
 }
 
-void var_bayes::zeroSSInit(suff_stats& ss)
-{
+void var_bayes::zeroSSInit(suff_stats& ss) {
 
     for(int k=0; k<numTopics; k++){
         for(int w=0; w<numTerms; w++){

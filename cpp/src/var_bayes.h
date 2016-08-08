@@ -22,9 +22,23 @@ struct suff_stats {
 
 class var_bayes : public lda_model{
 public:
+    /*! Constructor
+     * @sa lda_model
+     * @param corp Document corpus. @sa doc_corpus
+     * @param settings LDA settings. @sa lda_settings
+     * @param a_settings Settings for alpha. @sa alpha_settings
+     * @return var_bayes lda model
+     */
     var_bayes(doc_corpus& corp, lda_settings settings, alpha_settings a_settings);
 
+    /*! Train on the given corpus with variational inference.
+     * @param [in] numTopics Number of topics to train model with.
+     */
     void train(size_t numTopics);
+
+    /*! Write the model paramters to files in the given folder.
+     * @param [in] file_dir Folder directory.
+     */
     void save_parameters(std::string file_dir);
 
 private:
@@ -71,28 +85,64 @@ private:
     void train(int num_topics, alpha_settings a_settings);
 
     // Inference helper functions
-    //! randomly initialise the given sufficient statistics
+    /*! Randomly initialise the given sufficient statistics.
+     *  Randomly sets the sufficient statistics for alpha and beta. Note that it is
+     *  assumed that the sufficient stat vectors already exist with the correct dimensions.
+     *  So zeroSSInit should be called before this function. @sa zeroSSInit
+     * @param [in,out] ss The sufficient statistic struct @sa suff_stats .
+     */
     void randomSSInit(suff_stats& ss);
-    //! zero initialise the given sufficient statistics
+    /*! Initiliase the sufficient statistics objects for alpha and beta.
+     * Initialises the sufficient statistics objects (vectors) and fills them with zeros.
+     * Vectors should now have the correct dimensions and never need to be moved or re-initialised
+     * only written to.
+     * @param [out] ss The sufficient statistic struct @sa suff_stats .
+     */
     void zeroSSInit(suff_stats& ss);
 
-    //! Sets up alpha given the settings
+    /*! Sets up the alpha dirichlet with the given settings
+     * @sa dirichlet
+     * @param [in] settings the settings struct. @sa alpha_settings
+     * @return The alpha dirichlet.
+     */
     dirichlet setup_alpha(alpha_settings settings);
 
-    //! get the maximum likelihood model from the sufficient statistics
-    void mle(suff_stats& ss, bool optAlpha);
+    /*! Calculate a maximum lokelihood estimate of the global model parameters
+     * Estimates the dirichlet priors alpha and beta given the variational parameters.
+     * @param [in] ss The sufficient statistics. @sa suff_stats
+     * @param [in] optAlpha Whether alpha should be estimated. Default true.
+     */
+    void mle(suff_stats& ss, const bool optAlpha);
 
-    //! perform the e-step of the EM algo on the given document
-    double doc_e_step(document const& doc, suff_stats& ss, std::vector<double>& var_gamma,
+    /*! E-step. Estimate the variational parameters.
+     * Estimate gamma and phi with a document with alpha and beta fixed. Updates the sufficient statistics.
+     * @param [in] doc The current document
+     * @param [out] ss The sufficient statistics for alpha and beta
+     * @param [in,out] var_gamma The topic distribution for the document
+     * @param [in,out] phi The word topic assignments for the document
+     * @return The (lower bound) log-likelihood of the document
+     */
+    double doc_e_step(const document &doc, suff_stats& ss, std::vector<double>& var_gamma,
                       std::vector<std::vector<double>>& phi);
 
-    //! performs inference on the current document
-    double inference(document const& doc, std::vector<double>& var_gamma,
+    /*! The actual inference for the e step
+     * Updates gamma and phi. @sa doc_e_step
+     * @param [in] doc The current document
+     * @param [in,out] var_gamma Gamma for the current document
+     * @param [in,out] phi Phi for the current document.
+     * @return The log-likelihood for this document.
+     */
+    double inference(const document &doc, std::vector<double>& var_gamma,
                      std::vector<std::vector<double>>& phi);
 
-    //! calculates the log likelihood for the current document
-    double compute_likelihood(document const& doc, std::vector<double>& var_gamma,
-                              std::vector<std::vector<double>>& phi);
+    /*! Calculate the log-likelihood for the given document.
+     * @param [in] doc The document in question.
+     * @param [in] var_gamma Gamma for the document.
+     * @param [in] phi Phi for the document.
+     * @return The log-likelihood
+     */
+    double compute_likelihood(const document &doc, const std::vector<double> &var_gamma,
+                              const std::vector<std::vector<double>> &phi);
 };
 
 
