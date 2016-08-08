@@ -48,15 +48,8 @@ void dirichlet::update(std::vector<double> ss, size_t D) {
 }
 
 
-void dirichlet::symmetric_update(double ss, size_t D)
-{
-/*!
-Update alpha of the dirichlet given the sufficient statistics. Alpha is updated as symmetric.
- The sufficient stats are the sum of the observed samples of the diriclet.
-The mean remains unchanged. Precision can change
-\param ss the sufficient statistics
-\param D the number of observed samples for the sufficient statistics
-*/
+void dirichlet::symmetric_update(double ss, size_t D) {
+
     double a, log_a, init_a = INIT_A;
     double df, d2f;
     int iter = 0;
@@ -85,16 +78,8 @@ The mean remains unchanged. Precision can change
     }
 }
 
-void dirichlet::asymmetric_update(std::vector<double> ss, size_t D)
-{
-/*!
-Performs Newton-Raphson for dirichlet with special hessian. Linear time
-Fully updates the dirichlet from the given sufficient statistics. Mean and precision are estimated.
-Sufficient statistics are the observed samples of the dirichlet where for one sample and dimension k:
-ss[k] += digamma(sample[k]) - digamma(sum(samples))
-/param ss the sufficient statistics in a K dimension vector
-/param D the number of samples in the sufficient statistics
-*/
+void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
+
     int iteration = 0;
     double thresh = 0;
     double alpha_sum = 0;

@@ -9,7 +9,7 @@
 #include <vector>
 #include <stdlib.h>
 
-//! settings struct for alpha updates
+/*! Settings struct with all the necessary values for the dirichlet. */
 struct alpha_settings {
     alpha_settings() : symmetric(true), newton_threshold(1e-5),
                        max_iterations(1000), init(0), init_s(100) {}
@@ -37,7 +37,7 @@ public:
     dirichlet(size_t K, alpha_settings settings);
 
     double s;                   /*!< The concentration coefficient or precision of the dirichlet.*/
-    size_t K;                      /*!< The number of dimensions*/
+    size_t K;                   /*!< The number of dimensions*/
     std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
 
@@ -45,14 +45,22 @@ public:
 
 private:
     // Update settings
-    int INIT_A = 100;               /*! The initial precision for the precision update */
-    double NEWTON_THRESH = 1e-5;    /*! The threshold for netwon-raphson update convergance */
-    int MAX_ALPHA_ITER = 1000;      /*! Max number of iterations for newton-raphson */
-    bool SYMMETRIC = false;
+    int INIT_A = 100;               /*!< The initial precision for the precision update */
+    double NEWTON_THRESH = 1e-5;    /*!< The threshold for netwon-raphson update convergance */
+    int MAX_ALPHA_ITER = 1000;      /*!< Max number of iterations for newton-raphson */
+    bool SYMMETRIC = false;         /*!< If the dirichlet is symmetrix */
 
-    //! Update the dirichlet alpha assuming alhpa is symmetric
+    /*! Update the alpha of the dirichlet when it is symmetric.
+     * The sufficient stats are the sum of the observed samples of the diriclet.
+     * @param [in] ss Sufficient statistics. Sum of the dirichlet expectation of samples from the dirichlet.
+     * @param [in] D Number of samples in the sufficient statistics.
+     */
     void symmetric_update(double ss, size_t D);
-    //! Fully update the dirichlet alpha
+
+    /*! Update the alpha of an assymetric alpha
+     * @param [in] ss Sufficient statistics. Sum of the dirichlet expectation of samples from the dirichlet.
+     * @param [in] D Number of samples in the sufficient statistics.
+     */
     void asymmetric_update(std::vector<double> ss, size_t D);
 };
 
