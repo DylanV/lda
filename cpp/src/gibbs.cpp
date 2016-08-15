@@ -59,6 +59,18 @@ void gibbs::train(size_t numTopics) {
                 }
             }
         }
+
+        std::cout << "<";
+        int count = 0;
+        int length = 50;
+        for(int x=0; x<(iter/200.0)*length; x++){
+            std::cout << "=";
+            count++;
+        }
+        for(int x=0; x<length-count; x++){
+            std::cout << "-";
+        }
+        std::cout << "> " << iter+1 << "/200" << '\r' << std::flush;
     }
     // update phi and theta
     estimate_parameters();
