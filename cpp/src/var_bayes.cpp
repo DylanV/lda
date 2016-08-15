@@ -110,8 +110,10 @@ void var_bayes::train(int num_topics, alpha_settings a_settings) {
 double var_bayes::doc_e_step(const document &doc, suff_stats &ss, std::vector<double>& var_gamma,
                        std::vector<std::vector<double>>& phi) {
 
+    // Estimate gamma and phi for this document and get the document log likelihood
     double likelihood = inference(doc, var_gamma, phi);
 
+    // Update the sufficient statistics
     int topic=0;
     for(const double& val: dirichlet_expectation(var_gamma)){
         ss.alpha_ss[topic] += val;
@@ -167,7 +169,7 @@ double var_bayes::inference(const document &doc, std::vector<double>& var_gamma,
                     phisum = phi[n][k];
                 }
             }
-
+            // Estimate gamma and phi
             for(int k=0; k<numTopics; k++){
                 phi[n][k] = exp(phi[n][k] - phisum);
                 var_gamma[k] += word_count.second*(phi[n][k]);

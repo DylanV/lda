@@ -9,10 +9,7 @@
 #include <sstream>
 
 gibbs::gibbs(doc_corpus& corp){
-/*!
-    The class constructor for the gibbs class. Just requires a document corpus.
-    \param corp A reference to a document corpus. \sa doc_corpus
- */
+
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
@@ -21,10 +18,7 @@ gibbs::gibbs(doc_corpus& corp){
 };
 
 void gibbs::train(size_t numTopics) {
-/*!
-    Train the lda model from scratch given the number of topics. Currently all settings are hard coded.
-    \param numTopics The number of topics for the model.
- */
+
     this->numTopics = numTopics;
 
     zero_init_counts();
@@ -71,10 +65,7 @@ void gibbs::train(size_t numTopics) {
 }
 
 void gibbs::save_parameters(std::string file_dir) {
-/*!
-    Writes phi and theta to files in the given foder path.
-    \param file_dir The folder path where the parameter files will be written.
- */
+
     std::fstream fs; //get the filestream
 
     //write phi
@@ -89,6 +80,7 @@ void gibbs::save_parameters(std::string file_dir) {
 }
 
 void gibbs::zero_init_counts() {
+
     n_dk = std::vector<std::vector<int>>(numDocs, std::vector<int>(numTopics, 0));
     n_kw = std::vector<std::vector<int>>(numTopics, std::vector<int>(numTerms, 0));
     n_k = std::vector<int>(numTopics);

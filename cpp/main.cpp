@@ -17,14 +17,15 @@ int main(int argc, char* argv[]) {
         std::cerr << "Insufficient arguments" << endl;
         std::cerr << "Standard usage is -corpus <infile> -param <outdir> -topics <numtopics>" << endl;
         std::cerr << "Optionally settings can also be loaded -corpus <infile> "
-                             "-param <outdir> -topics <numtopics> -setting <infile>" << endl;
+                             "-param <outdir> -topics <numtopics> -setting <infile> -inference <gibbs/bayes>" << endl;
         std::cin.get();
         exit(0);
 
     } else {
-        string corpus_path = "", param_dir="", settings_path="";
+        string corpus_path = "", param_dir="", settings_path="",inference="gibbs";
         int numTopics = 0;
         bool settings_path_passed = false;
+
         for(int i=1; i<argc-1; i++){
 
             string argument = argv[i];
@@ -50,6 +51,9 @@ int main(int argc, char* argv[]) {
                 settings_path.assign(argv[i+1]);
                 settings_path_passed = true;
             }
+            else if(argument == "-inference"){
+                inference.assign(argv[i+1]);
+            }
         }
 
         cout << "Loading corpus from "<< corpus_path << endl;
@@ -72,8 +76,6 @@ int main(int argc, char* argv[]) {
 
         lda_model * model;
 
-        const bool train_gibbs = true;
-
 //        var_bayes bayes_model = var_bayes(corpus, l, a);
 //        model = &bayes_model;
 
@@ -81,6 +83,7 @@ int main(int argc, char* argv[]) {
         model = &gibbs_model;
 
         cout << "Training lda with " << numTopics << " topics:" << endl;
+
         clock_t start = clock();
         model->train(numTopics);
         cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
