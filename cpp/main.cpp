@@ -3,6 +3,7 @@
  */
 
 #include <iostream>
+#include <expectation_prop.h>
 #include "data.h"
 #include "var_bayes.h"
 #include "gibbs.h"
@@ -79,8 +80,11 @@ int main(int argc, char* argv[]) {
 //        var_bayes bayes_model = var_bayes(corpus, l, a);
 //        model = &bayes_model;
 
-        gibbs gibbs_model = gibbs(corpus);
-        model = &gibbs_model;
+//        gibbs gibbs_model = gibbs(corpus);
+//        model = &gibbs_model;
+
+        expectation_prop ep = expectation_prop(corpus);
+        model = &ep;
 
         cout << "Training lda with " << numTopics << " topics:" << endl;
 
