@@ -9,6 +9,18 @@
 #include <vector>
 #include <stdlib.h>
 
+/*! The sufficient statistics for estimating a dirichlet
+ * Given a set of observed data D= {p_1,...p_N} the sufficient statistic is a
+ * fixed dimension function of the data calculated as 1/N * sum(log(p_i)) from 1 to N.
+ * This can only be calculated when we have all the data we want to use. The log sum and total are
+ * therefore tracked seperately.
+ */
+struct dirichlet_suff_stats {
+    std::vector<double> logp;      /*!< Sum of the log of the observed multinomial samples*/
+    size_t N;                      /*!< Number of observed samples. */
+};
+
+
 /*! Settings struct with all the necessary values for the dirichlet. */
 struct alpha_settings {
     alpha_settings() : symmetric(true), newton_threshold(1e-5),

@@ -6,6 +6,8 @@
 #include "util.h"
 #include <math.h>
 
+
+
 dirichlet::dirichlet()
 {
     s = 0;
