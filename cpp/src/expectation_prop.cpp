@@ -53,20 +53,18 @@ void expectation_prop::setup_parameters() {
             = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
     std::vector<double> classTotal = std::vector<double>(numTopics, 0.0);
 
+    srand (time(NULL));
+
     for(int k=0; k<numTopics; k++){
         for(int n=0; n<numTerms; n++){
-            classWord[k][n] += rand();
+            classWord[k][n] += rand()*(1.0/RAND_MAX);
             classTotal[k] += classWord[k][n];
         }
     }
 
     for(int k=0; k<numTopics;k++){
         for(int w=0; w<numTerms; w++){
-            if(classWord[k][w] > 0){
-                Pword[k][w] = log(classWord[k][w]) - log(classTotal[k]);
-            } else {
-                Pword[k][w] = -100.0;
-            }
+            Pword[k][w] = log(classWord[k][w]) - log(classTotal[k]);
             Pword[k][w] = exp(Pword[k][w]);
         }
     }
@@ -91,12 +89,13 @@ double expectation_prop::doc_e_step(int d) {
 
     int w=0;
     for(auto const& word_count : doc.wordCounts){
+
         //deletion
         std::vector<double> old_posterior = std::vector<double>(numTopics);
         bool skipWord = false;
-        double old_posterior_total = 0;
+        double old_posterior_total = 0.0;
         for(int k=0; k<numTopics; ++k){
-            old_posterior[k] = gamma[d][k] - beta[d][w][k];
+            old_posterior[k] = gamma[d][k] - word_count.second*beta[d][w][k];
             old_posterior_total += old_posterior[k];
             if(old_posterior[k] < 0){
                 skipWord = true;
@@ -122,10 +121,13 @@ double expectation_prop::doc_e_step(int d) {
             double denom_sum = 0;
 
             for(int k=0; k<numTopics; ++k){
-                m_a = (1.0/Z_w)*(old_posterior[k]/old_posterior_total)*
-                        ((Pword[k][word_count.first]+prob_total)/(1.0+old_posterior_total));
-                m2_a = (1.0/Z_w)*(old_posterior[k]/old_posterior_total)*
-                        ((old_posterior[k]+1)/(old_posterior_total+1.0));
+                m_a = (1.0/Z_w);
+                m_a *= (old_posterior[k]/old_posterior_total);
+                m_a *= ((Pword[k][word_count.first]+prob_total)/(1.0+old_posterior_total));
+
+                m2_a = (1.0/Z_w);
+                m2_a *= (old_posterior[k]/old_posterior_total);
+                m2_a *= ((old_posterior[k]+1)/(old_posterior_total+1.0));
                 m2_a *= ((2.0*Pword[k][word_count.first] + prob_total)/(2.0 + old_posterior_total));
 
                 gamma_prime[k] = m_a;
@@ -137,7 +139,7 @@ double expectation_prop::doc_e_step(int d) {
             }
 
             // update
-            double step_size = 1.0/numTerms;
+            double step_size = 1.0/doc.count;
             std::vector<double> beta_new = std::vector<double>(numTopics);
             bool make_changes = true;
             for(int k=0; k<numTopics; ++k){
@@ -147,7 +149,7 @@ double expectation_prop::doc_e_step(int d) {
             // inclusion
             std::vector<double> gamma_new = std::vector<double>(numTopics);
             for(int k=0; k<numTopics; ++k){
-                gamma_new[k] = gamma[d][k] + (word_count.second)*(beta[d][w][k] - beta_new[k]);
+                gamma_new[k] = gamma[d][k] + (word_count.second)*(beta_new[k] - beta[d][w][k]);
                 if(gamma_new[k] < 0){
                     make_changes = false;
                 }

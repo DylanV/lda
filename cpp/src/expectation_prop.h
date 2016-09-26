@@ -16,7 +16,7 @@ public:
 private:
     doc_corpus corpus;  /*!< Document corpus for the lda. */
 
-    const int MAX_ITERATION = 100;
+    const int MAX_ITERATION = 50;
     const double CONV_THRESHHOLD = 1e-5;
 
     // Convenience constants
