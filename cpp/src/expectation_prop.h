@@ -16,7 +16,7 @@ public:
 private:
     doc_corpus corpus;  /*!< Document corpus for the lda. */
 
-    const int MAX_ITERATION = 50;
+    const int MAX_ITERATION = 200;
     const double CONV_THRESHHOLD = 1e-5;
 
     // Convenience constants
@@ -24,6 +24,7 @@ private:
     size_t numTopics;      /*!< Number of topics. */
     size_t numDocs;        /*!< Total number of documents in the corpus. */
     size_t numTerms;       /*!< Total number of terms(words) in the corpus. */
+    int numSkipped;
 
     std::vector<double> alpha;
     std::vector<std::vector<double>> Pword;

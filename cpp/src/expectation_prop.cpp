@@ -29,6 +29,7 @@ void expectation_prop::train(size_t numTopics) {
     bool converged = false;
     while(!converged && iteration < MAX_ITERATION){
         iteration++;
+        numSkipped = 0;
         likelihood = 0.0;
         for(int d=0; d<numDocs; ++d){
             likelihood += doc_e_step(d);
@@ -41,12 +42,12 @@ void expectation_prop::train(size_t numTopics) {
             converged = true;
         }
 
-        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood << std::endl;
+        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood <<  " " << numSkipped <<std::endl;
     }
 }
 
 void expectation_prop::setup_parameters() {
-    alpha = std::vector<double>(numTopics, 1.0/numTopics);
+    alpha = std::vector<double>(numTopics, 0.1);
     Pword = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms));
 
     std::vector<std::vector<double>> classWord
@@ -57,7 +58,7 @@ void expectation_prop::setup_parameters() {
 
     for(int k=0; k<numTopics; k++){
         for(int n=0; n<numTerms; n++){
-            classWord[k][n] += rand()*(1.0/RAND_MAX);
+            classWord[k][n] += rand();
             classTotal[k] += classWord[k][n];
         }
     }
@@ -99,6 +100,7 @@ double expectation_prop::doc_e_step(int d) {
             old_posterior_total += old_posterior[k];
             if(old_posterior[k] < 0){
                 skipWord = true;
+                numSkipped++;
             }
         }
 
@@ -139,12 +141,13 @@ double expectation_prop::doc_e_step(int d) {
             }
 
             // update
-            double step_size = 1.0/doc.count;
+            double step_size = 1.0/word_count.second;
             std::vector<double> beta_new = std::vector<double>(numTopics);
             bool make_changes = true;
             for(int k=0; k<numTopics; ++k){
                 beta_new[k] = (1.0-step_size)*beta[d][w][k];
                 beta_new[k] += step_size*(gamma_prime[k] - old_posterior[k]);
+//                beta_new[k] = (gamma_prime[k] - old_posterior[k]);
             }
             // inclusion
             std::vector<double> gamma_new = std::vector<double>(numTopics);
@@ -152,6 +155,7 @@ double expectation_prop::doc_e_step(int d) {
                 gamma_new[k] = gamma[d][k] + (word_count.second)*(beta_new[k] - beta[d][w][k]);
                 if(gamma_new[k] < 0){
                     make_changes = false;
+                    break;
                 }
             }
             if(make_changes){
@@ -177,7 +181,6 @@ double expectation_prop::doc_e_step(int d) {
                 s[d][w] *= (prod_gamma_old / digamma(old_posterior_total));
             }
         }
-
         w++;
     }
 
@@ -198,7 +201,6 @@ double expectation_prop::doc_e_step(int d) {
         likelihood *= pow(s[d][w],word_count.second);
         w++;
     }
-
     return likelihood;
 }
 
