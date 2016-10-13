@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    const bool ratings = true;
+    const bool ratings = false;
 
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;

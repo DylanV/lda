@@ -162,9 +162,7 @@ void gibbs::estimate_parameters() {
     }
     total += numTerms*beta;
     for(int k=0; k<numTopics; ++k){
-        for(int w=0; w<numTerms; ++w){
-            phi[k][w] /= total;
-        }
+        norm(phi[k]);
     }
 
     // calculate theta

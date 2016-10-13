@@ -16,8 +16,9 @@ public:
 private:
     doc_corpus corpus;  /*!< Document corpus for the lda. */
 
-    const int MAX_ITERATION = 200;
-    const double CONV_THRESHHOLD = 1e-5;
+    const int MAX_ITERATION = 100;
+    const double CONV_THRESHHOLD = 1e-6;
+    const double ALPHA_INIT = 0.1;
 
     // Convenience constants
     // =====================
@@ -29,7 +30,7 @@ private:
     std::vector<double> alpha;
     std::vector<std::vector<double>> Pword;
 
-    std::vector<std::vector<double>> s;
+    std::vector<double> s;
     std::vector<std::vector<std::vector<double>>> beta;
     std::vector<std::vector<double>> gamma;
 

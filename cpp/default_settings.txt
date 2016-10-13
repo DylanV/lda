@@ -1,5 +1,5 @@
 LDA 7
-converged_threshold 1e-5
+converged_threshold 1e-6
 min_iterations 3
 max_iterations 100
 inf_converged_threshold 1e-5
@@ -11,5 +11,5 @@ ALPHA 5
 symmetric true
 newton_threshold 1e-5
 max_iterations 100
-init 1
+init 0.1
 init_s 100
