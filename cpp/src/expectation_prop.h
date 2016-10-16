@@ -18,7 +18,7 @@ private:
 
     const int MAX_ITERATION = 100;
     const double CONV_THRESHHOLD = 1e-6;
-    const double ALPHA_INIT = 0.1;
+    const double ALPHA_INIT = 0.001;
 
     // Convenience constants
     // =====================
@@ -30,7 +30,7 @@ private:
     std::vector<double> alpha;
     std::vector<std::vector<double>> Pword;
 
-    std::vector<double> s;
+    std::vector<std::vector<double>> s;
     std::vector<std::vector<std::vector<double>>> beta;
     std::vector<std::vector<double>> gamma;
 

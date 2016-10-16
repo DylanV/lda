@@ -7,6 +7,7 @@
 #include "data.h"
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
 gibbs::gibbs(doc_corpus& corp){
 
