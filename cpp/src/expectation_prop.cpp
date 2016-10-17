@@ -29,7 +29,6 @@ void expectation_prop::train(size_t numTopics) {
     bool converged = false;
     while(!converged && iteration < MAX_ITERATION){
         iteration++;
-        numSkipped = 0;
         likelihood = 0.0;
         for(int d=0; d<numDocs; ++d){
             likelihood += doc_e_step(d);
@@ -41,8 +40,9 @@ void expectation_prop::train(size_t numTopics) {
         if(conv < CONV_THRESHHOLD){
             converged = true;
         }
+        first = false;
 
-        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood <<  " " << numSkipped <<std::endl;
+        std::cout << "Iteration " << iteration << ": with likelihood: " << likelihood <<std::endl;
     }
 }
 
@@ -55,7 +55,7 @@ void expectation_prop::setup_parameters() {
     std::vector<double> classTotal = std::vector<double>(numTopics, 0.0);
 
     srand (time(NULL));
-
+//    srand(87932874928838748);
     for(int k=0; k<numTopics; k++){
         for(int n=0; n<numTerms; n++){
             classWord[k][n] += (rand());
@@ -70,155 +70,187 @@ void expectation_prop::setup_parameters() {
         }
     }
 
-//    Pword[0][0] = 0.2;
-//    Pword[0][1] = 0.2;
-//    Pword[0][2] = 0.5;
-//    Pword[0][9] = 0.1;
-//
-//    Pword[1][3] = 0.3;
-//    Pword[1][4] = 0.3;
-//    Pword[1][5] = 0.3;
-//    Pword[1][9] = 0.1;
-//
-//    Pword[2][6] = 0.2;
-//    Pword[2][7] = 0.3;
-//    Pword[2][8] = 0.4;
-//    Pword[2][9] = 0.1;
-
-    s = std::vector<std::vector<double>>(numDocs);
     beta = std::vector<std::vector<std::vector<double>>>(numDocs);
     for(int d=0; d<numDocs; ++d){
-        s[d] = std::vector<double>(corpus.docs[d].count);
-        beta[d] = std::vector<std::vector<double>>(corpus.docs[d].count, std::vector<double>(numTopics, 0));
+        beta[d] = std::vector<std::vector<double>>(corpus.docs[d].uniqueCount, std::vector<double>(numTopics, 0));
     }
     gamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, ALPHA_INIT));
 }
 
 double expectation_prop::doc_e_step(int d) {
+
+    // Document variables
     document doc = corpus.docs[d];
-    std::map<int, int> local_counts = doc.wordCounts;
-    int all_zero = 0;
+    std::vector<double> doc_gamma = std::vector<double>(numTopics,ALPHA_INIT);
+    std::vector<std::vector<double>> doc_beta = beta[d];
+    std::vector<double> s = std::vector<double>(doc.uniqueCount, 1);
+    int w=0; // used to index beta and s. Not actually the type w
+    int converged = 1;
+    int skipped = 0;
+    double beta_change = 0;
+    double log_likelihood = 0.0;
+    int max_iter = E_MAX_ITERATIONS;
+    if(!first){
+        max_iter /= 5;
+    }
+    double s_total = 0;
 
-    int w=0;
-    while(all_zero == 0){
-        all_zero = 1;
-        for(auto &word_count : local_counts){
-            int type = word_count.first;
-            double token_count = word_count.second;
+    // these vectors are initialised here to save having to re-init them every iteration
+    std::vector<double> gamma_not_w = std::vector<double>(numTopics);
+    std::vector<double> new_beta = std::vector<double>(numTopics);
+    std::vector<double> new_gamma = std::vector<double>(numTopics);
 
-            //deletion
-            std::vector<double> old_posterior = std::vector<double>(numTopics);
-            bool skipWord = false;
-            double old_posterior_total = 0.0;
-            for (int k = 0; k < numTopics; ++k) {
-                old_posterior[k] = gamma[d][k] - beta[d][w][k];
-                old_posterior_total += old_posterior[k];
-                if (old_posterior[k] < 0) {
-                    skipWord = true;
-                    numSkipped++;
-                    break;
-                }
-            }
-            // skip words where any of the 'old' posterior < 0
-            if (!skipWord) {
-
-                // calculate Z_w needed for moment matching and update steps
-                double Z_w = 0.0;
-                double prob_total = 0.0;
-                for (int k = 0; k < numTopics; ++k) {
-                    prob_total += Pword[k][type] * old_posterior[k];
-                }
-                Z_w = prob_total / old_posterior_total;
-
-                // moment matching
-                double m_a;
-                double m2_a;
-                std::vector<double> gamma_prime = std::vector<double>(numTopics);
-                double numer_sum = 0;
-                double denom_sum = 0;
-
-                for (int k = 0; k < numTopics; ++k) {
-                    m_a = (1.0 / Z_w);
-                    m_a *= (old_posterior[k] / old_posterior_total);
-                    m_a *= ((Pword[k][type] + prob_total) / (1.0 + old_posterior_total));
-
-                    m2_a = (1.0 / Z_w);
-                    m2_a *= (old_posterior[k] / old_posterior_total);
-                    m2_a *= ((old_posterior[k] + 1) / (old_posterior_total + 1.0));
-                    m2_a *= ((2.0 * Pword[k][word_count.first] + prob_total) / (2.0 + old_posterior_total));
-
-                    gamma_prime[k] = m_a;
-                    numer_sum += (m_a - m2_a);
-                    denom_sum += (m2_a - m_a * m_a);
-                }
-                for (int k = 0; k < numTopics; ++k) {
-                    gamma_prime[k] *= (numer_sum / denom_sum);
-                }
-
-                // update
-                double step_size = 1.0/token_count;
-                std::vector<double> beta_new = std::vector<double>(numTopics);
-                bool make_changes = true;
-                for (int k = 0; k < numTopics; ++k) {
-                    beta_new[k] = (1.0-step_size)*beta[d][w][k];
-                    beta_new[k] += step_size*(gamma_prime[k] - old_posterior[k]);
-                }
-                // inclusion
-                std::vector<double> gamma_new = std::vector<double>(numTopics);
-                for (int k = 0; k < numTopics; ++k) {
-                    gamma_new[k] = old_posterior[k] + (token_count) * (beta_new[k] - beta[d][w][k]);
-                    if (gamma_new[k] < 0) {
-                        make_changes = false;
-                        numSkipped++;
-                    }
-                }
-                if (make_changes) {
-                    // inclusion continued
-                    for (int k = 0; k < numTopics; ++k) {
-                        gamma[d][k] = gamma_new[k];
-                    }
-                    // update continued
-                    for (int k = 0; k < numTopics; ++k) {
-                        beta[d][w][k] = beta_new[k];
-                    }
-                    double prod_gamma_prime = 1.0;
-                    double prod_gamma_old = 1.0;
-                    double gamma_prime_sum = 0;
-                    for (int k = 0; k < numTopics; ++k) {
-                        prod_gamma_prime *= tgamma(gamma_prime[k]);
-                        prod_gamma_old *= tgamma(old_posterior[k]);
-                        gamma_prime_sum += gamma_prime[k];
-                    }
-
-                    s[d][w] = Z_w;
-                    s[d][w] *= (tgamma(gamma_prime_sum) / prod_gamma_prime);
-                    s[d][w] *= (prod_gamma_old / tgamma(old_posterior_total));
-                }
-            }
-            word_count.second = word_count.second - 1;
-            if(word_count.second != 0){
-                all_zero *= 0;
-            }
+    // Calculate gamma
+    for(int k=0; k<numTopics; ++k){
+        w=0;
+        for(auto const& type_count : doc.wordCounts){
+            doc_gamma[k] += doc_beta[w][k] * type_count.second;
             ++w;
         }
     }
 
-    // calculate document likelihood
-    double gamma_sum = 0;
-    double gamma_prod = 1.0;
-    double alpha_sum = 0;
-    double alpha_prod = 1.0;
-    for(int k=0; k<numTopics; k++){
-        gamma_sum += gamma[d][k];
-        alpha_sum += alpha[k];
-        gamma_prod *= tgamma(gamma[d][k]);
-        alpha_prod *= tgamma(alpha[k]);
+    for(int iter=0; iter<max_iter; ++ iter){
+        converged = 1;
+        skipped = 0;
+        w=0;
+        beta_change = 0;
+        s_total = 0;
+        for(auto const& type_count : doc.wordCounts){
+
+            int type = type_count.first;
+            int n_w = type_count.second;
+
+            // Get the 'old' posterior
+            bool any_gamma_not_w_neg = false;
+            for(int k=0; k<numTopics; ++k){
+                gamma_not_w[k] = doc_gamma[k] - doc_beta[w][k];
+                if(gamma_not_w[k] < 0){
+                    any_gamma_not_w_neg = true;
+                }
+            }
+            // If any of the old posterior are negative skip this word for this iteration
+            if(any_gamma_not_w_neg){
+                ++skipped;
+                ++w;
+                continue;
+            }
+
+            // For convenience calculate the sum of the old posterior just once
+            double sum_gamma_not_w = sum(gamma_not_w);
+
+            // Calculate the new beta for this word
+            // First calculate Z_w needed for moment matching and update steps
+            double Z_w = 0.0;
+            double prob_total = 0.0;
+            for (int k = 0; k < numTopics; ++k) {
+                prob_total += Pword[k][type] * gamma_not_w[k];
+            }
+            Z_w = prob_total / sum_gamma_not_w;
+
+            // Use moment matching to calculate gamma'
+            double m_a;
+            double m2_a;
+            std::vector<double> gamma_prime = std::vector<double>(numTopics);
+            double numer_sum = 0;
+            double denom_sum = 0;
+
+            for (int k = 0; k < numTopics; ++k) {
+                m_a = (1.0 / Z_w);
+                m_a *= (gamma_not_w[k] / sum_gamma_not_w);
+                m_a *= ((Pword[k][type] + prob_total) / (1.0 + sum_gamma_not_w));
+
+                m2_a = (1.0 / Z_w);
+                m2_a *= (gamma_not_w[k] / sum_gamma_not_w);
+                m2_a *= ((gamma_not_w[k] + 1) / (sum_gamma_not_w + 1.0));
+                m2_a *= ((2.0 * Pword[k][type] + prob_total) / (2.0 + sum_gamma_not_w));
+
+                gamma_prime[k] = m_a;
+                numer_sum += (m_a - m2_a);
+                denom_sum += (m2_a - m_a * m_a);
+            }
+            for (int k = 0; k < numTopics; ++k) {
+                gamma_prime[k] *= (numer_sum / denom_sum);
+                // Get the new beta
+                new_beta[k] = gamma_prime[k] - gamma_not_w[k];
+            }
+
+            // Damp the changes in beta and update gamma
+            bool any_gamma_neg = false;
+            double step_size = 1.0/n_w;
+            for(int k=0; k<numTopics; ++k){
+                new_beta[k] = step_size*new_beta[k] + (1-step_size)*doc_beta[w][k];
+                new_gamma[k] = doc_gamma[k] + n_w * (new_beta[k] - doc_beta[w][k]);
+                if(new_gamma[k] < 0){
+                    any_gamma_neg = true;
+                }
+            }
+            // If any of the new gamma are negative skip this word
+            if(any_gamma_neg){
+                ++skipped;
+                ++w;
+                continue;
+            }
+
+            // Update
+            doc_gamma = new_gamma;
+            //Calculate the largest change in beta
+            for(int k=0; k<numTopics; ++k){
+                double change = fabs(new_beta[k] - doc_beta[w][k]);
+                if(change > beta_change){
+                    beta_change = change;
+                }
+            }
+            doc_beta[w] = new_beta;
+            // If the change in beta for this word is too great we are still not converged
+            if(beta_change > 1e-5){
+                converged *= 0;
+            }
+            else{
+                int z=0;
+            }
+
+            // Calculate s for this word in log space
+            std::vector<double> gam_beta = std::vector<double>(numTopics);
+            bool any_neg_gam_beta = false;
+            for(int k=0; k<numTopics; ++k){
+                gam_beta[k] = doc_gamma[k] + doc_beta[w][k];
+                if(gam_beta[k] < 0){
+                    any_neg_gam_beta = true;
+                }
+            }
+
+            if(!any_neg_gam_beta and (skipped == 0 and converged == 1)){
+                s[w] = log(Z_w);
+                for(int k=0; k<numTopics; ++k){
+                    s[w] += lgamma(doc_gamma[k]);
+                    s[w] -= lgamma(gam_beta[k]);
+                }
+                s[w] -= lgamma(sum(doc_gamma));
+                s[w] += lgamma(sum(gam_beta));
+                s[w] *= n_w;
+            }
+            s_total += s[w];
+
+            // Next word
+            ++w;
+        }
+
+        if(converged == 1 and skipped == 0){
+            break;
+        }
     }
-    double likelihood = (gamma_prod/tgamma(gamma_sum)) * (tgamma(alpha_sum)/alpha_prod);
-    for(int w=0; w<doc.count; ++d) {
-        likelihood *= s[d][w];
+
+    gamma[d] = doc_gamma;
+    beta[d] = doc_beta;
+
+    log_likelihood = numTopics*lgamma(ALPHA_INIT) - lgamma(ALPHA_INIT*numTopics);
+    for(int k=0; k<numTopics; ++k){
+        log_likelihood += lgamma(gamma[d][k]);
     }
-    return likelihood;
+    log_likelihood += lgamma(sum(gamma[d]));
+    log_likelihood += s_total;
+
+    return log_likelihood;
 }
 
 void expectation_prop::m_step() {
