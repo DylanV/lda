@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_settings) {
+var_bayes::var_bayes(doc_corpus &corp, lda_settings settings) {
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
@@ -21,12 +21,10 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings, alpha_settings a_s
     INF_MAX_ITER = settings.inf_max_iterations;
     EST_ALPHA = settings.estimate_alpha;
     UPDATE_INTERVAL = settings.alpha_update_interval;
-
-    ALPHA_SETTINGS = a_settings;
 }
 
 void var_bayes::train(size_t numTopics) {
-    train(numTopics, ALPHA_SETTINGS);
+    train(numTopics);
 }
 
 void var_bayes::save_parameters(std::string file_dir) {
@@ -56,11 +54,11 @@ void var_bayes::save_parameters(std::string file_dir) {
     fs.close();
 }
 
-void var_bayes::train(int num_topics, alpha_settings a_settings) {
+void var_bayes::train(int num_topics) {
     numTopics = size_t(num_topics);
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
-    alpha = setup_alpha(a_settings);
+    alpha = setup_alpha();
 
     suff_stats ss;
     randomSSInit(ss);
@@ -235,8 +233,8 @@ void var_bayes::mle(suff_stats &ss, const bool optAlpha=true) {
     }
 }
 
-dirichlet var_bayes::setup_alpha(alpha_settings settings) {
-    return dirichlet(numTopics, settings);
+dirichlet var_bayes::setup_alpha() {
+    return dirichlet(numTopics, 1.0/numTopics);
 }
 
 void var_bayes::randomSSInit(suff_stats& ss) {

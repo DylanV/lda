@@ -97,14 +97,13 @@ std::vector<std::string> load_vocab(std::string file_path) {
     return vocab;
 }
 
-void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda) {
+void load_settings(std::string file_path, lda_settings& lda) {
 
     std::ifstream fs(file_path);
     const char line_delim = ' ';
 //    int numAlpha = 0;
 //    int numLDA = 0;
     bool loadingLDA = false;
-    bool loadingAlpha = false;
 
     if(fs.is_open()){
         std::string line;
@@ -122,13 +121,6 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
                     if(items[0] == "LDA"){
 //                        numLDA = std::stoi(items[1]);
                         loadingLDA = true;
-                        loadingAlpha = false;
-                    }
-
-                    else if(items[0] == "ALPHA"){
-//                        numAlpha = std::stoi(items[1]);
-                        loadingLDA = false;
-                        loadingAlpha = true;
                     }
 
                     if(loadingLDA){
@@ -148,18 +140,6 @@ void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& l
                             lda.alpha_update_interval = std::stoi(value);
                     }
 
-                    if(loadingAlpha){
-                        if(items[0] == "symmetric")
-                            alpha.symmetric = (value == "true");
-                        else if(items[0] == "newton_threshold")
-                            alpha.newton_threshold = std::stod(value);
-                        else if(items[0] == "max_iterations")
-                            alpha.max_iterations = std::stoi(value);
-                        else if(items[0] == "init")
-                            alpha.init = std::stod(value);
-                        else if(items[0] == "init_s")
-                            alpha.init_s = std::stoi(value);
-                    }
                 }
             }
         }

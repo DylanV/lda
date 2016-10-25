@@ -6,47 +6,46 @@
 #include "util.h"
 #include <math.h>
 
+dirichlet::dirichlet(){
 
-
-dirichlet::dirichlet()
-{
-    s = 0;
-    K = 0;
 }
 
-dirichlet::dirichlet(size_t K, alpha_settings settings)
-{
-    double a = settings.init;
-    dirichlet::K = K;
-    if(a == 0){
-        a = 1.0/K;
-    }
+dirichlet::dirichlet(size_t K, double alpha) {
+    this->K = K;
+    this->alpha = std::vector<double>(K, alpha);
+    dirichlet::dirichlet(K, this->alpha);
+}
 
-    mean = std::vector<double>(K, 1.0/K);
-    alpha = std::vector<double>(K, 1.0);
-    s = 0;
-    for(int i=0; i<K; i++){
-        alpha[i] = alpha[i]*a;
-        s += alpha[i];
+dirichlet::dirichlet(size_t K, std::vector<double> alpha) {
+    this->K = K;
+    this->alpha = alpha;
+    // Calculate the precision
+    this->s = sum(this->alpha);
+    this->mean = alpha;
+    double prev_val = alpha[0];
+    symmetric = true;
+    for(int k=0; k<this->K; ++k){
+        // Calculate the mean
+        this->mean[k] = this->mean[k] / this->s;
+        // Check if alpha is symmetric
+        if(this->alpha[k] == prev_val){
+            symmetric = false;
+        }
+        prev_val = this->alpha[k];
     }
-
-    INIT_A = settings.init_s;
-    NEWTON_THRESH = settings.newton_threshold;
-    MAX_ALPHA_ITER = settings.max_iterations;
-    SYMMETRIC = settings.symmetric;
 }
 
 void dirichlet::update(std::vector<double> ss, size_t D) {
-    if(SYMMETRIC){
-        double total_ss = 0;
-        for(const double& val : ss){
-            total_ss += val;
-        }
-        symmetric_update(total_ss, D);
-    }
-    else{
-        asymmetric_update(ss, D);
-    }
+//    if(SYMMETRIC){
+//        double total_ss = 0;
+//        for(const double& val : ss){
+//            total_ss += val;
+//        }
+//        symmetric_update(total_ss, D);
+//    }
+//    else{
+//        asymmetric_update(ss, D);
+//    }
 }
 
 

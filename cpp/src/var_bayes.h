@@ -29,7 +29,7 @@ public:
      * @param a_settings Settings for alpha. @sa alpha_settings
      * @return var_bayes lda model
      */
-    var_bayes(doc_corpus& corp, lda_settings settings, alpha_settings a_settings);
+    var_bayes(doc_corpus& corp, lda_settings settings);
 
     /*! Train on the given corpus with variational inference.
      * @param [in] numTopics Number of topics to train model with.
@@ -63,8 +63,6 @@ private:
 
     // Settings
     // ========
-    // Alpha
-    alpha_settings ALPHA_SETTINGS;
     // Training Settings
     double CONV_THRESHHOLD;     /*!< The convergence threshold used in training */
     int MIN_ITER;               /*!< Minimum number of iterations to train for */
@@ -82,7 +80,7 @@ private:
      * @param [in] num_topics Number of topics for the model
      * @param [in] a_settings Settings for the alpha dirichlet prior. @sa dirichlet
      */
-    void train(int num_topics, alpha_settings a_settings);
+    void train(int num_topics);
 
     // Inference helper functions
     /*! Randomly initialise the given sufficient statistics.
@@ -105,7 +103,7 @@ private:
      * @param [in] settings the settings struct. @sa alpha_settings
      * @return The alpha dirichlet.
      */
-    dirichlet setup_alpha(alpha_settings settings);
+    dirichlet setup_alpha();
 
     /*! Calculate a maximum lokelihood estimate of the global model parameters
      * Estimates the dirichlet priors alpha and beta given the variational parameters.

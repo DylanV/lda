@@ -26,7 +26,7 @@ private:
 
     // Model parameters
     // ================
-    double alpha = 1.0;                       /*!< Symmetrc dirichlet alpha parameter. Topic distribution prior. */
+    double alpha = 0.0001;                       /*!< Symmetrc dirichlet alpha parameter. Topic distribution prior. */
     double beta = 0.1;                      /*!< Symmetric dirichlet beta parameter. Topic word distribution prior. */
     std::vector<std::vector<double>> phi;   /*!< Topic word distribution. */
     std::vector<std::vector<double>> theta; /*!< Document topic proportions. */

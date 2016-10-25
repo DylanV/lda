@@ -12,7 +12,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    const bool ratings = false;
+    const bool ratings = true;
 
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;
@@ -66,25 +66,25 @@ int main(int argc, char* argv[]) {
             corpus.docs.erase(corpus.docs.begin());
         }
 
-        lda_settings l;
-        alpha_settings a;
-        if(settings_path_passed){
-            cout << "Loading settings from "<< settings_path << endl;
-            load_settings(settings_path, a, l);
-        } else {
-            cout << "Using default inference settings\n" << endl;
-        }
+//        lda_settings l;
+//        alpha_settings a;
+//        if(settings_path_passed){
+//            cout << "Loading settings from "<< settings_path << endl;
+//            load_settings(settings_path, a, l);
+//        } else {
+//            cout << "Using default inference settings\n" << endl;
+//        }
 
         lda_model * model;
 
 //        var_bayes bayes_model = var_bayes(corpus, l, a);
 //        model = &bayes_model;
 
-//        gibbs gibbs_model = gibbs(corpus);
-//        model = &gibbs_model;
+        gibbs gibbs_model = gibbs(corpus);
+        model = &gibbs_model;
 
-        expectation_prop ep = expectation_prop(corpus);
-        model = &ep;
+//        expectation_prop ep = expectation_prop(corpus);
+//        model = &ep;
 
         cout << "Training lda with " << numTopics << " topics:" << endl;
 

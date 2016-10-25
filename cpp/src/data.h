@@ -41,7 +41,7 @@ std::vector<std::string> load_vocab(std::string file_path);
  * @param [out] alpha Alpha settings struct. @sa alpha_settings
  * @param [out] lda LDA settings struct. @sa lda_settings
  */
-void load_settings(std::string file_path, alpha_settings& alpha, lda_settings& lda);
+void load_settings(std::string file_path, lda_settings& lda);
 
 
 /*! Write a vector to the given file stream.
