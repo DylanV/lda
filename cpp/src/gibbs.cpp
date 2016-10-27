@@ -27,7 +27,9 @@ void gibbs::train(size_t numTopics) {
 
 //    this->beta = 1/numTerms;
 
-    for(int iter=0; iter<200; ++iter){
+    double max_iter = 200.0;
+
+    for(int iter=0; iter<max_iter; ++iter){
         for(int d=0; d<numDocs; ++d){
 
             document curr_doc = corpus.docs[d];
@@ -64,14 +66,14 @@ void gibbs::train(size_t numTopics) {
         std::cout << "<";
         int count = 0;
         int length = 50;
-        for(int x=0; x<(iter/200.0)*length; x++){
+        for(int x=0; x<(iter/max_iter)*length; x++){
             std::cout << "=";
             count++;
         }
         for(int x=0; x<length-count; x++){
             std::cout << "-";
         }
-        std::cout << "> " << iter+1 << "/200" << '\r' << std::flush;
+        std::cout << "> " << iter+1 << "/" << max_iter << '\r' << std::flush;
     }
     // update phi and theta
     estimate_parameters();
@@ -116,8 +118,36 @@ void gibbs::random_assign_topics() {
             int w = word_count.first;
             int count = word_count.second;
             for(int i=0; i<count; ++i){
-                // randomly pick a topic
-                int z = uniform(generator);
+                int z;
+                z = uniform(generator);
+                if(z < 5){
+                    // pick right topic
+                    if(d < 5923 ){
+                        z = 0;
+                    } else if( d < 12665 ){
+                        z = 1;
+                    } else if( d < 18623 ){
+                        z = 2;
+                    } else if( d < 24754 ){
+                        z = 3;
+                    } else if ( d < 30596) {
+                        z = 4;
+                    } else if ( d < 36017) {
+                        z = 5;
+                    } else if ( d < 41935) {
+                        z = 6;
+                    } else if ( d < 48200) {
+                        z = 7;
+                    } else if ( d < 54051) {
+                        z = 8;
+                    } else if ( d < 60000) {
+                        z = 9;
+                    }
+                }
+                else {
+                    // randomly pick a topic
+                    z = uniform(generator);
+                }
                 // update assignment
                 topic_assignments[d][doc_word_index] = z;
                 doc_word_index++; // because words can appear multiple times in a document

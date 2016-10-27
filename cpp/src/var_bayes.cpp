@@ -14,6 +14,7 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings) {
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
 
+
     CONV_THRESHHOLD = settings.converged_threshold;
     MIN_ITER = settings.min_iterations;
     MAX_ITER = settings.max_iterations;
@@ -21,10 +22,6 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings) {
     INF_MAX_ITER = settings.inf_max_iterations;
     EST_ALPHA = settings.estimate_alpha;
     UPDATE_INTERVAL = settings.alpha_update_interval;
-}
-
-void var_bayes::train(size_t numTopics) {
-    train(numTopics);
 }
 
 void var_bayes::save_parameters(std::string file_dir) {
@@ -229,7 +226,7 @@ void var_bayes::mle(suff_stats &ss, const bool optAlpha=true) {
     }
     // estimate alpha if necessary
     if(optAlpha){
-        alpha.update(ss.alpha_ss, ss.numDocs);
+        //alpha.update(ss.alpha_ss, ss.numDocs);
     }
 }
 

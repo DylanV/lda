@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <stdlib.h>
+#include <random>
 
 /*! The sufficient statistics for estimating a dirichlet
  * Given a set of observed data D= {p_1,...p_N} the sufficient statistic is a
@@ -31,7 +32,7 @@ struct dirichlet_suff_stats {
 class dirichlet {
 public:
     //! Default constructor
-    dirichlet();
+    dirichlet(){};
 
     /*!
      * @param K
@@ -39,6 +40,7 @@ public:
      * @return
      */
     dirichlet(size_t K, double alpha);
+
     /*!
      * @param K
      * @param alpha
@@ -52,13 +54,18 @@ public:
     std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
 
-    void update(std::vector<double> ss, size_t D);
-
+    std::default_random_engine generator;
+    std::vector<double> sample();
+    std::vector<std::vector<double>> sample(int N);
 private:
     // Update settings
     int INIT_A = 100;               /*!< The initial precision for the precision update */
     double NEWTON_THRESH = 1e-5;    /*!< The threshold for netwon-raphson update convergance */
     int MAX_ALPHA_ITER = 1000;      /*!< Max number of iterations for newton-raphson */
+
+    /*! From alpha and K calculates the properties of the dirichlet.
+     */
+    void calculate_properties();
 
     /*! Update the alpha of the dirichlet when it is symmetric.
      * The sufficient stats are the sum of the observed samples of the diriclet.

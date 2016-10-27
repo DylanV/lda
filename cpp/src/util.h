@@ -57,4 +57,9 @@ void norm(std::vector<T>& vec) {
  */
 std::vector<double> dirichlet_expectation(const std::vector<double>& prob);
 
+bool is_on_simplex(std::vector<double> point);
+
+double inv_digamma(double y);
+
+
 #endif //LDA_UTIL_H

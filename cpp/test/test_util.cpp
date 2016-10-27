@@ -71,3 +71,19 @@ TEST(DirichletExpectationTest, DirihletExpectationOfVectorRV) {
     ASSERT_NEAR(-1.386294361119890, result[1], 1e-10);
     ASSERT_NEAR(-9.846539275509543, result[2], 1e-10);
 }
+
+TEST(OnSimplexTest, OnSimplex){
+    std::vector<double> on_simplex = std::vector<double>(4,0.25);
+    std::vector<double> off_simplex = std::vector<double>(4,1.0);
+    std::vector<double> off_simplex_incorrect_sum = std::vector<double>(4,0.2);
+
+    ASSERT_TRUE(is_on_simplex(on_simplex));
+    ASSERT_FALSE(is_on_simplex(off_simplex));
+    ASSERT_FALSE(is_on_simplex(off_simplex_incorrect_sum));
+}
+
+TEST(InverseDigammaTest, Invert){
+    ASSERT_NEAR(inv_digamma(0.422784335), 2.0, 1e-7);
+    ASSERT_NEAR(inv_digamma(0.036489997), 1.5, 1e-7);
+    ASSERT_NEAR(inv_digamma(-1.963510026), 0.5, 1e-7);
+}

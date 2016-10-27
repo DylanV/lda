@@ -6,46 +6,58 @@
 #include "util.h"
 #include <math.h>
 
-dirichlet::dirichlet(){
-
-}
-
 dirichlet::dirichlet(size_t K, double alpha) {
     this->K = K;
     this->alpha = std::vector<double>(K, alpha);
-    dirichlet::dirichlet(K, this->alpha);
+    calculate_properties();
 }
 
 dirichlet::dirichlet(size_t K, std::vector<double> alpha) {
     this->K = K;
     this->alpha = alpha;
-    // Calculate the precision
-    this->s = sum(this->alpha);
-    this->mean = alpha;
+    calculate_properties();
+}
+
+void dirichlet::calculate_properties(){
+    s = sum(alpha);
+    mean = alpha;
     double prev_val = alpha[0];
     symmetric = true;
     for(int k=0; k<this->K; ++k){
         // Calculate the mean
-        this->mean[k] = this->mean[k] / this->s;
+        mean[k] = mean[k] / s;
         // Check if alpha is symmetric
-        if(this->alpha[k] == prev_val){
+        if(alpha[k] != prev_val){
             symmetric = false;
         }
         prev_val = this->alpha[k];
     }
 }
 
-void dirichlet::update(std::vector<double> ss, size_t D) {
-//    if(SYMMETRIC){
-//        double total_ss = 0;
-//        for(const double& val : ss){
-//            total_ss += val;
-//        }
-//        symmetric_update(total_ss, D);
-//    }
-//    else{
-//        asymmetric_update(ss, D);
-//    }
+std::vector<double> dirichlet::sample(){
+    std::vector<double>  sample = std::vector<double>(K);
+    double sum = 0.0;
+
+    for(int k=0; k<K; ++k){
+        std::gamma_distribution<double> gam(alpha[k], 1.0);
+        double sample_k = gam(generator);
+        sum += sample_k;
+        sample[k] = sample_k;
+    }
+
+    for(int k=0; k<K; ++k){
+        sample[k] /= sum;
+    }
+
+    return sample;
+}
+
+std::vector<std::vector<double>> dirichlet::sample(int N){
+    std::vector<std::vector<double>> samples;
+    for(int n=0; n<N; n++){
+        samples.insert(samples.end(), sample());
+    }
+    return samples;
 }
 
 
@@ -60,23 +72,23 @@ void dirichlet::symmetric_update(double ss, size_t D) {
     do{
         iter++;
         a = exp(log_a);
-        if (isnan(a)){
-            init_a = init_a * 10;
-            a = init_a;
-            log_a = log(a);
-        }
+//        if (isnan(a)){
+//            init_a = init_a * 10;
+//            a = init_a;
+//            log_a = log(a);
+//        }
         df = D * (K * digamma(K * a) - K * digamma(a)) + ss;
         d2f = D * (K * K * trigamma(K * a) - K * trigamma(a));
         log_a = log_a - df/(d2f * a + df);
     } while ((fabs(df) > NEWTON_THRESH) and (iter < MAX_ALPHA_ITER));
 
-    if(!isnan(exp(log_a))){
-        a = exp(log_a);
-        this->s = K*a;
-        for(int i=0; i<K; i++){
-            alpha[i] = a;
-        }
-    }
+//    if(!isnan(exp(log_a))){
+//        a = exp(log_a);
+//        this->s = K*a;
+//        for(int i=0; i<K; i++){
+//            alpha[i] = a;
+//        }
+//    }
 }
 
 void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {

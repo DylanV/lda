@@ -6,7 +6,6 @@
 #include <math.h>
 
 double digamma(double x) {
-
     double p = 1;
     x+=6;
     p/=(x*x);
@@ -20,7 +19,7 @@ double trigamma(double x) {
 
     double p = 0;
 
-    int iter = 20000000; // this can be adjusted for more accuracy at the cost of performance
+    int iter = 200000000; // this can be adjusted for more accuracy at the cost of performance
     for(int i=0; i<iter; i++){
         p += 1.0/((x+i)*(x+i));
     }
@@ -55,4 +54,24 @@ std::vector<double> dirichlet_expectation(const std::vector<double>& prob) {
     }
 
     return result;
+}
+
+bool is_on_simplex(std::vector<double> point) {
+    return (sum(point) == 1.0);
+}
+
+double inv_digamma(double y){
+
+    double x;
+    if(y >= -2.22){
+        x = exp(y) + 0.5;
+    } else {
+        x = -1.0 / (y - digamma(1));
+    }
+
+    for(int i=0; i<5; ++i){
+        x -= (digamma(x) - y) / trigamma(x);
+    }
+
+    return x;
 }
