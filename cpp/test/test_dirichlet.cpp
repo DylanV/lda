@@ -64,3 +64,33 @@ TEST(DirichletTest, MultipleSampleAsymmetric){
     }
 
 }
+
+TEST(DirichletTest, EstimateMean){
+    dirichlet d1 = dirichlet(4, 2.5); // get a symmetric dirichlet
+
+    std::vector<double> alpha = std::vector<double>(4, 1.0);
+    for(int k=0; k<4; k++){
+        alpha[k] += k;
+    }
+
+    dirichlet d2 = dirichlet(4, alpha); // get a second asymmetric dirichlet
+    std::vector<std::vector<double>> samples = d2.sample(100);
+    // get suff stats for samples from d2
+    dirichlet_suff_stats ss;
+    ss.logp = std::vector<double>(4);
+    ss.N = 0;
+
+    for(const std::vector<double>& sample : samples){
+        for(int k=0; k<4; ++k){
+            ss.logp[k] += log(sample[k]);
+        }
+        ++ss.N;
+    }
+    // not that s (the precision) is the same for both d1 and d2.
+    // This allows for perfect MLE estimation of the mean
+    d1.estimate_mean(ss);
+
+    for(int k=0; k<4; ++k){
+        ASSERT_NEAR(d2.mean[k], d1.mean[k], 1e-2);
+    }
+}

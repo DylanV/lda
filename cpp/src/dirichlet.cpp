@@ -60,6 +60,51 @@ std::vector<std::vector<double>> dirichlet::sample(int N){
     return samples;
 }
 
+void dirichlet::estimate_mean(dirichlet_suff_stats ss){
+    std::vector<double> new_mean = std::vector<double>(K);
+    std::vector<double> old_mean = mean;
+
+    for(int k=0; k<K; ++k){
+        old_mean[k] = exp(ss.logp[k]/ss.N);
+    }
+
+    double alpha_sum;
+    double max_change;
+    bool conv = false;
+    int iter = 0;
+
+    while(!conv and iter<10){
+        alpha_sum = 0;
+        max_change = 0;
+        for(int k=0; k<K; ++k){
+            // Calculate digamma(alpha_k)
+            double digamme_alpha_k = (ss.logp[k]/ss.N);
+            for(int j=0; j<K; ++j){
+                digamme_alpha_k -= old_mean[j] * ((ss.logp[j]/ss.N) - digamma(s*old_mean[j]));
+            }
+            // Get alpha by inverting the digamma function
+            double alpha_k = inv_digamma(digamme_alpha_k);
+            alpha_sum += alpha_k;
+            new_mean[k] = alpha_k;
+        }
+
+        for(int k=0; k<K; ++k){
+            new_mean[k] /= alpha_sum;
+            if(fabs(new_mean[k] - old_mean[k]) > max_change){
+                max_change = fabs(new_mean[k] - old_mean[k]);
+            }
+        }
+
+        if(max_change < 1e-6){
+            conv = true;
+        }
+
+        old_mean = new_mean;
+        ++iter;
+    }
+
+    mean = new_mean;
+}
 
 void dirichlet::symmetric_update(double ss, size_t D) {
 

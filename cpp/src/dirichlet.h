@@ -54,10 +54,16 @@ public:
     std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
     std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
 
-    std::default_random_engine generator;
     std::vector<double> sample();
     std::vector<std::vector<double>> sample(int N);
+
+    void estimate_mean(dirichlet_suff_stats ss);
+
+
 private:
+
+    std::default_random_engine generator;
+
     // Update settings
     int INIT_A = 100;               /*!< The initial precision for the precision update */
     double NEWTON_THRESH = 1e-5;    /*!< The threshold for netwon-raphson update convergance */
