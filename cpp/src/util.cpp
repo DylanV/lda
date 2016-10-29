@@ -71,9 +71,6 @@ double digamma(double x)
             value = 0.0;
             return value;
         }
-//
-//  Initialize.
-//
 
 //
 //  Use approximation for small argument.

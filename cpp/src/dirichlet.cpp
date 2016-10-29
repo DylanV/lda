@@ -106,6 +106,40 @@ void dirichlet::estimate_mean(dirichlet_suff_stats ss){
     mean = new_mean;
 }
 
+void dirichlet::estimate_precision(dirichlet_suff_stats ss) {
+
+    double s_old = s;
+    double s_like_deriv;
+    double s_like_sec_deriv;
+    double s_inv;
+    double s_new = 0.0;
+
+    bool conv = false;
+    int iter = 0;
+
+    while(!conv and iter<100){
+
+        s_like_deriv = (ss.N * digamma(s_old));
+        s_like_sec_deriv = (ss.N * trigamma(s_old));
+
+        for(int k=0; k<K;++k){
+            s_like_deriv -= ss.N*mean[k]*digamma(s_old*mean[k]);
+            s_like_deriv += mean[k]*ss.logp[k];
+
+            s_like_sec_deriv -= ss.N * mean[k] * mean[k] * trigamma(s_old*mean[k]);
+        }
+
+        s_inv = 1.0/s_old + (1.0/s_old)*(1.0/s_old)*(1.0/s_like_sec_deriv)*(s_like_deriv);
+        s_new = 1.0/s_inv;
+
+        conv = fabs(s_new - s_old) < 1e-6;
+        s_old = s_new;
+        ++iter;
+    }
+
+    s = s_new;
+}
+
 void dirichlet::symmetric_update(double ss, size_t D) {
 
     double a, log_a, init_a = INIT_A;

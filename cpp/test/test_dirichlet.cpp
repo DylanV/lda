@@ -74,7 +74,7 @@ TEST(DirichletTest, EstimateMean){
     }
 
     dirichlet d2 = dirichlet(4, alpha); // get a second asymmetric dirichlet
-    std::vector<std::vector<double>> samples = d2.sample(100);
+    std::vector<std::vector<double>> samples = d2.sample(10000);
     // get suff stats for samples from d2
     dirichlet_suff_stats ss;
     ss.logp = std::vector<double>(4);
@@ -93,4 +93,26 @@ TEST(DirichletTest, EstimateMean){
     for(int k=0; k<4; ++k){
         ASSERT_NEAR(d2.mean[k], d1.mean[k], 1e-2);
     }
+}
+
+TEST(DirichletTest, EstimatePrecision){
+    dirichlet d1 = dirichlet(4, 1.0);
+    dirichlet d2 = dirichlet(4, 0.5);
+
+    std::vector<std::vector<double>> samples = d2.sample(10000);
+    // get suff stats for samples from d2
+    dirichlet_suff_stats ss;
+    ss.logp = std::vector<double>(4);
+    ss.N = 0;
+
+    for(const std::vector<double>& sample : samples){
+        for(int k=0; k<4; ++k){
+            ss.logp[k] += log(sample[k]);
+        }
+        ++ss.N;
+    }
+
+    d1.estimate_precision(ss);
+
+    ASSERT_NEAR(d1.s, d2.s, 1e-2);
 }

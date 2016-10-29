@@ -58,6 +58,7 @@ public:
     std::vector<std::vector<double>> sample(int N);
 
     void estimate_mean(dirichlet_suff_stats ss);
+    void estimate_precision(dirichlet_suff_stats ss);
 
 
 private:
