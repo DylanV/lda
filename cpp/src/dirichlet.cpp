@@ -61,6 +61,11 @@ std::vector<std::vector<double>> dirichlet::sample(int N){
 }
 
 bool dirichlet::estimate_mean(dirichlet_suff_stats ss){
+
+    if(ss.logp.size() != K){
+        return false;
+    }
+
     std::vector<double> new_mean = std::vector<double>(K);
     std::vector<double> old_mean = mean;
 
@@ -115,6 +120,10 @@ bool dirichlet::estimate_mean(dirichlet_suff_stats ss){
 
 bool dirichlet::estimate_precision(dirichlet_suff_stats ss) {
 
+    if(ss.logp.size() != K){
+        return false;
+    }
+
     double s_old = s;
     double s_like_deriv;
     double s_like_sec_deriv;
@@ -166,70 +175,12 @@ void dirichlet::calculate_alpha() {
     symmetric = is_symm;
 }
 
-void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
-
-    int iteration = 0;
-    double thresh = 0;
-    double alpha_sum = 0;
-    std::vector<double> gradient(K);
-    std::vector<double> hessian(K);
-    double sum_g_h, sum_1_h;
-    double z, c;
-    int decay = 0;
-
-    do {
-        iteration++;
-        alpha_sum = sum(alpha);
-
-        z = D*trigamma(alpha_sum);
-        sum_g_h = 0, sum_1_h = 0;
-
-        for(int k=0; k<K; k++){
-            gradient[k] = D * (digamma(alpha_sum) - digamma(alpha[k])) + ss[k];
-            hessian[k] = -1.0*(D * trigamma(alpha[k]));
-            sum_g_h += gradient[k] / hessian[k];
-            sum_1_h += 1.0/hessian[k];
-        }
-
-        c = sum_g_h / ((1.0 / z) + sum_1_h);
-
-        std::vector<double> alpha_new(this->alpha);
-        std::vector<double> step_size(K);
-
-        thresh = 0;
-
-        while(true){
-            bool singular_hessian = false;
-            for(int k=0; k<K; k++){
-                step_size[k] = pow(0.9,decay)*(gradient[k] - c) / hessian[k];
-                if(step_size[k] >= this->alpha[k]){
-                    singular_hessian = true;
-                }
-            }
-            if(singular_hessian){
-                decay++;
-                if(decay > 10){
-                    break;
-                }
-            }else{
-                for(int k=0; k<K; k++){
-                    alpha_new[k] -= step_size[k];
-                    thresh += fabs(step_size[k]);
-                }
-                break;
-            }
-        }
-        alpha = alpha_new;
-    }while(iteration < MAX_ALPHA_ITER and thresh > NEWTON_THRESH);
-    // update class members
-    alpha_sum = sum(alpha);
-    s = alpha_sum;
-    for(int k=0; k<K; k++){
-        mean[k] = alpha[k] / alpha_sum;
-    }
-}
-
 bool dirichlet::estimate(dirichlet_suff_stats ss) {
+
+    if(ss.logp.size() != K){
+        return false;
+    }
+
     std::vector<double> new_alpha = std::vector<double>(K);
     std::vector<double> old_alpha = alpha;
     double alpha_sum;
@@ -272,3 +223,67 @@ bool dirichlet::estimate(dirichlet_suff_stats ss) {
 
     return true;
 }
+
+
+//void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
+//
+//    int iteration = 0;
+//    double thresh = 0;
+//    double alpha_sum = 0;
+//    std::vector<double> gradient(K);
+//    std::vector<double> hessian(K);
+//    double sum_g_h, sum_1_h;
+//    double z, c;
+//    int decay = 0;
+//
+//    do {
+//        iteration++;
+//        alpha_sum = sum(alpha);
+//
+//        z = D*trigamma(alpha_sum);
+//        sum_g_h = 0, sum_1_h = 0;
+//
+//        for(int k=0; k<K; k++){
+//            gradient[k] = D * (digamma(alpha_sum) - digamma(alpha[k])) + ss[k];
+//            hessian[k] = -1.0*(D * trigamma(alpha[k]));
+//            sum_g_h += gradient[k] / hessian[k];
+//            sum_1_h += 1.0/hessian[k];
+//        }
+//
+//        c = sum_g_h / ((1.0 / z) + sum_1_h);
+//
+//        std::vector<double> alpha_new(this->alpha);
+//        std::vector<double> step_size(K);
+//
+//        thresh = 0;
+//
+//        while(true){
+//            bool singular_hessian = false;
+//            for(int k=0; k<K; k++){
+//                step_size[k] = pow(0.9,decay)*(gradient[k] - c) / hessian[k];
+//                if(step_size[k] >= this->alpha[k]){
+//                    singular_hessian = true;
+//                }
+//            }
+//            if(singular_hessian){
+//                decay++;
+//                if(decay > 10){
+//                    break;
+//                }
+//            }else{
+//                for(int k=0; k<K; k++){
+//                    alpha_new[k] -= step_size[k];
+//                    thresh += fabs(step_size[k]);
+//                }
+//                break;
+//            }
+//        }
+//        alpha = alpha_new;
+//    }while(iteration < MAX_ALPHA_ITER and thresh > NEWTON_THRESH);
+//    // update class members
+//    alpha_sum = sum(alpha);
+//    s = alpha_sum;
+//    for(int k=0; k<K; k++){
+//        mean[k] = alpha[k] / alpha_sum;
+//    }
+//}

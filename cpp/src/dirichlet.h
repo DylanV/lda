@@ -31,58 +31,88 @@ struct dirichlet_suff_stats {
  */
 class dirichlet {
 public:
+
+    // Constructors
+    // ============
     //! Default constructor
     dirichlet(){};
 
     /*!
-     * @param K
-     * @param alpha
-     * @return
+     * @param K Dimension of the dirichlet
+     * @param alpha value for alpha for all K
+     * @return diriclet
      */
     dirichlet(size_t K, double alpha);
 
     /*!
-     * @param K
-     * @param alpha
-     * @return
+     * @param K Dimension of the dirichlet
+     * @param alpha Parameter vector
+     * @return diriclet
      */
     dirichlet(size_t K, std::vector<double> alpha);
 
-    double s;                   /*!< The concentration coefficient or precision of the dirichlet.*/
-    size_t K;                   /*!< The number of dimensions*/
-    bool symmetric;             /*!< Is the dirichlet symmetric */
-    std::vector<double> alpha;  /*!< The alpha psuedo count parameter*/
-    std::vector<double> mean;   /*!< The mean of the dirichlet which is simply alpha / precision*/
+    // Attributes
+    // ==========
 
+    double s;                   /*!< The precision*/
+    size_t K;                   /*!< Dimension  */
+    bool symmetric;             /*!< Is the dirichlet symmetric */
+    std::vector<double> alpha;  /*!< The alpha (psuedo count) parameter*/
+    std::vector<double> mean;   /*!< The mean, which is simply alpha / precision*/
+
+    // Sampling
+    // ========
+    /*!
+     * Gets a single sample from the dirichlet
+     * @return A k dimension multinomial on the K-1 simplex
+     */
     std::vector<double> sample();
+
+    /*!
+     * Samples the dirichlet N times
+     * @param N The number of samples
+     * @return A vector of N K dimension multinomial samples
+     */
     std::vector<std::vector<double>> sample(int N);
 
+    // MLE estimators
+    // ==============
+    /*! MLE estimate of the mean
+     * Gets a maximum likelihood estimate of the mean from the given
+     * sufficient statistics and updatest the mean and alpha of the dirichlet.
+     * @param ss The sufficient statistics
+     * @return boolean indicating whether the update was succesful
+     */
     bool estimate_mean(dirichlet_suff_stats ss);
+
+    /*! MLE estimate of the precision
+     * Gets a maximum likelihood estimate of the precision from the given
+     * sufficient statistics and updatest the precision and alpha of the dirichlet.
+     * @param ss The sufficient statistics
+     * @return boolean indicating whether the update was succesful
+     */
     bool estimate_precision(dirichlet_suff_stats ss);
+
+    /*! MLE estimate of the alpha parameter
+     * Uses the inverting digamma method from Minka to get a maximum likelihood estimate
+     * of the alpha parameter for the dirichlet.
+     * @param ss The sufficient statistics
+     * @return boolean indicating whether the update was succesful
+     */
     bool estimate(dirichlet_suff_stats ss);
 
 
 private:
 
+    /*! RNG */
     std::default_random_engine generator;
 
-    // Update settings
-    int INIT_A = 100;               /*!< The initial precision for the precision update */
-    double NEWTON_THRESH = 1e-5;    /*!< The threshold for netwon-raphson update convergance */
-    int MAX_ALPHA_ITER = 1000;      /*!< Max number of iterations for newton-raphson */
-
-    /*! From alpha and K calculates the properties of the dirichlet.
-     */
+    /*! From alpha and K calculates the properties of the dirichlet. */
     void calculate_properties();
 
+    /*! From the mean and precision recalculates tha alpha parameter and checks for symmetry */
     void calculate_alpha();
 
-
-    /*! Update the alpha of an assymetric alpha
-     * @param [in] ss Sufficient statistics. Sum of the dirichlet expectation of samples from the dirichlet.
-     * @param [in] D Number of samples in the sufficient statistics.
-     */
-    void asymmetric_update(std::vector<double> ss, size_t D);
 };
 
 

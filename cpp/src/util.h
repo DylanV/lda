@@ -57,8 +57,16 @@ void norm(std::vector<T>& vec) {
  */
 std::vector<double> dirichlet_expectation(const std::vector<double>& prob);
 
+/*! Determins if a K dimensional point lies on the K-1 simplex
+ * @param point A K dimensional point
+ * @return True if point is on the simplex, false otherwise
+ */
 bool is_on_simplex(std::vector<double> point);
 
+/*! The inverse of the digamma function
+ * @param y Digamma(x)
+ * @return x
+ */
 double inv_digamma(double y);
 
 

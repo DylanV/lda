@@ -83,6 +83,8 @@ private:
     void train(int num_topics);
 
     // Inference helper functions
+    // ==========================
+
     /*! Randomly initialise the given sufficient statistics.
      *  Randomly sets the sufficient statistics for alpha and beta. Note that it is
      *  assumed that the sufficient stat vectors already exist with the correct dimensions.
