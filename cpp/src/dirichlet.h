@@ -59,6 +59,7 @@ public:
 
     void estimate_mean(dirichlet_suff_stats ss);
     void estimate_precision(dirichlet_suff_stats ss);
+    void estimate(dirichlet_suff_stats ss);
 
 
 private:
@@ -74,12 +75,8 @@ private:
      */
     void calculate_properties();
 
-    /*! Update the alpha of the dirichlet when it is symmetric.
-     * The sufficient stats are the sum of the observed samples of the diriclet.
-     * @param [in] ss Sufficient statistics. Sum of the dirichlet expectation of samples from the dirichlet.
-     * @param [in] D Number of samples in the sufficient statistics.
-     */
-    void symmetric_update(double ss, size_t D);
+    void calculate_alpha();
+
 
     /*! Update the alpha of an assymetric alpha
      * @param [in] ss Sufficient statistics. Sum of the dirichlet expectation of samples from the dirichlet.

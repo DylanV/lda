@@ -104,6 +104,7 @@ void dirichlet::estimate_mean(dirichlet_suff_stats ss){
     }
 
     mean = new_mean;
+    calculate_alpha();
 }
 
 void dirichlet::estimate_precision(dirichlet_suff_stats ss) {
@@ -138,36 +139,20 @@ void dirichlet::estimate_precision(dirichlet_suff_stats ss) {
     }
 
     s = s_new;
+    calculate_alpha();
 }
 
-void dirichlet::symmetric_update(double ss, size_t D) {
-
-    double a, log_a, init_a = INIT_A;
-    double df, d2f;
-    int iter = 0;
-
-    log_a = log(init_a);
-
-    do{
-        iter++;
-        a = exp(log_a);
-//        if (isnan(a)){
-//            init_a = init_a * 10;
-//            a = init_a;
-//            log_a = log(a);
-//        }
-        df = D * (K * digamma(K * a) - K * digamma(a)) + ss;
-        d2f = D * (K * K * trigamma(K * a) - K * trigamma(a));
-        log_a = log_a - df/(d2f * a + df);
-    } while ((fabs(df) > NEWTON_THRESH) and (iter < MAX_ALPHA_ITER));
-
-//    if(!isnan(exp(log_a))){
-//        a = exp(log_a);
-//        this->s = K*a;
-//        for(int i=0; i<K; i++){
-//            alpha[i] = a;
-//        }
-//    }
+void dirichlet::calculate_alpha() {
+    double prev_alpha = alpha[0];
+    bool is_symm = true;
+    for(int k=0; k<K; ++k){
+        alpha[k] = mean[k]*s;
+        if(alpha[k] != prev_alpha){
+            is_symm = false;
+        }
+        prev_alpha = alpha[k];
+    }
+    symmetric = is_symm;
 }
 
 void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
@@ -231,4 +216,40 @@ void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
     for(int k=0; k<K; k++){
         mean[k] = alpha[k] / alpha_sum;
     }
+}
+
+void dirichlet::estimate(dirichlet_suff_stats ss) {
+    std::vector<double> new_alpha = std::vector<double>(K);
+    std::vector<double> old_alpha = alpha;
+    double alpha_sum;
+
+    int iter = 0;
+    bool conv = false;
+    double max_change;
+
+    while(!conv and iter<100){
+
+        alpha_sum = 0;
+        for(int k=0; k<K; ++k){
+            alpha_sum += old_alpha[k];
+        }
+        max_change = 0;
+        for(int k=0; k<K; ++k){
+            new_alpha[k] = inv_digamma(digamma(alpha_sum) + ss.logp[k]/ss.N);
+            double change = fabs(new_alpha[k]- old_alpha[k]);
+            if(change > max_change){
+                max_change = change;
+            }
+        }
+
+        if(max_change < 1e-6){
+            conv = true;
+        }
+
+        old_alpha = new_alpha;
+        ++iter;
+    }
+
+    alpha = new_alpha;
+    calculate_properties();
 }
