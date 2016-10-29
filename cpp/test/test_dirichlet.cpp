@@ -89,7 +89,7 @@ TEST(DirichletTest, EstimateMean){
     ASSERT_TRUE(d1.symmetric);
     // note that s (the precision) is the same for both d1 and d2.
     // This allows for 'perfect' MLE estimation of the mean
-    d1.estimate_mean(ss);
+    ASSERT_TRUE(d1.estimate_mean(ss));
 
     for(int k=0; k<4; ++k){
         ASSERT_NEAR(d2.mean[k], d1.mean[k], 1e-2);
@@ -115,7 +115,7 @@ TEST(DirichletTest, EstimatePrecision){
         ++ss.N;
     }
 
-    d1.estimate_precision(ss);
+    ASSERT_TRUE(d1.estimate_precision(ss));
 
     ASSERT_NEAR(d1.s, d2.s, 1e-2);
 }
@@ -144,7 +144,7 @@ TEST(DirichletTest, Estimate){
     ASSERT_TRUE(d1.symmetric);
     // note that s (the precision) is the same for both d1 and d2.
     // This allows for 'perfect' MLE estimation of the mean
-    d1.estimate(ss);
+    ASSERT_TRUE(d1.estimate(ss));
 
     ASSERT_NEAR(d1.s, d2.s, 0.1);
     for(int k=0; k<4; ++k){

@@ -60,7 +60,7 @@ std::vector<std::vector<double>> dirichlet::sample(int N){
     return samples;
 }
 
-void dirichlet::estimate_mean(dirichlet_suff_stats ss){
+bool dirichlet::estimate_mean(dirichlet_suff_stats ss){
     std::vector<double> new_mean = std::vector<double>(K);
     std::vector<double> old_mean = mean;
 
@@ -103,11 +103,17 @@ void dirichlet::estimate_mean(dirichlet_suff_stats ss){
         ++iter;
     }
 
+    if(!is_on_simplex(new_mean)){
+        return false;
+    }
+
     mean = new_mean;
     calculate_alpha();
+
+    return true;
 }
 
-void dirichlet::estimate_precision(dirichlet_suff_stats ss) {
+bool dirichlet::estimate_precision(dirichlet_suff_stats ss) {
 
     double s_old = s;
     double s_like_deriv;
@@ -137,9 +143,14 @@ void dirichlet::estimate_precision(dirichlet_suff_stats ss) {
         s_old = s_new;
         ++iter;
     }
+    if(s < 0){
+        return false;
+    }
 
     s = s_new;
     calculate_alpha();
+
+    return true;
 }
 
 void dirichlet::calculate_alpha() {
@@ -218,7 +229,7 @@ void dirichlet::asymmetric_update(std::vector<double> ss, size_t D) {
     }
 }
 
-void dirichlet::estimate(dirichlet_suff_stats ss) {
+bool dirichlet::estimate(dirichlet_suff_stats ss) {
     std::vector<double> new_alpha = std::vector<double>(K);
     std::vector<double> old_alpha = alpha;
     double alpha_sum;
@@ -250,6 +261,14 @@ void dirichlet::estimate(dirichlet_suff_stats ss) {
         ++iter;
     }
 
+    for(int k=0; k<K; ++k){
+        if(new_alpha[k] < 0){
+            return false;
+        }
+    }
+
     alpha = new_alpha;
     calculate_properties();
+
+    return true;
 }
