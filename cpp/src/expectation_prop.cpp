@@ -48,27 +48,9 @@ void expectation_prop::train(size_t numTopics) {
 
 void expectation_prop::setup_parameters() {
     alpha = std::vector<double>(numTopics, ALPHA_INIT);
-    Pword = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0.0));
 
-    std::vector<std::vector<double>> classWord
-            = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 1.0/numTerms));
-    std::vector<double> classTotal = std::vector<double>(numTopics, 0.0);
-
-    srand (time(NULL));
-//    srand(87932874928838748);
-    for(int k=0; k<numTopics; k++){
-        for(int n=0; n<numTerms; n++){
-            classWord[k][n] += (rand());
-            classTotal[k] += classWord[k][n];
-        }
-    }
-
-    for(int k=0; k<numTopics;k++){
-        for(int w=0; w<numTerms; w++){
-            Pword[k][w] = log(classWord[k][w]) - log(classTotal[k]);
-            Pword[k][w] = exp(Pword[k][w]);
-        }
-    }
+    dirichlet dir_beta = dirichlet(numTerms, 1.0);
+    Pword = dir_beta.sample(numTopics);
 
     beta = std::vector<std::vector<std::vector<double>>>(numDocs);
     for(int d=0; d<numDocs; ++d){
@@ -91,7 +73,7 @@ double expectation_prop::doc_e_step(int d) {
     double log_likelihood = 0.0;
     int max_iter = E_MAX_ITERATIONS;
     if(!first){
-        max_iter /= 5;
+        max_iter /= 2;
     }
     double s_total = 0;
 
@@ -204,9 +186,6 @@ double expectation_prop::doc_e_step(int d) {
             // If the change in beta for this word is too great we are still not converged
             if(beta_change > 1e-5){
                 converged *= 0;
-            }
-            else{
-                int z=0;
             }
 
             // Calculate s for this word in log space
