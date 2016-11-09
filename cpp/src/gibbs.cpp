@@ -27,7 +27,7 @@ void gibbs::train(size_t numTopics) {
 
 //    this->beta = 1/numTerms;
 
-    double max_iter = 200.0;
+    double max_iter = 100.0;
 
     for(int iter=0; iter<max_iter; ++iter){
         for(int d=0; d<numDocs; ++d){
@@ -114,35 +114,45 @@ void gibbs::random_assign_topics() {
     for(int d=0; d<numDocs; d++){
         document curr_doc = corpus.docs[d];
         int doc_word_index = 0;
+
+        bool god_sample = false;
+        int true_topic = 0;
+        int ran = uniform(generator);
+        int thresh = 8;
+        if(ran < thresh){
+            if(d < 60000){
+                god_sample = true;
+            }
+            if(d < 5923 ){
+                true_topic = 0;
+            } else if( d < 12665 ){
+                true_topic = 1;
+            } else if( d < 18623 ){
+                true_topic = 2;
+            } else if( d < 24754 ){
+                true_topic = 3;
+            } else if ( d < 30596) {
+                true_topic = 4;
+            } else if ( d < 36017) {
+                true_topic = 5;
+            } else if ( d < 41935) {
+                true_topic = 6;
+            } else if ( d < 48200) {
+                true_topic = 7;
+            } else if ( d < 54051) {
+                true_topic = 8;
+            } else if ( d < 60000) {
+                true_topic = 9;
+            }
+        }
+
         for(auto const& word_count : curr_doc.wordCounts){
             int w = word_count.first;
             int count = word_count.second;
             for(int i=0; i<count; ++i){
                 int z;
-                z = uniform(generator);
-                if(z < 5){
-                    // pick right topic
-                    if(d < 5923 ){
-                        z = 0;
-                    } else if( d < 12665 ){
-                        z = 1;
-                    } else if( d < 18623 ){
-                        z = 2;
-                    } else if( d < 24754 ){
-                        z = 3;
-                    } else if ( d < 30596) {
-                        z = 4;
-                    } else if ( d < 36017) {
-                        z = 5;
-                    } else if ( d < 41935) {
-                        z = 6;
-                    } else if ( d < 48200) {
-                        z = 7;
-                    } else if ( d < 54051) {
-                        z = 8;
-                    } else if ( d < 60000) {
-                        z = 9;
-                    }
+                if(god_sample){
+                    z = true_topic;
                 }
                 else {
                     // randomly pick a topic
