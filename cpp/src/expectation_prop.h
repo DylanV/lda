@@ -5,8 +5,8 @@
 
 #include "lda_model.h"
 
-class expectation_prop : public lda_model {
-public:
+    class expectation_prop : public lda_model {
+    public:
     expectation_prop(doc_corpus& corpus);
 
     void train(size_t numTopics);
@@ -19,7 +19,7 @@ private:
     const int MAX_ITERATION = 20;
     const int E_MAX_ITERATIONS = 200;
     const double CONV_THRESHHOLD = 1e-5;
-    const double ALPHA_INIT = 0.02;
+    const double ALPHA_INIT = 0.01;
 
     // Convenience constants
     // =====================
