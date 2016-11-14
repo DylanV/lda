@@ -14,8 +14,15 @@ expectation_prop::expectation_prop(doc_corpus &corpus) {
 
 void expectation_prop::save_parameters(std::string file_dir) {
     std::fstream fs; //get the filestream
+
+    // Save beta p(w|z)
     fs.open(file_dir+"beta.dat", std::fstream::out | std::fstream::trunc);
     write_2d_vector_to_fs(fs, Pword);
+    fs.close();
+
+    // Save gamma
+    fs.open(file_dir+"gamma.dat", std::fstream::out | std::fstream::trunc);
+    write_2d_vector_to_fs(fs, gamma);
     fs.close();
 }
 
@@ -198,7 +205,7 @@ double expectation_prop::doc_e_step(int d) {
                 }
             }
 
-            if(!any_neg_gam_beta and (skipped == 0 and converged == 1)){
+            if((!any_neg_gam_beta and (skipped == 0 and converged == 1)) or iter == max_iter-1){
                 s[w] = log(Z_w);
                 for(int k=0; k<numTopics; ++k){
                     s[w] += lgamma(doc_gamma[k]);

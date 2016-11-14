@@ -58,7 +58,7 @@ private:
 
     // Variational parameters
     // ======================
-    std::vector<std::vector<double>> varGamma;          /*!< Gamma : per document topic distribution */
+    std::vector<std::vector<double>> gamma;          /*!< Gamma : per document topic distribution */
     std::vector<std::vector<std::vector<double>>> phi;  /*!< Phi : per document word topic assignments */
 
     // Settings

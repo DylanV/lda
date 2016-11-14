@@ -25,9 +25,9 @@ void gibbs::train(size_t numTopics) {
     zero_init_counts();
     random_assign_topics();
 
-//    this->beta = 1/numTerms;
+    this->beta = 1/numTerms;
 
-    double max_iter = 100.0;
+    double max_iter = MAX_ITER;
 
     for(int iter=0; iter<max_iter; ++iter){
         for(int d=0; d<numDocs; ++d){
@@ -84,7 +84,7 @@ void gibbs::save_parameters(std::string file_dir) {
     std::fstream fs; //get the filestream
 
     //write phi
-    fs.open(file_dir+"phi.dat", std::fstream::out | std::fstream::trunc);
+    fs.open(file_dir+"beta.dat", std::fstream::out | std::fstream::trunc);
     write_2d_vector_to_fs(fs, phi);
     fs.close();
 
@@ -115,49 +115,13 @@ void gibbs::random_assign_topics() {
         document curr_doc = corpus.docs[d];
         int doc_word_index = 0;
 
-        bool god_sample = false;
-        int true_topic = 0;
-        int ran = uniform(generator);
-        int thresh = 8;
-        if(ran < thresh){
-            if(d < 60000){
-                god_sample = true;
-            }
-            if(d < 5923 ){
-                true_topic = 0;
-            } else if( d < 12665 ){
-                true_topic = 1;
-            } else if( d < 18623 ){
-                true_topic = 2;
-            } else if( d < 24754 ){
-                true_topic = 3;
-            } else if ( d < 30596) {
-                true_topic = 4;
-            } else if ( d < 36017) {
-                true_topic = 5;
-            } else if ( d < 41935) {
-                true_topic = 6;
-            } else if ( d < 48200) {
-                true_topic = 7;
-            } else if ( d < 54051) {
-                true_topic = 8;
-            } else if ( d < 60000) {
-                true_topic = 9;
-            }
-        }
-
         for(auto const& word_count : curr_doc.wordCounts){
             int w = word_count.first;
             int count = word_count.second;
             for(int i=0; i<count; ++i){
                 int z;
-                if(god_sample){
-                    z = true_topic;
-                }
-                else {
-                    // randomly pick a topic
-                    z = uniform(generator);
-                }
+                // randomly pick a topic
+                z = uniform(generator);
                 // update assignment
                 topic_assignments[d][doc_word_index] = z;
                 doc_word_index++; // because words can appear multiple times in a document
@@ -194,31 +158,23 @@ void gibbs::estimate_parameters() {
 
     // calculate phi
     phi = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
-    double total = 0;
     for(int k=0; k<numTopics; ++k){
         for(int w=0; w<numTerms; ++w){
             phi[k][w] = n_kw[k][w] + beta;
-            total += n_kw[k][w];
         }
     }
-    total += numTerms*beta;
     for(int k=0; k<numTopics; ++k){
         norm(phi[k]);
     }
 
     // calculate theta
     theta = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
-    total = 0;
     for(int d=0; d<numDocs; ++d){
         for(int k=0; k<numTopics; ++k){
             theta[d][k] = n_dk[d][k] + alpha;
-            total += n_dk[d][k];
         }
     }
-    total += numTopics*alpha;
     for(int d=0; d<numDocs; ++d){
-        for(int k=0; k<numTopics; ++k){
-            theta[d][k] /= total;
-        }
+        norm(theta[d]);
     }
 }

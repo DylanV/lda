@@ -42,7 +42,7 @@ void var_bayes::save_parameters(std::string file_dir) {
 
     //write gamma
     fs.open(file_dir+"gamma.dat", std::fstream::out | std::fstream::trunc);
-    write_2d_vector_to_fs(fs, varGamma);
+    write_2d_vector_to_fs(fs, gamma);
     fs.close();
 
     //write alpha
@@ -51,7 +51,7 @@ void var_bayes::save_parameters(std::string file_dir) {
     fs.close();
 }
 
-void var_bayes::train(int num_topics) {
+void var_bayes::train(size_t num_topics) {
     numTopics = size_t(num_topics);
     logProbW = std::vector<std::vector<double>>(numTopics, std::vector<double>(numTerms, 0));
 
@@ -61,7 +61,7 @@ void var_bayes::train(int num_topics) {
     randomSSInit(ss);
     mle(ss, false);
 
-    varGamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
+    gamma = std::vector<std::vector<double>>(numDocs, std::vector<double>(numTopics, 0));
     phi = std::vector<std::vector<std::vector<double>>>(numDocs);
     for(int d=0; d<corpus.numDocs; d++){
         phi[d] = std::vector<std::vector<double>>(corpus.docs[d].uniqueCount, std::vector<double>((numTopics)));
@@ -81,7 +81,7 @@ void var_bayes::train(int num_topics) {
 
         for(int d=0; d<numDocs; d++){
             document doc = corpus.docs[d];
-            std::vector<double>& var_gamma = varGamma[d];
+            std::vector<double>& var_gamma = gamma[d];
             std::vector<std::vector<double>>& doc_phi = phi[d];
             likelihood += doc_e_step(doc, ss, var_gamma, doc_phi);
         }
