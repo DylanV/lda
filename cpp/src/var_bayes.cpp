@@ -1,7 +1,3 @@
-/*!
- \file var_bayes.cpp
- */
-
 #include "var_bayes.h"
 #include "util.h"
 #include <math.h>
@@ -13,7 +9,6 @@ var_bayes::var_bayes(doc_corpus &corp, lda_settings settings) {
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
-
 
     CONV_THRESHHOLD = settings.converged_threshold;
     MIN_ITER = settings.min_iterations;

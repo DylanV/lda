@@ -26,7 +26,6 @@ public:
      * @sa lda_model
      * @param corp Document corpus. @sa doc_corpus
      * @param settings LDA settings. @sa lda_settings
-     * @param a_settings Settings for alpha. @sa alpha_settings
      * @return var_bayes lda model
      */
     var_bayes(doc_corpus& corp, lda_settings settings);
