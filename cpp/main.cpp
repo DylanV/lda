@@ -12,18 +12,20 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    const bool ratings = true;
+    bool ratings = false;
 
     if (argc < 7) {
         std::cerr << "Insufficient arguments" << endl;
-        std::cerr << "Standard usage is -corpus <infile> -param <outdir> -topics <numtopics>" << endl;
-        std::cerr << "Optionally settings can also be loaded -corpus <infile> "
-                             "-param <outdir> -topics <numtopics> -setting <infile> -inference <gibbs/bayes>" << endl;
+        std::cerr << "Standard usage is --corpus <infile> --output <outdir> --topics <numtopics>" << endl;
+        std::cerr << "Settings can be loaded from file with the argument: --setting <infile>" << endl;
+        std::cerr << "Inference method can be chosen with the argument: --inference <1/2/3>" << endl;
+        std::cerr << "Where <1/2/3> corresponds to <variational inference/collapsed gibbs/expectation propagtion> respectively." << endl;
         std::cin.get();
         exit(0);
 
     } else {
-        string corpus_path = "", param_dir="", settings_path="",inference="gibbs";
+        string corpus_path = "", output_dir="", settings_path="";
+        int inference_method = 1;
         int numTopics = 0;
         bool settings_path_passed = false;
 
@@ -31,10 +33,10 @@ int main(int argc, char* argv[]) {
 
             string argument = argv[i];
 
-            if(argument == "-corpus"){
+            if(argument == "--corpus_path" || argument == "-c"){
                 corpus_path.assign(argv[i+1]);
             }
-            else if(argument == "-topics"){
+            else if(argument == "--topics" || argument == "-t"){
                 numTopics = stoi(argv[i+1]);
                 if(numTopics<= 0){
                     std::cerr << "Number of topics should be positive and non-zero.";
@@ -42,18 +44,21 @@ int main(int argc, char* argv[]) {
                     exit(0);
                 }
             }
-            else if(argument == "-param"){
-                param_dir.assign(argv[i+1]);
-                if(param_dir.find_last_of("\\/") != param_dir.size()-1){
-                    param_dir.append("/"); // If the directory does not end in a slash add one
+            else if(argument == "--output" || argument == "-o"){
+                output_dir.assign(argv[i+1]);
+                if(output_dir.find_last_of("\\/") != output_dir.size()-1){
+                    output_dir.append("/"); // If the directory does not end in a slash add one
                 }
             }
-            else if(argument == "-setting"){
+            else if(argument == "--setting_path" || argument == "-s"){
                 settings_path.assign(argv[i+1]);
                 settings_path_passed = true;
             }
-            else if(argument == "-inference"){
-                inference.assign(argv[i+1]);
+            else if(argument == "--inference" || argument == "-i"){
+                inference_method = std::stoi(argv[i+1]);
+            }
+            else if(argument == "-r"){
+                ratings = true;
             }
         }
 
@@ -67,17 +72,18 @@ int main(int argc, char* argv[]) {
         }
 
         lda_settings l;
-
         lda_model * model;
 
-        var_bayes bayes_model = var_bayes(corpus, l);
-        model = &bayes_model;
-
-//        gibbs gibbs_model = gibbs(corpus);
-//        model = &gibbs_model;
-
-//        expectation_prop ep = expectation_prop(corpus);
-//        model = &ep;
+        if(inference_method == 1){
+            var_bayes bayes_model = var_bayes(corpus, l);
+            model = &bayes_model;
+        }else if(inference_method == 2){
+            gibbs gibbs_model = gibbs(corpus);
+            model = &gibbs_model;
+        }else{
+            expectation_prop ep_model = expectation_prop(corpus);
+            model = &ep_model;
+        }
 
         cout << "Training lda with " << numTopics << " topics:" << endl;
 
@@ -86,8 +92,8 @@ int main(int argc, char* argv[]) {
         cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
         << " seconds. \n" << endl;
 
-        cout << "Writing dirichlet parameters to files in "<< param_dir << endl;
-        model->save_parameters(param_dir);
+        cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
+        model->save_parameters(output_dir);
     }
 
     return 0;
