@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     } else {
         string corpus_path = "", output_dir="", settings_path="";
         int inference_method = 1;
-        int numTopics = 0;
+        size_t numTopics = 0;
         bool settings_path_passed = false;
 
         for(int i=1; i<argc-1; i++){
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
                 corpus_path.assign(argv[i+1]);
             }
             else if(argument == "--topics" || argument == "-t"){
-                numTopics = stoi(argv[i+1]);
+                numTopics = size_t(stoi(argv[i+1]));
                 if(numTopics<= 0){
                     std::cerr << "Number of topics should be positive and non-zero.";
                     std::cin.get();
@@ -73,6 +73,10 @@ int main(int argc, char* argv[]) {
 
         lda_settings l;
         lda_model * model;
+
+        if(settings_path_passed){
+            load_settings(settings_path, l);
+        }
 
         if(inference_method == 1){
             var_bayes bayes_model = var_bayes(corpus, l);
