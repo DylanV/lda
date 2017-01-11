@@ -20,6 +20,17 @@ struct suff_stats {
     size_t numDocs;    /*!< Number of documents included in the suff stats. */
 };
 
+struct var_bayes_settings : lda_settings {
+
+    var_bayes_settings() : converged_threshold(1e-6),
+                           inf_converged_threshold(1e-6),
+                           inf_max_iterations(20){}
+
+    double converged_threshold;     /*!< The convergence threshold used in training. */
+    double inf_converged_threshold; /*!< Document inference convergence threshold. */
+    int inf_max_iterations;         /*!< Document inference max iterations. */
+};
+
 class var_bayes : public lda_model{
 public:
     /*! Constructor
@@ -28,7 +39,7 @@ public:
      * @param settings LDA settings. @sa lda_settings
      * @return var_bayes lda model
      */
-    var_bayes(doc_corpus& corp, lda_settings settings);
+    var_bayes(const doc_corpus &corp, const var_bayes_settings &settings);
 
     /*! Train on the given corpus with variational inference.
      * @param [in] numTopics Number of topics to train model with.

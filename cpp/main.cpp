@@ -79,7 +79,8 @@ int main(int argc, char* argv[]) {
         }
 
         if(inference_method == 1){
-            var_bayes bayes_model = var_bayes(corpus, l);
+            var_bayes_settings v;
+            var_bayes bayes_model = var_bayes(corpus, v);
             model = &bayes_model;
         }else if(inference_method == 2){
             gibbs gibbs_model = gibbs(corpus);

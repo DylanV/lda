@@ -5,18 +5,18 @@
 #include <iostream>
 #include <fstream>
 
-var_bayes::var_bayes(doc_corpus &corp, lda_settings settings) {
+var_bayes::var_bayes(const doc_corpus &corp, const var_bayes_settings &settings) {
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
 
     CONV_THRESHHOLD = settings.converged_threshold;
-    MIN_ITER = settings.min_iterations;
-    MAX_ITER = settings.max_iterations;
+    MIN_ITER = settings.MIN_ITER;
+    MAX_ITER = settings.MAX_ITER;
     INF_CONV_THRESH = settings.inf_converged_threshold;
     INF_MAX_ITER = settings.inf_max_iterations;
-    EST_ALPHA = settings.estimate_alpha;
-    UPDATE_INTERVAL = settings.alpha_update_interval;
+    EST_ALPHA = settings.EMPIRICAL_BAYES;
+    UPDATE_INTERVAL = settings.ALPHA_UPDATE_INTERVAL;
 }
 
 void var_bayes::save_parameters(std::string file_dir) {

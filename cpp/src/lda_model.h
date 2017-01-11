@@ -31,18 +31,17 @@ struct doc_corpus {
  * @sa gibbs @sa var_bayes
  */
 struct lda_settings {
-    lda_settings() : converged_threshold(1e-6), min_iterations(2),
-                     max_iterations(100), inf_converged_threshold(1e-6),
-                     inf_max_iterations(20), estimate_alpha(false),
-                     alpha_update_interval(1){}
 
-    double converged_threshold;     /*!< The convergence threshold used in training. */
-    int min_iterations;             /*!< Minimum number of iterations to train for. */
-    int max_iterations;             /*!< Maximum number of iterations to train for. */
-    double inf_converged_threshold; /*!< Document inference convergence threshold. */
-    int inf_max_iterations;         /*!< Document inference max iterations. */
-    bool estimate_alpha;            /*!< Whether to estimate alpha. */
-    int alpha_update_interval;      /*!< Interval to update alpha on. */
+    lda_settings() : EMPIRICAL_BAYES(false),
+                     ALPHA_UPDATE_INTERVAL(1),
+                     MIN_ITER(1),
+                     MAX_ITER(100)
+    {}
+    bool EMPIRICAL_BAYES;
+    int ALPHA_UPDATE_INTERVAL;
+    int MAX_ITER;
+    int MIN_ITER;
+
 };
 
 /*! Represetation of latent dirichlet allocation model.

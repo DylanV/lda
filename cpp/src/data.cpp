@@ -124,20 +124,20 @@ void load_settings(std::string file_path, lda_settings& lda) {
                     }
 
                     if(loadingLDA){
-                        if(items[0] == "converged_threshold")
-                            lda.converged_threshold = std::stod(value);
-                        else if(items[0] == "min_iterations")
-                            lda.min_iterations = std::stoi(value);
-                        else if(items[0] == "max_iterations")
-                            lda.max_iterations = std::stoi(value);
-                        else if(items[0] == "inf_converged_threshold")
-                            lda.inf_converged_threshold = std::stod(value);
-                        else if(items[0] == "inf_max_iterations")
-                            lda.inf_max_iterations = std::stoi(value);
-                        else if(items[0] == "estimate_alpha")
-                            lda.estimate_alpha = (value == "true");
-                        else if(items[0] == "alpha_update_interval")
-                            lda.alpha_update_interval = std::stoi(value);
+//                        if(items[0] == "converged_threshold")
+//                            lda.converged_threshold = std::stod(value);
+//                        else if(items[0] == "min_iterations")
+//                            lda.min_iterations = std::stoi(value);
+//                        else if(items[0] == "max_iterations")
+//                            lda.max_iterations = std::stoi(value);
+//                        else if(items[0] == "inf_converged_threshold")
+//                            lda.inf_converged_threshold = std::stod(value);
+//                        else if(items[0] == "inf_max_iterations")
+//                            lda.inf_max_iterations = std::stoi(value);
+//                        else if(items[0] == "estimate_alpha")
+//                            lda.estimate_alpha = (value == "true");
+//                        else if(items[0] == "alpha_update_interval")
+//                            lda.alpha_update_interval = std::stoi(value);
                     }
 
                 }
