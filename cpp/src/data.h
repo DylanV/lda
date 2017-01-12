@@ -35,14 +35,13 @@ std::vector<std::string> split(std::string const& str, char delim);
  */
 std::vector<std::string> load_vocab(std::string file_path);
 
-/*! Load settings from a file.
- * Loads lda settings and alpha settings from a settings file.
- * @param [in] file_path Path to the settings file.
- * @param [out] alpha Alpha settings struct. @sa alpha_settings
- * @param [out] lda LDA settings struct. @sa lda_settings
+/*! Loads settings from a file into a map
+ * Takes a standard settings file and loads each line into a string pair in a map.
+ * Map can be used to set up settings object for the relevent inference method.
+ * @param file_path [in] The path to the settings file.
+ * @return String to string map of settings names and values.
  */
-void load_settings(const std::string file_path, lda_settings& lda);
-
+std::map<std::string, std::string> load_settings_file(const std::string file_path);
 
 /*! Write a vector to the given file stream.
  * Writes the vector to a single line in the given file stream. Items are space seperated.

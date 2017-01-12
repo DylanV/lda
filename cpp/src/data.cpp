@@ -97,51 +97,30 @@ std::vector<std::string> load_vocab(std::string file_path) {
     return vocab;
 }
 
-void load_settings(std::string file_path, lda_settings& lda) {
+std::map<std::string, std::string> load_settings_file(const std::string file_path) {
+    std::map<std::string, std::string> settings;
 
     std::ifstream fs(file_path);
-    const char line_delim = ' ';
-//    int numAlpha = 0;
-//    int numLDA = 0;
-    bool loadingLDA = false;
+    const char delim = ' ';
 
     if(fs.is_open()){
         std::string line;
         while(!fs.eof()){
             getline(fs, line);
-            if(line != ""){
-                std::vector<std::string> items = split(line, line_delim);
-                if(items.size() == 2){
-
+            if(line != ""){ //ignore empty lines
+                std::vector<std::string> items = split(line, delim);
+                if(items.size() == 2){ //get lines with two items
+                    //cleanup white space
                     std::string value = items[1];
                     value.erase(std::remove(value.begin(), value.end(), '\n'), value.end());
                     value.erase(std::remove(value.begin(), value.end(), '\r'), value.end());
                     value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
-
-                    if(items[0] == "LDA"){
-//                        numLDA = std::stoi(items[1]);
-                        loadingLDA = true;
-                    }
-
-                    if(loadingLDA){
-//                        if(items[0] == "converged_threshold")
-//                            lda.converged_threshold = std::stod(value);
-//                        else if(items[0] == "min_iterations")
-//                            lda.min_iterations = std::stoi(value);
-//                        else if(items[0] == "max_iterations")
-//                            lda.max_iterations = std::stoi(value);
-//                        else if(items[0] == "inf_converged_threshold")
-//                            lda.inf_converged_threshold = std::stod(value);
-//                        else if(items[0] == "inf_max_iterations")
-//                            lda.inf_max_iterations = std::stoi(value);
-//                        else if(items[0] == "estimate_alpha")
-//                            lda.estimate_alpha = (value == "true");
-//                        else if(items[0] == "alpha_update_interval")
-//                            lda.alpha_update_interval = std::stoi(value);
-                    }
-
+                    //load into map
+                    settings.insert(items[0], items[1]);
                 }
             }
         }
     }
-}
+
+    return settings;
+};

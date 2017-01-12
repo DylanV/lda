@@ -71,11 +71,11 @@ int main(int argc, char* argv[]) {
             corpus.docs.erase(corpus.docs.begin());
         }
 
-        lda_settings l;
+        std::map<std::string, std::string> raw_settings;
         lda_model * model;
 
         if(settings_path_passed){
-            load_settings(settings_path, l);
+            raw_settings = load_settings_file(settings_path);
         }
 
         if(inference_method == 1){
