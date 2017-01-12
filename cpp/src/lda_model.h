@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <algorithm>
 
 /*! Represents a document bag of words style.
  * A document is a collection of words. Word order does not matter only word frequency is recoreded.
@@ -41,6 +42,31 @@ struct lda_settings {
     int ALPHA_UPDATE_INTERVAL;
     int MAX_ITER;
     int MIN_ITER;
+
+    virtual void set_values(std::map<std::string, std::string> raw_settings){
+        for(const auto &pair : raw_settings){
+            std::string key = pair.first;
+            std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+            if(key == "EMPIRICAL_BAYES"){
+                std::string val = pair.second;
+                std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+                if(val == "1" || val == "true"){
+                    EMPIRICAL_BAYES = true;
+                }
+            } else if(key == "ALPHA_UPDATE_INTERVAL"){
+                std::string val = pair.second;
+                ALPHA_UPDATE_INTERVAL = stoi(val);
+            } else if(key == "MAX_ITER"){
+                std::string val = pair.second;
+                MAX_ITER = stoi(val);
+            } else if(key == "MIN_ITER"){
+                std::string val = pair.second;
+                MIN_ITER = stoi(val);
+            }
+
+        }
+    }
 
 };
 

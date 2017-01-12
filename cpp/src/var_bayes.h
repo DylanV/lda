@@ -22,13 +22,35 @@ struct suff_stats {
 
 struct var_bayes_settings : lda_settings {
 
-    var_bayes_settings() : converged_threshold(1e-6),
-                           inf_converged_threshold(1e-6),
-                           inf_max_iterations(20){}
+    var_bayes_settings(std::map<std::string, std::string> raw_settings) : CONV_THRESH(1e-6),
+                           INF_CONV_THRESH(1e-6),
+                           INF_MAX_ITER(20)
+    {
+        if(raw_settings.size() > 0){
+            lda_settings::set_values(raw_settings);
 
-    double converged_threshold;     /*!< The convergence threshold used in training. */
-    double inf_converged_threshold; /*!< Document inference convergence threshold. */
-    int inf_max_iterations;         /*!< Document inference max iterations. */
+            for(const auto &pair : raw_settings){
+                std::string key = pair.first;
+                std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+
+                if(key == "CONV_THRESH"){
+                    std::string val = pair.second;
+                    CONV_THRESH = stod(val);
+                } else if(key == "INF_CONV_THRESH"){
+                    std::string val = pair.second;
+                    INF_CONV_THRESH = stod(val);
+                } else if(key == "INF_MAX_ITER"){
+                    std::string val = pair.second;
+                    INF_MAX_ITER = stoi(val);
+                }
+
+            }
+        }
+    }
+
+    double CONV_THRESH;     /*!< The convergence threshold used in training. */
+    double INF_CONV_THRESH; /*!< Document inference convergence threshold. */
+    int INF_MAX_ITER;         /*!< Document inference max iterations. */
 };
 
 class var_bayes : public lda_model{

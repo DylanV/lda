@@ -10,11 +10,11 @@ var_bayes::var_bayes(const doc_corpus &corp, const var_bayes_settings &settings)
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
 
-    CONV_THRESHHOLD = settings.converged_threshold;
+    CONV_THRESHHOLD = settings.CONV_THRESH;
     MIN_ITER = settings.MIN_ITER;
     MAX_ITER = settings.MAX_ITER;
-    INF_CONV_THRESH = settings.inf_converged_threshold;
-    INF_MAX_ITER = settings.inf_max_iterations;
+    INF_CONV_THRESH = settings.INF_CONV_THRESH;
+    INF_MAX_ITER = settings.INF_MAX_ITER;
     EST_ALPHA = settings.EMPIRICAL_BAYES;
     UPDATE_INTERVAL = settings.ALPHA_UPDATE_INTERVAL;
 }
