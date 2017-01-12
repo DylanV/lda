@@ -6,10 +6,15 @@
 #include <cstdlib>
 #include <iostream>
 
-expectation_prop::expectation_prop(doc_corpus &corpus) {
+expectation_prop::expectation_prop(const doc_corpus &corpus, const ep_settings &settings) {
     this->corpus = corpus;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
+
+    MAX_ITERATION = settings.MAX_ITER;
+    E_MAX_ITERATIONS = settings.E_MAX_ITERATIONS;
+    CONV_THRESHHOLD = settings.CONV_THRESH;
+    ALPHA_INIT = settings.ALPHA_INIT;
 }
 
 void expectation_prop::save_parameters(std::string file_dir) {

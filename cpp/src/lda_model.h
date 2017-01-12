@@ -36,14 +36,14 @@ struct lda_settings {
     lda_settings() : EMPIRICAL_BAYES(false),
                      ALPHA_UPDATE_INTERVAL(1),
                      MIN_ITER(1),
-                     MAX_ITER(100)
-    {}
+                     MAX_ITER(100) {}
+
     bool EMPIRICAL_BAYES;
     int ALPHA_UPDATE_INTERVAL;
     int MAX_ITER;
     int MIN_ITER;
 
-    virtual void set_values(std::map<std::string, std::string> raw_settings){
+    void set_values(std::map<std::string, std::string> raw_settings){
         for(const auto &pair : raw_settings){
             std::string key = pair.first;
             std::transform(key.begin(), key.end(), key.begin(), ::toupper);
