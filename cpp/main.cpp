@@ -79,14 +79,15 @@ int main(int argc, char* argv[]) {
         }
 
         if(inference_method == 1){
-            var_bayes_settings v;
+            var_bayes_settings v(raw_settings);
             var_bayes bayes_model = var_bayes(corpus, v);
             model = &bayes_model;
         }else if(inference_method == 2){
             gibbs gibbs_model = gibbs(corpus);
             model = &gibbs_model;
         }else{
-            expectation_prop ep_model = expectation_prop(corpus);
+            ep_settings ep_set(raw_settings);
+            expectation_prop ep_model = expectation_prop(corpus, ep_set);
             model = &ep_model;
         }
 
