@@ -10,7 +10,9 @@
 #include <random>
 
 struct gibbs_settings : lda_settings {
+    gibbs_settings(std::map<std::string, std::string> raw_settings){
 
+    }
 };
 
 

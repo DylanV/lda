@@ -83,7 +83,8 @@ int main(int argc, char* argv[]) {
             var_bayes bayes_model = var_bayes(corpus, v);
             model = &bayes_model;
         }else if(inference_method == 2){
-            gibbs gibbs_model = gibbs(corpus);
+            gibbs_settings g(raw_settings);
+            gibbs gibbs_model = gibbs(corpus, g);
             model = &gibbs_model;
         }else{
             ep_settings ep_set(raw_settings);
