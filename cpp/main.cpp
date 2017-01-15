@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Standard usage is --corpus <infile> --output <outdir> --topics <numtopics>" << endl;
         std::cerr << "Settings can be loaded from file with the argument: --setting <infile>" << endl;
         std::cerr << "Inference method can be chosen with the argument: --inference <1/2/3>" << endl;
-        std::cerr << "Where <1/2/3> corresponds to <variational inference/collapsed gibbs/expectation propagtion> respectively." << endl;
+        std::cerr << "Where <1/2/3> corresponds to <variational inference/collapsed gibbs/expectation propagation> respectively." << endl;
         std::cin.get();
         exit(0);
 

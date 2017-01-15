@@ -9,13 +9,15 @@
 #include <sstream>
 #include <chrono>
 
-gibbs::gibbs(doc_corpus& corp){
+gibbs::gibbs(const doc_corpus &corp, const gibbs_settings &settings){
 
     corpus = corp;
     numDocs = corpus.numDocs;
     numTerms = corpus.numTerms;
     auto seed = std::chrono::system_clock::now().time_since_epoch().count();
     generator =  std::default_random_engine(seed);
+
+    MAX_ITER = settings.MAX_ITER;
 };
 
 void gibbs::train(size_t numTopics) {

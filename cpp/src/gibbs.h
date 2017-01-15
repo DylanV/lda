@@ -9,11 +9,16 @@
 #include <vector>
 #include <random>
 
+struct gibbs_settings : lda_settings {
+
+};
+
+
 class gibbs : public lda_model{
 
 public:
     //! The constructor.
-    gibbs(doc_corpus& corp);
+    gibbs(const doc_corpus &corp, const gibbs_settings &settings);
     //! Train a lda model with the given number of topics.
     void train(size_t numTopics);
     //! Save the model parameters to the given folder.
@@ -30,7 +35,7 @@ private:
     double beta = 1.0;               /*!< Symmetric dirichlet beta parameter. Topic word distribution prior. */
     std::vector<std::vector<double>> phi;   /*!< Topic word distribution. */
     std::vector<std::vector<double>> theta; /*!< Document topic proportions. */
-    const double MAX_ITER = 200.0;
+    double MAX_ITER = 200.0;
 
     // Convenience constants
     // =====================
