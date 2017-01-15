@@ -1,0 +1,7 @@
+Settings loader should ignore lines with more than 2 words.
+The following string pairs shoudl be loaded into a map:
+FIRST first
+SECOND 2
+THIRD true
+
+empty lines should be ignored

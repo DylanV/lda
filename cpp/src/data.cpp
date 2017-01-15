@@ -116,7 +116,7 @@ std::map<std::string, std::string> load_settings_file(const std::string file_pat
                     value.erase(std::remove(value.begin(), value.end(), '\r'), value.end());
                     value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
                     //load into map
-                    settings.insert(items[0], items[1]);
+                    settings.insert(std::pair<std::string, std::string>(items[0], value));
                 }
             }
         }
