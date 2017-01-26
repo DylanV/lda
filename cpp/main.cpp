@@ -82,25 +82,47 @@ int main(int argc, char* argv[]) {
             var_bayes_settings v(raw_settings);
             var_bayes bayes_model = var_bayes(corpus, v);
             model = &bayes_model;
+            cout << "Training lda with variational bayes and " << numTopics << " topics:" << endl;
+
+            clock_t start = clock();
+            model->train(numTopics);
+            cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
+                 << " seconds. \n" << endl;
+
+            cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
+            model->save_parameters(output_dir);
+
         }else if(inference_method == 2){
             gibbs_settings g(raw_settings);
             gibbs gibbs_model = gibbs(corpus, g);
             model = &gibbs_model;
+            cout << "Training lda with collapsed gibbs and " << numTopics << " topics:" << endl;
+
+            clock_t start = clock();
+            model->train(numTopics);
+            cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
+                 << " seconds. \n" << endl;
+
+            cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
+            model->save_parameters(output_dir);
+
         }else{
             ep_settings ep_set(raw_settings);
             expectation_prop ep_model = expectation_prop(corpus, ep_set);
             model = &ep_model;
+
+            cout << "Training lda with expectation propagation and " << numTopics << " topics:" << endl;
+
+            clock_t start = clock();
+            model->train(numTopics);
+            cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
+                 << " seconds. \n" << endl;
+
+            cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
+            model->save_parameters(output_dir);
         }
 
-        cout << "Training lda with " << numTopics << " topics:" << endl;
 
-        clock_t start = clock();
-        model->train(numTopics);
-        cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
-        << " seconds. \n" << endl;
-
-        cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
-        model->save_parameters(output_dir);
     }
 
     return 0;
