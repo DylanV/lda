@@ -18,18 +18,14 @@ def run_LDA():
             '-c', CORPUS_PATH,
             '-t', '10',
             '-o', OUT_PATH,
-            '-i', '3')
+            '-i', '2')
 
     p = Popen(lda_args, stdout=PIPE, stderr=PIPE, cwd=WORK_DIR)
     p.wait()
     out, err = p.communicate()
     print(out)
+    print(err)
     print(p.returncode)
 
-
-def main(args):
-    run_LDA()
-
 if __name__ == '__main__':
-    from sys import argv
-    exit(main(argv))
+    run_LDA()
