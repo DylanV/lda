@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.4)
 project(lda)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+# if you're compiling with cygwin on windows and the python wrapper is failing
+# add the flags -static-libgcc -static-libstdc++. This blows up the executable size
+# but should solve the linking issues. Otherwise figure out what's not linking and add
+# that to your PATH.
 
 set(dir ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/cpp/build")
