@@ -8,16 +8,18 @@ set(SOURCE
         gibbs.cpp
         var_bayes.cpp
         var_bayes.h
-        expectation_prop.cpp)
+        expectation_prop.cpp
+        online_var_bayes.cpp)
 
 set(HEADERS
-        lda_model.H
+        lda_model.h
         util.h
         data.h
         dirichlet.h
         gibbs.h
         var_bayes.h
-        expectation_prop.h)
+        expectation_prop.h
+        online_var_bayes.h)
 
 add_library(lib ${SOURCE} ${HEADERS} )
 # Adding the headers is not necessary when each has an associated cpp source file, consider just adding sources
