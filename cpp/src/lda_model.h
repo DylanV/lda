@@ -36,7 +36,7 @@ struct lda_settings {
     lda_settings() : EMPIRICAL_BAYES(false),
                      ALPHA_UPDATE_INTERVAL(1),
                      MIN_ITER(1),
-                     MAX_ITER(100) {}
+                     MAX_ITER(200) {}
 
     bool EMPIRICAL_BAYES;
     int ALPHA_UPDATE_INTERVAL;

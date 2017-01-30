@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <expectation_prop.h>
+#include <online_var_bayes.h>
 #include "data.h"
 #include "var_bayes.h"
 #include "gibbs.h"
@@ -97,6 +98,20 @@ int main(int argc, char* argv[]) {
             gibbs gibbs_model = gibbs(corpus, g);
             model = &gibbs_model;
             cout << "Training lda with collapsed gibbs and " << numTopics << " topics:" << endl;
+
+            clock_t start = clock();
+            model->train(numTopics);
+            cout << "\nTrained in " << double(clock() - start)/CLOCKS_PER_SEC
+                 << " seconds. \n" << endl;
+
+            cout << "Writing dirichlet parameters to files in "<< output_dir << endl;
+            model->save_parameters(output_dir);
+
+        }else if(inference_method == 3){
+            online_var_bayes_settings g(raw_settings);
+            online_var_bayes ovb_model = online_var_bayes(corpus, g);
+            model = &ovb_model;
+            cout << "Training lda with online variational bayes and " << numTopics << " topics:" << endl;
 
             clock_t start = clock();
             model->train(numTopics);

@@ -29,8 +29,23 @@ private:
     double ALPHA;
     double ETA;
 
-    // Variational
+    // Convenience
+    size_t numDocs;
+    size_t numTopics;
+    size_t numTerms;
 
+    // Learning parameters
+    double tau;
+    double kappa;
+    int updateCount;
+    int batchSize;
+
+    // Variational
+    std::vector<std::vector<double>> lambda;
+    std::vector<std::vector<double>> Elogbeta;
+
+    // RNG
+    std::default_random_engine generator;
 };
 
 

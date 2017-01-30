@@ -17,6 +17,7 @@ var_bayes::var_bayes(const doc_corpus &corp, const var_bayes_settings &settings)
     INF_MAX_ITER = settings.INF_MAX_ITER;
     EST_ALPHA = settings.EMPIRICAL_BAYES;
     UPDATE_INTERVAL = settings.ALPHA_UPDATE_INTERVAL;
+
 }
 
 void var_bayes::save_parameters(std::string file_dir) {
