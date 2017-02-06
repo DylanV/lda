@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.4)
 project(lda)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2")
 
 # if you're compiling with cygwin on windows and the python wrapper is failing
 # add the flags -static-libgcc -static-libstdc++. This blows up the executable size
