@@ -25,7 +25,7 @@ public:
 private:
     doc_corpus corpus;                      /*!< The corpus */
 
-    // The priors
+    // The parameters on the priors
     double ALPHA;
     double ETA;
 
@@ -39,10 +39,12 @@ private:
     double kappa;
     int updateCount;
     int batchSize;
+    int numRuns;
 
     // Variational
     std::vector<std::vector<double>> lambda;
     std::vector<std::vector<double>> Elogbeta;
+    std::vector<std::vector<double>> Elogtheta;
 
     // RNG
     std::default_random_engine generator;
