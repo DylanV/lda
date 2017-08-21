@@ -8,14 +8,14 @@ using namespace std;
 online_var_bayes::online_var_bayes(const doc_corpus &corp, const online_var_bayes_settings &settings){
     ALPHA = 0.01;
     ETA = 0.001;
-    tau = 2;
-    kappa = 0.75;
+    tau = 256;
+    kappa = 0.5;
 
     corpus = corp;
     numDocs = corp.numDocs;
     numTerms = corp.numTerms;
-    batchSize = 2;
-    numRuns = 2;
+    batchSize = 1;
+    numRuns = 1;
 }
 
 void online_var_bayes::save_parameters(std::string file_dir) {
